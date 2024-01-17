@@ -1,21 +1,26 @@
 package com.swp.services;
 
+import com.swp.cms.reqDto.ResetPasswordRequest;
 import com.swp.entity.User;
 import com.swp.exception.EntityNotFoundException;
 import com.swp.repositories.UserRepository;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.security.Principal;
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class UserService {
 
+    private final PasswordEncoder passwordEncoder;
     private Integer userId;
     @Autowired
     private final UserRepository userRepository;
@@ -46,11 +51,24 @@ public class UserService {
         return userRepository.findAll();
     }
 
-    public User addUser(User user) {
-        return userRepository.save(user);
+    public void changePassword(ResetPasswordRequest request, Principal connectedUser) {
+
+        var user = (User) ((UsernamePasswordAuthenticationToken) connectedUser).getPrincipal();
+
+        // check if the current password is correct
+        if (!passwordEncoder.matches(request.getCurrentPassword(), user.getPassword())) {
+            throw new IllegalStateException("Wrong password");
+        }
+        // check if the two new passwords are the same
+        if (!request.getNewPassword().equals(request.getConfirmationPassword())) {
+            throw new IllegalStateException("Password are not the same");
+        }
+
+        // update the password
+        user.setPassword(passwordEncoder.encode(request.getNewPassword()));
+
+        // save the new password
+        userRepository.save(user);
     }
-//    public Boolean existsByUsername(String username) {
-//        return userRepository.existsByUsername(username);
-//    }
 
 }

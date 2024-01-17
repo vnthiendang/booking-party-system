@@ -1,14 +1,14 @@
 package com.swp.config;
 
-import com.swp.entity.Roles;
 import com.swp.security_jwt.AuthTokenFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -19,10 +19,28 @@ import org.springframework.web.filter.CorsFilter;
 
 import java.util.Arrays;
 
+import static com.swp.entity.Roles.ADMIN;
+import static com.swp.entity.Roles.HOST;
+import static com.swp.token.Permission.*;
+import static org.springframework.http.HttpMethod.GET;
+import static org.springframework.http.HttpMethod.POST;
+import static org.springframework.http.HttpMethod.PUT;
+import static org.springframework.http.HttpMethod.DELETE;
+import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
+
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity
 @RequiredArgsConstructor
 public class SecurityConfiguration {
+    private static final String[] WHITE_LIST_URL = {"/booking/auth/**",
+            "/swagger-resources",
+            "/swagger-resources/**",
+            "/configuration/ui",
+            "/configuration/security",
+            "/swagger-ui/**",
+            "/webjars/**",
+            "/swagger-ui.html"};
     private final AuthTokenFilter jwtAuthFilter;
     private final AuthenticationProvider authenticationProvider;
     private final LogoutHandler logoutHandler;
@@ -31,23 +49,27 @@ public class SecurityConfiguration {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
         http
-                .csrf()
-                .disable()
-                .authorizeRequests()
-                .requestMatchers("/booking/auth/**").permitAll()
-                .requestMatchers("/booking/user/GetAll/**").hasAnyAuthority(Roles.ADMIN.name())
-                .anyRequest()
-                .authenticated()
-                .and()
-                .sessionManagement()
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                .and()
+                .csrf(AbstractHttpConfigurer::disable)
+                .authorizeHttpRequests(req ->
+                        req.requestMatchers(WHITE_LIST_URL)
+                                .permitAll()
+                                .requestMatchers("/booking/management/**").hasAnyRole(ADMIN.name(), HOST.name())
+                                .requestMatchers(GET, "/booking/management/**").hasAnyAuthority(ADMIN_READ.name(), HOST_READ.name())
+                                .requestMatchers(POST, "/booking/management/**").hasAnyAuthority(ADMIN_CREATE.name(), HOST_CREATE.name())
+                                .requestMatchers(PUT, "/booking/management/**").hasAnyAuthority(ADMIN_UPDATE.name(), HOST_UPDATE.name())
+                                .requestMatchers(DELETE, "/booking/management/**").hasAnyAuthority(ADMIN_DELETE.name(), HOST_DELETE.name())
+                                .anyRequest()
+                                .authenticated()
+                )
+                .sessionManagement(session -> session.sessionCreationPolicy(STATELESS))
                 .authenticationProvider(authenticationProvider)
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
-                .logout()
-                .logoutUrl("/booking/auth/logout")
-                .addLogoutHandler(logoutHandler)
-                .logoutSuccessHandler((request, response, authentication) -> SecurityContextHolder.clearContext());
+                .logout(logout ->
+                        logout.logoutUrl("/booking/auth/logout")
+                                .addLogoutHandler(logoutHandler)
+                                .logoutSuccessHandler((request, response, authentication) -> SecurityContextHolder.clearContext())
+                )
+        ;
         return http.build();
     }
 
@@ -64,18 +86,4 @@ public class SecurityConfiguration {
 
         return new CorsFilter(source);
     }
-
-//    @Bean
-//    public UserDetailsService users(){
-//        UserDetails admin = User.builder()
-//                .role_id("ADMIN")
-//                .build();
-//        UserDetails customer = User.builder()
-//                .role_id("CUSTOMER")
-//                .build();
-//        UserDetails host = User.builder()
-//                .role_id("HOST")
-//                .build();
-//        return new InMemoryUserDetailsManager(admin, customer, host);
-//    }
 }

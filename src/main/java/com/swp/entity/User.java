@@ -1,14 +1,13 @@
 package com.swp.entity;
 
+import com.swp.token.Token;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
@@ -49,7 +48,10 @@ public class User implements UserDetails {
     @NotNull
     @Column(name = "password", nullable = false)
     private String password;
+    @OneToMany(mappedBy = "user")
+    private List<Token> tokens;
 
+    @Enumerated(EnumType.STRING)
     private Roles role_id;
 
     @Column(name = "created_date")
@@ -58,7 +60,7 @@ public class User implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority(role_id.name()));
+        return role_id.getAuthorities();
     }
 
     @Override
@@ -70,7 +72,6 @@ public class User implements UserDetails {
     public String getUsername() {
         return email;
     }
-
 
     @Override
     public boolean isAccountNonExpired() {
@@ -98,10 +99,5 @@ public class User implements UserDetails {
         if (o == null || getClass() != o.getClass()) return false;
         User user = (User) o;
         return Objects.equals(usId, user.usId);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(usId);
     }
 }
