@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.security.Principal;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -69,6 +70,29 @@ public class UserService {
 
         // save the new password
         userRepository.save(user);
+    }
+
+    public User createUser(User user) {
+        return userRepository.save(user);
+    }
+
+
+    public User updateUser(Integer userId, User updateUser) {
+        Optional<User> optionalUser = userRepository.findById(userId);
+        if(optionalUser.isPresent()){
+            User userExist = optionalUser.get();
+            userExist.setDisplay_name(updateUser.getDisplay_name());
+            userExist.setPhone(updateUser.getPhone());
+            userExist.setEmail(updateUser.getEmail());
+            return userRepository.save(userExist);
+        }
+        return null;
+    }
+
+
+    public void deleteUser(Integer userId) {
+        userRepository.deleteById(userId);
+
     }
 
 }

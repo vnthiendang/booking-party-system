@@ -44,4 +44,21 @@ public class UserController {
         userService.changePassword(request, connectedUser);
         return ResponseEntity.ok().build();
     }
+    @GetMapping("/{userId}")
+    @PreAuthorize("hasAnyAuthority('ADMIN_READ', 'HOST_READ')")
+    public User getuUserById(@PathVariable Integer userId){
+        return userService.getById(userId);
+    }
+
+    @PutMapping("/{userId}")
+    public User updateUser(@PathVariable Integer userId, @RequestBody User updateUser){
+        return userService.updateUser(userId,updateUser);
+    }
+    @DeleteMapping("/{userId}")
+    public void deleteUser(@PathVariable Integer userId){
+
+        userService.deleteUser(userId);
+    }
 }
+
+
