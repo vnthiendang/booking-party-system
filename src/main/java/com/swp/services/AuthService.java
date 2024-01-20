@@ -73,6 +73,8 @@ public class AuthService {
                 .role(String.valueOf(user.getRole_id()))
                 .token(jwtToken)
                 .refreshToken(refreshToken)
+                .email(user.getEmail())
+                .pwd(user.getPassword())
                 .build();
     }
 

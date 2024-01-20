@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -51,7 +52,8 @@ public class ManagementController {
 
     )
 
-    @GetMapping("/GetAll")
+    @GetMapping("/GetAllUsers")
+    @PreAuthorize("hasAnyAuthority('ADMIN_READ')")
     public List<UserDto> getAll() {
         List<User> users = userService.getAllUsers();
         List<UserDto> userDtos = users.stream()
