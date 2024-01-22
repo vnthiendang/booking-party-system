@@ -9,12 +9,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/host")
+@RequestMapping("/booking/package")
 public class PackageController {
     @Autowired
     private PackageService packageService;
 
-    @PostMapping("/packages/create")
+    @PostMapping("/create")
         public Package createPackage (@RequestBody Package packages) throws Exception {
             return packageService.createPackage(packages);
         }
