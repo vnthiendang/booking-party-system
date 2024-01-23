@@ -1,30 +1,37 @@
 package com.swp.services;
 
+import com.swp.cms.dto.UserDto;
 import com.swp.cms.reqDto.ResetPasswordRequest;
 import com.swp.entity.User;
 import com.swp.exception.EntityNotFoundException;
 import com.swp.repositories.UserRepository;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class UserService {
 
-    private final PasswordEncoder passwordEncoder;
     private Integer userId;
     @Autowired
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @PostConstruct
     public void initialize() {
@@ -33,6 +40,10 @@ public class UserService {
             User userDetails = (User) authentication.getPrincipal();
             userId = userDetails.getUsId();
         }
+    }
+
+    public Optional<User> findUserByUsername(String username) {
+        return userRepository.findByEmail(username);
     }
 
     public User getById() {
@@ -48,8 +59,25 @@ public class UserService {
                 .orElseThrow(() -> new EntityNotFoundException(User.class, "id", id.toString()) );
     }
 
-    public List<User> getAllUsers() {
-        return userRepository.findAll();
+    public List<UserDto> getAllUsers() {
+        List<User> userList = userRepository.findAll();
+
+        List<UserDto> userDTOList = new ArrayList<>();
+        for (User user : userList) {
+            UserDto userDTO = mapUserToUserDto(user);
+            userDTOList.add(userDTO);
+        }
+        return userDTOList;
+    }
+
+    private UserDto mapUserToUserDto(User user) {
+        return UserDto.builder()
+                .userId(user.getUsId())
+                .email(user.getUsername())
+                .display_name(user.getDisplay_name())
+                .phone(user.getPhone())
+                .role_id(user.getRole_id())
+                .build();
     }
 
     public void changePassword(ResetPasswordRequest request, Principal connectedUser) {
@@ -72,10 +100,37 @@ public class UserService {
         userRepository.save(user);
     }
 
-    public User createUser(User user) {
-        return userRepository.save(user);
+    public void updateLoggedInUser(UserDto userDTO) {
+        String loggedInUsername = SecurityContextHolder.getContext().getAuthentication().getName();
+        Optional<User> loggedInUser = userRepository.findByEmail(loggedInUsername);
+
+        //setFormattedDataToUser(loggedInUser, userDTO);
+        //userRepository.save(loggedInUser);
+        log.info("Successfully updated logged in user with ID: {}", loggedInUser.get().getUsId());
+
+        // Create new authentication token
+        updateAuthentication(userDTO);
     }
 
+    private void updateAuthentication(UserDto userDTO) {
+        Optional<User> user = userRepository.findByEmail(userDTO.getEmail());
+
+        List<GrantedAuthority> authorities = new ArrayList<>();
+        authorities.add(new SimpleGrantedAuthority("ROLE_" + user.get().getUsername()));
+
+        UserDetails newUserDetails = new org.springframework.security.core.userdetails.User(
+                user.get().getUsername(),
+                user.get().getPassword(),
+                authorities
+        );
+
+        UsernamePasswordAuthenticationToken newAuthentication = new UsernamePasswordAuthenticationToken(
+                newUserDetails,
+                null,
+                newUserDetails.getAuthorities()
+        );
+        SecurityContextHolder.getContext().setAuthentication(newAuthentication);
+    }
 
     public User updateUser(Integer userId, User updateUser) {
         Optional<User> optionalUser = userRepository.findById(userId);

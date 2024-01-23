@@ -1,4 +1,4 @@
-package com.swp.entity;
+package com.swp.entity.enums;
 
 import com.swp.token.Permission;
 import lombok.Getter;

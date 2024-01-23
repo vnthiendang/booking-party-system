@@ -1,6 +1,6 @@
 package com.swp.cms.reqDto;
 
-import com.swp.entity.Roles;
+import com.swp.entity.enums.Roles;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 

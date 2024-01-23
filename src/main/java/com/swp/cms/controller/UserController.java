@@ -1,52 +1,34 @@
 package com.swp.cms.controller;
 
-import com.swp.cms.dto.UserDto;
-import com.swp.cms.mapper.UserMapper;
 import com.swp.cms.reqDto.ResetPasswordRequest;
 import com.swp.entity.User;
+import com.swp.services.BookingService;
 import com.swp.services.UserService;
-import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
-import java.util.List;
-import java.util.stream.Collectors;
 
-@RestController
-@RequestMapping("/booking/user")
+@Controller
+@RequestMapping("/customer")
+@RequiredArgsConstructor
+@Slf4j
 public class UserController {
 
-    @Autowired
-    private ModelMapper modelMapper;
-    @Autowired
-    private UserMapper mapper;
-    @Autowired
     private final UserService userService;
+    private final BookingService bookingService;
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
-
-    @Autowired
-    public UserController(UserService userService, PasswordEncoder passwordEncoder) {
-        this.userService = userService;
-        this.passwordEncoder = passwordEncoder;
+    private Integer getCurrentCustomerId() {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        return userService.findUserByUsername(username).get().getUsId();
     }
 
-    @PatchMapping
-    public ResponseEntity<?> changePassword(
-            @RequestBody ResetPasswordRequest request,
-            Principal connectedUser
-    ) {
-        userService.changePassword(request, connectedUser);
-        return ResponseEntity.ok().build();
-    }
     @GetMapping("/getUserById/{userId}")
-    @PreAuthorize("hasAnyAuthority('ADMIN_READ', 'HOST_READ')")
-    public User getuUserById(@PathVariable Integer userId){
+    public User getUserById(@PathVariable Integer userId){
         return userService.getById(userId);
     }
 

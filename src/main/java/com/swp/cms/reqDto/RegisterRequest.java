@@ -1,25 +1,35 @@
 package com.swp.cms.reqDto;
 
-import com.swp.entity.Roles;
+import com.swp.entity.enums.Roles;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import static com.swp.entity.Roles.CUSTOMER;
+import static com.swp.entity.enums.Roles.CUSTOMER;
 
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 public class RegisterRequest {
-    private String displayName;
+
+    @NotBlank(message = "Email address cannot be empty")
+    @Email(message = "Invalid email address")
     private String email;
+
+    @NotBlank(message = "Name cannot be empty")
+    @Pattern(regexp = "^(?!\\s*$)[A-Za-z ]+$", message = "Name must only contain letters")
+    private String displayName;
+
+    @NotBlank(message = "Password cannot be empty")
     private String password;
+    @NotBlank(message = "Phone cannot be empty")
     private String phone;
     public Roles getRole_id() {
         return CUSTOMER;
     }
-//    public void setRole_id(Role role_id) {
-//        this.role_id = role_id;
-//    }
+
 }

@@ -1,48 +1,76 @@
 package com.swp.entity;
 
+import com.swp.entity.enums.Location;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Entity
-@Table(name = "package")
+@NoArgsConstructor
+@AllArgsConstructor
 @Getter
 @Setter
+@Builder
 public class Package {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer packageId;
+    private Integer id;
 
-    @Column(name = "packageName")
+    @Column(unique = true, nullable = false)
     private String packageName;
 
-    @Column(name = "description")
+    @Column(nullable = false)
     private String description;
 
-    @Column(name = "price")
-    private BigDecimal price;
+    private Double price;
 
-    @Column(name = "capacity")
+    @Column(nullable = false)
+    private LocalDateTime checkinTime;
+
+    @Column(nullable = false)
+    private LocalDateTime checkoutTime;
+
+    @Column(nullable = false)
     private Integer capacity;
 
-    @Column(name = "timeSlot")
-    private LocalDateTime timeSlot;
+    @Enumerated(EnumType.STRING)
+    private Location venue;
+    public void setVenueWithPrice(Location venue) {
+        this.venue = venue;
+        this.price = venue.getPrice(); // Set the price based on the chosen location
+    }
 
-    @Column(name = "packageImage")
-    private String packageImage;
-
-    @Column(name = "venue")
-    private String venue;
+    @OneToMany(mappedBy = "packageId", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
+    private List<PService> services = new ArrayList<>();
 
     @OneToMany(mappedBy = "packageId")
     private List<Booking> bookings = new ArrayList<>();
 
-    @ManyToOne
-    @JoinColumn(name = "serviceId")
-    private Service service;
+    @Override
+    public String toString() {
+        return "Package{" +
+                "id=" + id +
+                ", name='" + packageName + '\'' +
+                ", address=" + venue +
+                ", rooms=" + services +
+                '}';
+    }
+
+//    @Override
+//    public boolean equals(Object o) {
+//        if (this == o) return true;
+//        if (o == null || getClass() != o.getClass()) return false;
+//        Package packages = (Package) o;
+//        return Objects.equals(packageId, packages.packageId) && Objects.equals(packageName, packages.packageName) && Objects.equals(host, packages.HOST);
+//    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, packageName);
+    }
 }

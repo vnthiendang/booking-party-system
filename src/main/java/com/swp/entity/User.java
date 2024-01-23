@@ -1,9 +1,11 @@
 package com.swp.entity;
 
+import com.swp.entity.enums.Roles;
 import com.swp.token.Token;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -24,12 +26,12 @@ public class User implements UserDetails {
     public User(Integer usId) {
         this.usId = usId;
     }
-    public Integer getUsId() {
-        return usId;
-    }
+
     public User(String name) {
         this.display_name = name;
     }
+
+    @Getter
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
@@ -54,7 +56,7 @@ public class User implements UserDetails {
     @Enumerated(EnumType.STRING)
     private Roles role_id;
 
-    @Column(name = "created_date")
+    @CreationTimestamp
     private LocalDateTime created_date;
 
 

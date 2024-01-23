@@ -19,8 +19,7 @@ import org.springframework.web.filter.CorsFilter;
 
 import java.util.Arrays;
 
-import static com.swp.entity.Roles.ADMIN;
-import static com.swp.entity.Roles.HOST;
+import static com.swp.entity.enums.Roles.*;
 import static com.swp.token.Permission.*;
 import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpMethod.POST;
@@ -53,11 +52,9 @@ public class SecurityConfiguration {
                 .authorizeHttpRequests(req ->
                         req.requestMatchers(WHITE_LIST_URL)
                                 .permitAll()
-                                .requestMatchers("/booking/management/**").hasAnyRole(ADMIN.name(), HOST.name())
-                                .requestMatchers(GET, "/booking/management/**").hasAnyAuthority(ADMIN_READ.name(), HOST_READ.name())
-                                .requestMatchers(POST, "/booking/management/**").hasAnyAuthority(ADMIN_CREATE.name(), HOST_CREATE.name())
-                                .requestMatchers(PUT, "/booking/management/**").hasAnyAuthority(ADMIN_UPDATE.name(), HOST_UPDATE.name())
-                                .requestMatchers(DELETE, "/booking/management/**").hasAnyAuthority(ADMIN_DELETE.name(), HOST_DELETE.name())
+                                .requestMatchers("/admin/**").hasRole("ADMIN")
+                                .requestMatchers("/customer/**").hasRole("CUSTOMER")
+                                .requestMatchers("/host/**", "/booking/**").hasRole("HOST")
                                 .anyRequest()
                                 .authenticated()
                 )
