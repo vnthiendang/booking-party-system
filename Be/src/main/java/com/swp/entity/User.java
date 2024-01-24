@@ -55,8 +55,8 @@ public class User implements UserDetails {
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     private Customer customer;
 
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
-    private Host host;
+//    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+//    private Host host;
 
 
     @Override

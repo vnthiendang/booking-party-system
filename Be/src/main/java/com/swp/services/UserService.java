@@ -29,23 +29,16 @@ import java.util.stream.Collectors;
 @Slf4j
 public class UserService {
 
-    private Integer userId;
-    @Autowired
     private final UserRepository userRepository;
 
     private final PasswordEncoder passwordEncoder;
 
-    @PostConstruct
-    public void initialize() {
+    public User findUserByUsername(String username) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication != null) {
-            User userDetails = (User) authentication.getPrincipal();
-            userId = userDetails.getUsId();
-        }
-    }
+        User userDetails = (User) authentication.getPrincipal();
 
-    public Optional<User> findUserByUsername(String username) {
-        return userRepository.findByEmail(username);
+        User us = userRepository.findByEmail(userDetails.getUsername());
+        return us;
     }
 
     public UserDto getById() {
@@ -55,6 +48,14 @@ public class UserService {
         User us = userRepository.findByUsId(userId);
         UserDto dto = mapUserToUserDto(us);
         return dto;
+    }
+
+    public User getCurrentUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        User userDetails = (User) authentication.getPrincipal();
+        Integer userId = userDetails.getUsId();
+        User us = userRepository.findByUsId(userId);
+        return us;
     }
 
     public User getById(Integer id){
@@ -102,25 +103,25 @@ public class UserService {
 
     public void updateLoggedInUser(UserDto userDTO) {
         String loggedInUsername = SecurityContextHolder.getContext().getAuthentication().getName();
-        Optional<User> loggedInUser = userRepository.findByEmail(loggedInUsername);
+        User loggedInUser = userRepository.findByEmail(loggedInUsername);
 
         //setFormattedDataToUser(loggedInUser, userDTO);
         //userRepository.save(loggedInUser);
-        log.info("Successfully updated logged in user with ID: {}", loggedInUser.get().getUsId());
+        log.info("Successfully updated logged in user with ID: {}", loggedInUser.getUsId());
 
         // Create new authentication token
         updateAuthentication(userDTO);
     }
 
     private void updateAuthentication(UserDto userDTO) {
-        Optional<User> user = userRepository.findByEmail(userDTO.getEmail());
+        User user = userRepository.findByEmail(userDTO.getEmail());
 
         List<GrantedAuthority> authorities = new ArrayList<>();
-        authorities.add(new SimpleGrantedAuthority("ROLE_" + user.get().getEmail()));
+        authorities.add(new SimpleGrantedAuthority("ROLE_" + user.getEmail()));
 
         UserDetails newUserDetails = new org.springframework.security.core.userdetails.User(
-                user.get().getEmail(),
-                user.get().getPassword(),
+                user.getEmail(),
+                user.getPassword(),
                 authorities
         );
 

@@ -19,10 +19,10 @@ public class PService {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer serviceId;
 
-    @Column(name = "serviceName")
+    @Column(nullable = false)
     private String serviceName;
 
-    @Column(name = "description")
+    @Column(nullable = false)
     private String description;
 
     @Column(nullable = false)

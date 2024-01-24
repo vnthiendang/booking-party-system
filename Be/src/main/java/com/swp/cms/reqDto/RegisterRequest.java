@@ -1,5 +1,6 @@
 package com.swp.cms.reqDto;
 
+import com.swp.entity.Role;
 import com.swp.entity.enums.Roles;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -28,8 +29,9 @@ public class RegisterRequest {
     private String password;
     @NotBlank(message = "Phone cannot be empty")
     private String phone;
-    public Roles getRole_id() {
-        return CUSTOMER;
-    }
+    private Roles role;
+//    public Roles getRole_id() {
+//        return CUSTOMER;
+//    }
 
 }

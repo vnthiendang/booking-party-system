@@ -51,31 +51,30 @@ public class Package {
     @OneToMany(mappedBy = "packageId")
     private List<Booking> bookings = new ArrayList<>();
 
-    @ManyToOne
-    @JoinColumn(nullable = false)
-    private Host host;
+//    @ManyToOne
+//    @JoinColumn(nullable = false)
+//    private Host host;
 
     @Override
     public String toString() {
         return "Package{" +
                 "id=" + id +
                 ", name='" + packageName + '\'' +
-                ", address=" + venue +
-                ", rooms=" + services +
-                ", host=" + host +
+                ", venue=" + venue +
+                ", services=" + services +
                 '}';
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Package packages = (Package) o;
-        return Objects.equals(id, packages.id) && Objects.equals(packageName, packages.packageName) && Objects.equals(host, packages.host);
-    }
+//    @Override
+//    public boolean equals(Object o) {
+//        if (this == o) return true;
+//        if (o == null || getClass() != o.getClass()) return false;
+//        Package packages = (Package) o;
+//        return Objects.equals(id, packages.id) && Objects.equals(packageName, packages.packageName) && Objects.equals(host, packages.host);
+//    }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, packageName, host);
-    }
+//    @Override
+//    public int hashCode() {
+//        return Objects.hash(id, packageName);
+//    }
 }

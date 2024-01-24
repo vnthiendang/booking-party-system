@@ -39,7 +39,7 @@ public class AuthService {
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
                 .phone(request.getPhone())
-                .role_id(request.getRole_id())
+                .role_id(request.getRole())
                 .created_date(LocalDateTime.now())
                 .build();
 
@@ -62,8 +62,7 @@ public class AuthService {
                         request.getPassword()
                 )
         );
-        var user = userRepository.findByEmail(request.getEmail())
-                .orElseThrow();
+        var user = userRepository.findByEmail(request.getEmail());
         var jwtToken = jwtService.generateToken(user);
         var refreshToken = jwtService.generateRefreshToken(user);
         revokeAllUserTokens(user);
@@ -114,8 +113,7 @@ public class AuthService {
         refreshToken = authHeader.substring(7);
         userEmail = jwtService.extractUsername(refreshToken);
         if (userEmail != null) {
-            var user = this.userRepository.findByEmail(userEmail)
-                    .orElseThrow();
+            var user = this.userRepository.findByEmail(userEmail);
             if (jwtService.isTokenValid(refreshToken, user)) {
                 var accessToken = jwtService.generateToken(user);
                 revokeAllUserTokens(user);

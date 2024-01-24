@@ -24,7 +24,7 @@ public class UserController {
 
     private Integer getCurrentCustomerId() {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        return userService.findUserByUsername(username).get().getUsId();
+        return userService.findUserByUsername(username).getUsId();
     }
 
     @GetMapping("/getUserById/{userId}")
