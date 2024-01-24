@@ -21,14 +21,18 @@ import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
 
-@Controller
+@RestController
 @RequestMapping("/profile")
 @RequiredArgsConstructor
 @Slf4j
 public class ProfileController {
     private final UserService userService;
-    private ModelMapper modelMapper;
-    private PasswordEncoder passwordEncoder;
+
+    @GetMapping
+    public UserDto getCurrentUser(){
+        UserDto us = userService.getById();
+        return us;
+    }
 
     @PatchMapping("/resetPassword")
     public ResponseEntity<?> changePassword(
@@ -37,13 +41,6 @@ public class ProfileController {
     ) {
         userService.changePassword(request, connectedUser);
         return ResponseEntity.ok().build();
-    }
-
-    @GetMapping
-    public UserDto getUserById(){
-        User us = userService.getById();
-        UserDto dto = modelMapper.map(us, UserDto.class);
-        return dto;
     }
 
     // Customer actions

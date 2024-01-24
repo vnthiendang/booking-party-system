@@ -22,6 +22,7 @@ import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -31,6 +32,7 @@ public class UserService {
     private Integer userId;
     @Autowired
     private final UserRepository userRepository;
+
     private final PasswordEncoder passwordEncoder;
 
     @PostConstruct
@@ -46,12 +48,13 @@ public class UserService {
         return userRepository.findByEmail(username);
     }
 
-    public User getById() {
+    public UserDto getById() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User userDetails = (User) authentication.getPrincipal();
         Integer userId = userDetails.getUsId();
-        return userRepository.findById(userId)
-                .orElseThrow(() -> new EntityNotFoundException(User.class, "id", userId.toString()));
+        User us = userRepository.findByUsId(userId);
+        UserDto dto = mapUserToUserDto(us);
+        return dto;
     }
 
     public User getById(Integer id){
@@ -62,18 +65,15 @@ public class UserService {
     public List<UserDto> getAllUsers() {
         List<User> userList = userRepository.findAll();
 
-        List<UserDto> userDTOList = new ArrayList<>();
-        for (User user : userList) {
-            UserDto userDTO = mapUserToUserDto(user);
-            userDTOList.add(userDTO);
-        }
-        return userDTOList;
+        return userList.stream()
+                .map(this::mapUserToUserDto)
+                .collect(Collectors.toList());
     }
 
     private UserDto mapUserToUserDto(User user) {
         return UserDto.builder()
                 .userId(user.getUsId())
-                .email(user.getUsername())
+                .email(user.getEmail())
                 .display_name(user.getDisplay_name())
                 .phone(user.getPhone())
                 .role_id(user.getRole_id())
@@ -116,10 +116,10 @@ public class UserService {
         Optional<User> user = userRepository.findByEmail(userDTO.getEmail());
 
         List<GrantedAuthority> authorities = new ArrayList<>();
-        authorities.add(new SimpleGrantedAuthority("ROLE_" + user.get().getUsername()));
+        authorities.add(new SimpleGrantedAuthority("ROLE_" + user.get().getEmail()));
 
         UserDetails newUserDetails = new org.springframework.security.core.userdetails.User(
-                user.get().getUsername(),
+                user.get().getEmail(),
                 user.get().getPassword(),
                 authorities
         );
