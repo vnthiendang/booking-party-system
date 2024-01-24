@@ -1,11 +1,14 @@
 import { BlogView } from "../sections/blog/view";
+import { DashboardLayout } from "../layout";
 
 // ----------------------------------------------------------------------
 
 export default function BlogPage() {
   return (
     <>
-      <BlogView />
+      <DashboardLayout>
+        <BlogView />
+      </DashboardLayout>
     </>
   );
 }
