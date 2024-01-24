@@ -67,8 +67,13 @@ public class SecurityConfiguration {
     @Bean
     public CorsFilter corsFilter() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOriginPatterns(Arrays.asList("http://127.0.0.1:5501")); // Specify the allowed origin patterns
-        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE"));
+
+        configuration.setAllowedOriginPatterns(Arrays.asList(
+                "http://127.0.0.1:5501",
+                "http://localhost"
+        ));
+
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH"));
         configuration.setAllowedHeaders(Arrays.asList("*"));
         configuration.setAllowCredentials(true);
 
@@ -77,4 +82,5 @@ public class SecurityConfiguration {
 
         return new CorsFilter(source);
     }
+
 }
