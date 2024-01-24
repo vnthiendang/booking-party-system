@@ -3,6 +3,7 @@ package com.swp.services;
 import com.swp.cms.dto.PackageCreateDto;
 import com.swp.cms.dto.PackageDto;
 import com.swp.cms.dto.ServiceDto;
+import com.swp.entity.Host;
 import com.swp.entity.PService;
 import com.swp.entity.Package;
 import com.swp.entity.enums.Location;
@@ -27,6 +28,7 @@ public class PackageService {
 
     private final PServiceService serviceServiceService;
     private final UserService userService;
+    private final HostService hostService;
 
     @Transactional
     public Package createPackage(PackageCreateDto createDto) {
@@ -43,6 +45,8 @@ public class PackageService {
         aPackage.setDescription(createDto.getDescription());
         aPackage.setCheckinTime(createDto.getCheckinTime());
         aPackage.setCheckoutTime(createDto.getCheckoutTime());
+//        Host host = hostService.findByUser(userService.findUserByUsername(username));
+//        aPackage.setHost(host);
 
         //aPackage = packageRepository.save(aPackage);
         List<Integer> serviceIds = createDto.getServiceDtos();

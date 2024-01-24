@@ -15,41 +15,31 @@ import java.util.List;
 import java.util.Objects;
 
 @Entity
-@RequiredArgsConstructor
+@NoArgsConstructor
 @Builder
 @AllArgsConstructor
-@Table(name = "app_user", uniqueConstraints = {
-        @UniqueConstraint(columnNames = "email")})
 @Getter
 @Setter
 public class User implements UserDetails {
-    public User(Integer usId) {
-        this.usId = usId;
-    }
 
-    public User(String name) {
-        this.display_name = name;
-    }
-
-    @Getter
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
     private Integer usId;
 
-    @Column(name = "display_name", nullable = false)
+    @Column(nullable = false)
     private String display_name;
 
-    @Column(name = "phone", nullable = false)
+    @Column(nullable = false)
     private String phone;
 
     @NotNull
-    @Column(name = "email", nullable = false)
+    @Column(unique = true, nullable = false)
     private String email;
 
     @NotNull
-    @Column(name = "password", nullable = false)
+    @Column(nullable = false)
     private String password;
+
     @OneToMany(mappedBy = "user")
     private List<Token> tokens;
 
@@ -58,6 +48,15 @@ public class User implements UserDetails {
 
     @CreationTimestamp
     private LocalDateTime created_date;
+
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    private Admin admin;
+
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    private Customer customer;
+
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    private Host host;
 
 
     @Override

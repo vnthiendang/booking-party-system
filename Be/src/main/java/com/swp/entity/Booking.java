@@ -7,12 +7,11 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 
-import java.math.BigDecimal;
-import java.util.Objects;
-import java.util.UUID;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.UUID;
 
 @Entity
 @NoArgsConstructor
@@ -25,12 +24,12 @@ public class Booking {
     private Integer bookingId;
 
     @ManyToOne
-    @JoinColumn(name = "packageId")
+    @JoinColumn(nullable = true)
     private Package packageId;
 
     @ManyToOne
-    @JoinColumn(name = "userId")
-    private User user;
+    @JoinColumn(nullable = false)
+    private Customer customer;
 
     @CreationTimestamp
     private LocalDateTime bookingDate;
@@ -38,10 +37,8 @@ public class Booking {
     @Column(unique = true, nullable = false)
     private String confirmNumber;
 
-    @Column(name = "paymentStatus")
-    private String paymentStatus;
 
-    @Column(name = "totalCost")
+    @Column(nullable = false)
     private Double totalCost;
 
     @OneToMany(mappedBy = "booking")
@@ -58,8 +55,8 @@ public class Booking {
                 "id=" + bookingId +
                 ", confirmationNumber='" + confirmNumber + '\'' +
                 ", bookingDate=" + bookingDate +
+                ", customer=" + customer +
                 ", package=" + packageId +
-                ", payment=" + paymentStatus +
                 '}';
     }
 
