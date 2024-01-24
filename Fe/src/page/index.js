@@ -7,6 +7,7 @@ const UserPage = lazy(() => import("./user"));
 const LoginPage = lazy(() => import("./login"));
 const ProductsPage = lazy(() => import("./products"));
 const Page404 = lazy(() => import("./page-not-found"));
+const PackagePageHost = lazy(() => import("./package-host"));
 export {
   PackagePage,
   EventPage,
@@ -15,4 +16,5 @@ export {
   LoginPage,
   ProductsPage,
   Page404,
+  PackagePageHost,
 };

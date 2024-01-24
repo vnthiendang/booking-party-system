@@ -5,6 +5,8 @@ import {
   UserPage,
   ProductsPage,
   LoginPage,
+  BlogPage,
+  PackagePageHost,
 } from "./page";
 
 export const routers = [
@@ -25,6 +27,16 @@ export const routers = [
   {
     path: ROUTER.PRODUCT,
     element: <ProductsPage />,
+    auth: true,
+  },
+  {
+    path: ROUTER.BLOG,
+    element: <BlogPage />,
+    auth: true,
+  },
+  {
+    path: ROUTER.PACKAGE_HOST,
+    element: <PackagePageHost />,
     auth: true,
   },
   {

@@ -18,9 +18,10 @@ import { Bounce, toast } from "react-toastify";
 
 import { bgGradient } from "../../theme/css";
 
-import Logo from "../../components/logo";
 import Iconify from "../../components/iconify";
 import { AuthApi } from "../../api/index";
+import { useNavigate } from "react-router-dom";
+import { ROLE, ROUTER } from "../../util/index";
 
 // ----------------------------------------------------------------------
 
@@ -29,20 +30,30 @@ export default function LoginView() {
   const [email, setEmail] = useState("");
   const [password, setPassWord] = useState("");
   const [disbaleBtnLogin, setDisableBtnLogin] = useState(false);
+  const navigate = useNavigate();
 
   // const router = useRouter();
 
   const [showPassword, setShowPassword] = useState(false);
-
+  const checkRole = (role) => {
+    switch (role) {
+      case ROLE.ADMIN:
+        return navigate(ROUTER.USER);
+      case ROLE.HOST:
+        return navigate(ROUTER.PACKAGE_HOST);
+      default:
+        break;
+    }
+  };
   const handleClick = async () => {
     setDisableBtnLogin(true);
     try {
       const res = await AuthApi.login({
         email,
-        password: "12345",
+        password,
       });
-      console.log("🚀 ~ handleClick ~ res:", res);
       localStorage.setItem("token", JSON.stringify(res.access_token));
+      localStorage.setItem("info", JSON.stringify(res));
       toast.success("🦄 Login success!", {
         position: "top-center",
         autoClose: 5000,
@@ -54,7 +65,9 @@ export default function LoginView() {
         theme: "light",
         transition: Bounce,
       });
+
       setDisableBtnLogin(false);
+      checkRole(res?.role);
     } catch (error) {
       setDisableBtnLogin(false);
       toast.error("🦄 Something went wrong!", {
@@ -132,81 +145,73 @@ export default function LoginView() {
   );
 
   return (
-    <Box
-      sx={{
-        ...bgGradient({
-          color: alpha(theme.palette.background.default, 0.9),
-          imgUrl: "/assets/background/overlay_4.jpg",
-        }),
-        height: 1,
-      }}
-    >
-      <Logo
+    <div>
+      <Box
         sx={{
-          position: "fixed",
-          top: { xs: 16, md: 24 },
-          left: { xs: 16, md: 24 },
+          height: 1,
+          mt: 10,
         }}
-      />
+      >
+        <Stack alignItems="center" justifyContent="center" sx={{ height: 1 }}>
+          <Card
+            sx={{
+              p: 5,
+              width: 1,
+              maxWidth: 420,
+              border: "10px solid #fefefe",
+            }}
+          >
+            <Typography variant="h4">Sign in to Minimal</Typography>
 
-      <Stack alignItems="center" justifyContent="center" sx={{ height: 1 }}>
-        <Card
-          sx={{
-            p: 5,
-            width: 1,
-            maxWidth: 420,
-          }}
-        >
-          <Typography variant="h4">Sign in to Minimal</Typography>
-
-          <Typography variant="body2" sx={{ mt: 2, mb: 5 }}>
-            Don’t have an account?
-            <Link variant="subtitle2" sx={{ ml: 0.5 }}>
-              Get started
-            </Link>
-          </Typography>
-
-          <Stack direction="row" spacing={2}>
-            <Button
-              fullWidth
-              size="large"
-              color="inherit"
-              variant="outlined"
-              sx={{ borderColor: alpha(theme.palette.grey[500], 0.16) }}
-            >
-              <Iconify icon="eva:google-fill" color="#DF3E30" />
-            </Button>
-
-            <Button
-              fullWidth
-              size="large"
-              color="inherit"
-              variant="outlined"
-              sx={{ borderColor: alpha(theme.palette.grey[500], 0.16) }}
-            >
-              <Iconify icon="eva:facebook-fill" color="#1877F2" />
-            </Button>
-
-            <Button
-              fullWidth
-              size="large"
-              color="inherit"
-              variant="outlined"
-              sx={{ borderColor: alpha(theme.palette.grey[500], 0.16) }}
-            >
-              <Iconify icon="eva:twitter-fill" color="#1C9CEA" />
-            </Button>
-          </Stack>
-
-          <Divider sx={{ my: 3 }}>
-            <Typography variant="body2" sx={{ color: "text.secondary" }}>
-              OR
+            <Typography variant="body2" sx={{ mt: 2, mb: 5 }}>
+              Don’t have an account?
+              <Link variant="subtitle2" sx={{ ml: 0.5 }}>
+                Get started
+              </Link>
             </Typography>
-          </Divider>
 
-          {renderForm}
-        </Card>
-      </Stack>
-    </Box>
+            <Stack direction="row" spacing={2}>
+              <Button
+                fullWidth
+                size="large"
+                color="inherit"
+                variant="outlined"
+                sx={{ borderColor: alpha(theme.palette.grey[500], 0.16) }}
+              >
+                <Iconify icon="eva:google-fill" color="#DF3E30" />
+              </Button>
+
+              <Button
+                fullWidth
+                size="large"
+                color="inherit"
+                variant="outlined"
+                sx={{ borderColor: alpha(theme.palette.grey[500], 0.16) }}
+              >
+                <Iconify icon="eva:facebook-fill" color="#1877F2" />
+              </Button>
+
+              <Button
+                fullWidth
+                size="large"
+                color="inherit"
+                variant="outlined"
+                sx={{ borderColor: alpha(theme.palette.grey[500], 0.16) }}
+              >
+                <Iconify icon="eva:twitter-fill" color="#1C9CEA" />
+              </Button>
+            </Stack>
+
+            <Divider sx={{ my: 3 }}>
+              <Typography variant="body2" sx={{ color: "text.secondary" }}>
+                OR
+              </Typography>
+            </Divider>
+
+            {renderForm}
+          </Card>
+        </Stack>
+      </Box>
+    </div>
   );
 }

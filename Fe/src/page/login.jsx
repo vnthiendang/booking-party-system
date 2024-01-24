@@ -15,7 +15,9 @@ export default function LoginPage() {
 
   return (
     <>
-      <LoginView />
+      <div>
+        <LoginView />
+      </div>
     </>
   );
 }

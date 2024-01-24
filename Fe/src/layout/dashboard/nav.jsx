@@ -21,11 +21,15 @@ import Scrollbar from "../../components/scrollbar";
 
 import { NAV } from "./config-layout";
 import navConfig from "./config-navigation";
+import navConfigHost from "./config-navigation-host";
 
 // ----------------------------------------------------------------------
 
 export default function Nav({ openNav, onCloseNav }) {
   // const pathname = usePathname();
+  const info = localStorage.getItem("info")
+    ? JSON.parse(localStorage.getItem("info"))
+    : "";
 
   const upLg = useResponsive("up", "lg");
 
@@ -61,13 +65,32 @@ export default function Nav({ openNav, onCloseNav }) {
     </Box>
   );
 
-  const renderMenu = (
-    <Stack component="nav" spacing={0.5} sx={{ px: 2 }}>
-      {navConfig.map((item) => (
-        <NavItem key={item.title} item={item} />
-      ))}
-    </Stack>
-  );
+  const renderMenu = () => {
+    if (info) {
+      console.log("🚀 ~ renderMenu ~ info:", info.role);
+      switch (info?.role) {
+        case "ADMIN":
+          return (
+            <Stack component="nav" spacing={0.5} sx={{ px: 2 }}>
+              {navConfig.map((item) => (
+                <NavItem key={item.title} item={item} />
+              ))}
+            </Stack>
+          );
+        case "HOST":
+          return (
+            <Stack component="nav" spacing={0.5} sx={{ px: 2 }}>
+              {navConfigHost.map((item) => (
+                <NavItem key={item.title} item={item} />
+              ))}
+            </Stack>
+          );
+
+        default:
+          break;
+      }
+    }
+  };
 
   const renderContent = (
     <Scrollbar
@@ -84,7 +107,7 @@ export default function Nav({ openNav, onCloseNav }) {
 
       {renderAccount}
 
-      {renderMenu}
+      {renderMenu()}
 
       <Box sx={{ flexGrow: 1 }} />
     </Scrollbar>

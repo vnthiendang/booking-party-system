@@ -9,4 +9,12 @@ export const ROUTER = {
   USER: "/user",
   PRODUCT: "/products",
   AUTH: "/auth",
+  BLOG: "/blog",
+  PACKAGE_HOST: "/package",
+};
+
+export const ROLE = {
+  ADMIN: "ADMIN",
+  CUSTOMER: "CUSTOMER",
+  HOST: "HOST",
 };
