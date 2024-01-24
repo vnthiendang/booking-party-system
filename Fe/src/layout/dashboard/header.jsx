@@ -18,6 +18,7 @@ import { NAV, HEADER } from "./config-layout";
 import AccountPopover from "./common/account-popover";
 import LanguagePopover from "./common/language-popover";
 import NotificationsPopover from "./common/notifications-popover";
+import { Button } from "@mui/material";
 
 // ----------------------------------------------------------------------
 
@@ -39,6 +40,15 @@ export default function Header({ onOpenNav }) {
       <Box sx={{ flexGrow: 1 }} />
 
       <Stack direction="row" alignItems="center" spacing={1}>
+        <Button
+          variant="contained"
+          onClick={() => {
+            localStorage.clear();
+            window.location.reload();
+          }}
+        >
+          Logout
+        </Button>
         <LanguagePopover />
         <NotificationsPopover />
         <AccountPopover />

@@ -66,8 +66,9 @@ export default function LoginView() {
         transition: Bounce,
       });
 
-      setDisableBtnLogin(false);
       checkRole(res?.role);
+      setDisableBtnLogin(false);
+      window.location.reload();
     } catch (error) {
       setDisableBtnLogin(false);
       toast.error("🦄 Something went wrong!", {
