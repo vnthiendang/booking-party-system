@@ -1,4 +1,5 @@
 import axios from "axios";
+import { env } from "../config/env";
 import queryString from "query-string";
 // import { getToken } from "src/util/Utils";
 
@@ -10,7 +11,7 @@ const axiosClient = axios.create({
   paramsSerializer: (params) => queryString.stringify(params),
 });
 
-axiosClient.defaults.baseURL = process.env.REACT_APP_API;
+axiosClient.defaults.baseURL = env.REACT_APP_API;
 
 // axiosClient.interceptors.request.use(async (config) => {
 // 	const accessToken = getToken();

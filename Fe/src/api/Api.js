@@ -1,7 +1,8 @@
+import { env } from "../config/env";
 import axiosClient from "./axiosClient";
 
 export default class Api {
-  HOSTNAME = process.env.REACT_APP_API;
+  HOSTNAME = env.REACT_APP_API;
 
   table = "";
   axiosClient = null;

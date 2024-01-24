@@ -12,6 +12,7 @@ import IconButton from "@mui/material/IconButton";
 import LoadingButton from "@mui/lab/LoadingButton";
 import { alpha, useTheme } from "@mui/material/styles";
 import InputAdornment from "@mui/material/InputAdornment";
+import { Bounce, toast } from "react-toastify";
 
 // import { useRouter } from "src/routes/hooks";
 
@@ -19,29 +20,75 @@ import { bgGradient } from "../../theme/css";
 
 import Logo from "../../components/logo";
 import Iconify from "../../components/iconify";
+import { AuthApi } from "../../api/index";
 
 // ----------------------------------------------------------------------
 
 export default function LoginView() {
   const theme = useTheme();
+  const [email, setEmail] = useState("");
+  const [password, setPassWord] = useState("");
+  const [disbaleBtnLogin, setDisableBtnLogin] = useState(false);
 
   // const router = useRouter();
 
   const [showPassword, setShowPassword] = useState(false);
 
-  const handleClick = () => {
+  const handleClick = async () => {
+    setDisableBtnLogin(true);
+    try {
+      const res = await AuthApi.login({
+        email,
+        password: "12345",
+      });
+      console.log("🚀 ~ handleClick ~ res:", res);
+      localStorage.setItem("token", JSON.stringify(res.access_token));
+      toast.success("🦄 Login success!", {
+        position: "top-center",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+        transition: Bounce,
+      });
+      setDisableBtnLogin(false);
+    } catch (error) {
+      setDisableBtnLogin(false);
+      toast.error("🦄 Something went wrong!", {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+        transition: Bounce,
+      });
+    }
+
     // router.push("/dashboard");
   };
 
   const renderForm = (
     <>
       <Stack spacing={3}>
-        <TextField name="email" label="Email address" />
+        <TextField
+          name="email"
+          label="Email address"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+        />
 
         <TextField
           name="password"
           label="Password"
           type={showPassword ? "text" : "password"}
+          value={password}
+          onChange={(e) => setPassWord(e.target.value)}
           InputProps={{
             endAdornment: (
               <InputAdornment position="end">
@@ -77,6 +124,7 @@ export default function LoginView() {
         variant="contained"
         color="inherit"
         onClick={handleClick}
+        disabled={disbaleBtnLogin}
       >
         Login
       </LoadingButton>
