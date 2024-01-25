@@ -21,10 +21,12 @@ public class BookingController {
     private final UserService userService;
     private final BookingService bookingService;
 
+
     @GetMapping("/service/getall")
     public List<ServiceDto> getAllServices() {
 
         return serviceService.getAllServices();
     }
+
 
 }
