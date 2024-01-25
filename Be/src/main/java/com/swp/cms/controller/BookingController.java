@@ -26,4 +26,5 @@ public class BookingController {
 
         return serviceService.getAllServices();
     }
+
 }

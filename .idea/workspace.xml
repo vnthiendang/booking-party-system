@@ -52,9 +52,9 @@
       </UrlAndAccount>
     </option>
   </component>
-  <component name="KubernetesApiProvider"><![CDATA[{
-  "isMigrated": true
-}]]></component>
+  <component name="KubernetesApiProvider">{
+  &quot;isMigrated&quot;: true
+}</component>
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
   </component>
@@ -72,7 +72,9 @@
   &quot;associatedIndex&quot;: 6
 }</component>
   <component name="ProjectId" id="2RPgkChfPBPucf8FunQzYpt6F4F" />
-  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
@@ -92,9 +94,9 @@
     "Spring Boot.SWPApplication.executor": "Debug",
     "WebServerToolWindowFactoryState": "false",
     "codeWithMe.voiceChat.enabledByDefault": "false",
-    "git-widget-placeholder": "main",
+    "git-widget-placeholder": "ngoltn2",
     "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "D:/SE/SWP391/booking birthday party/booking_birthday_party/Be",
+    "last_opened_file_path": "D:/Kid party system/booking-party-system/Be",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
@@ -123,6 +125,13 @@
       <recent name="com.swp.services" />
       <recent name="com.swd.entities" />
     </key>
+  </component>
+  <component name="RunDashboard">
+    <option name="configurationTypes">
+      <set>
+        <option value="SpringBootApplicationConfigurationType" />
+      </set>
+    </option>
   </component>
   <component name="RunManager">
     <configuration name="All in generated-requests" type="HttpClient.HttpRequestRunConfigurationType" factoryName="HTTP Request" temporary="true" path="$APPLICATION_CONFIG_DIR$/scratches/generated-requests.http">
@@ -512,13 +521,6 @@
     <MESSAGE value="fix post" />
     <MESSAGE value="setup package" />
     <option name="LAST_COMMIT_MESSAGE" value="setup package" />
-  </component>
-  <component name="XDebuggerManager">
-    <watches-manager>
-      <configuration name="SpringBootApplicationConfigurationType">
-        <watch expression="serviceService" language="JAVA" />
-      </configuration>
-    </watches-manager>
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />
