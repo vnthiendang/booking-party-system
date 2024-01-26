@@ -78,4 +78,7 @@ public class PServiceService {
                 .map(this::mapServiceToServiceDto)
                 .collect(Collectors.toList());
     }
+    public Optional<ServiceDto> getServiceDetails(Integer serviceId) {
+        return serviceRepository.findById(serviceId).map(this::mapServiceToServiceDto);
+    }
 }
