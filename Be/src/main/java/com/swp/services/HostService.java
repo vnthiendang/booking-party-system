@@ -15,9 +15,9 @@ import org.springframework.stereotype.Service;
 public class HostService {
     private final HostRepository hostRepository;
 
-//    public Host findByUser(User user) {
-//        return hostRepository.findByUser(user)
-//                .orElseThrow(() -> new EntityNotFoundException("Host not found for user " + user.getEmail()));
-//
-//    }
+    public Host findByUser(User user) {
+        return hostRepository.findByUser(user)
+                .orElseThrow(() -> new EntityNotFoundException("Host not found for user " + user.getUsername()));
+
+    }
 }

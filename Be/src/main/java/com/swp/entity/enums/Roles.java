@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 
 import static com.swp.token.Permission.*;
 
+@Getter
 @RequiredArgsConstructor
 public enum Roles {
     ADMIN(
@@ -36,7 +37,6 @@ public enum Roles {
             )
     );
 
-    @Getter
     private final Set<Permission> permissions;
 
     public List<SimpleGrantedAuthority> getAuthorities() {

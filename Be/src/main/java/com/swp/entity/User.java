@@ -7,9 +7,11 @@ import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
@@ -55,14 +57,20 @@ public class User implements UserDetails {
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     private Customer customer;
 
-//    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
-//    private Host host;
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    private Host host;
 
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return role_id.getAuthorities();
     }
+
+//    public Collection<? extends GrantedAuthority> getAuthorities() {
+//        List<GrantedAuthority> authorities = new ArrayList<>();
+//        authorities.add(new SimpleGrantedAuthority("ROLE_" + getRole().getRoleType().name()));
+//        return authorities;
+//    }
 
     @Override
     public String getPassword() {

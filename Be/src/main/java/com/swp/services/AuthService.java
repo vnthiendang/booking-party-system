@@ -5,7 +5,9 @@ import com.swp.cms.reqDto.AuthenticationRequest;
 import com.swp.cms.reqDto.RegisterRequest;
 import com.swp.cms.resDto.AuthenticationResponse;
 import com.swp.config.JwtService;
+import com.swp.entity.Role;
 import com.swp.entity.User;
+import com.swp.entity.enums.Roles;
 import com.swp.repositories.UserRepository;
 import com.swp.token.Token;
 import com.swp.token.TokenRepository;
@@ -21,6 +23,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 
 @Service
 @RequiredArgsConstructor
@@ -33,7 +36,6 @@ public class AuthService {
     private final TokenRepository tokenRepository;
     public AuthenticationResponse register(RegisterRequest request) {
 
-        // Create the User object with the associated Role
         var user = User.builder()
                 .display_name(request.getDisplayName())
                 .email(request.getEmail())

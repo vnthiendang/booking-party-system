@@ -50,12 +50,9 @@ public class PackageService {
         aPackage.setCheckinTime(createDto.getCheckinTime());
         aPackage.setCheckoutTime(createDto.getCheckoutTime());
 
-        //String username = String.valueOf(SecurityContextHolder.getContext().getAuthentication());
-//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-//        User userDetails = (User) authentication.getPrincipal();
-//        String usName = userDetails.getEmail();
-//        Host host = hostService.findByUser(userService.findUserByUsername(usName));
-//        aPackage.setHost(host);
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        Host host = hostService.findByUser(userService.findUserByUsername(username));
+        aPackage.setHost(host);
 
         //aPackage = packageRepository.save(aPackage);
         List<Integer> serviceIds = createDto.getServiceDtos();
@@ -77,13 +74,18 @@ public class PackageService {
     public PackageDto mapPackageToPackageDto(Package packages) {
         List<ServiceDto> serviceDtos = packages.getServices().stream()
                 .map(serviceServiceService::mapServiceToServiceDto)
-                .collect(Collectors.toList());  // collect results to a list
+                .collect(Collectors.toList());
 
         return PackageDto.builder()
                 .id(packages.getId())
                 .name(packages.getPackageName())
                 .venue(Location.valueOf(String.valueOf(packages.getVenue())))
-                .serviceDtos(serviceDtos)
+                .description(packages.getDescription())
+                .checkinTime(packages.getCheckinTime())
+                .checkoutTime(packages.getCheckoutTime())
+                .capacity(packages.getCapacity())
+                .services(serviceDtos)
+                .hostEmail(packages.getHost().getUser().getUsername())
                 .build();
     }
 
@@ -144,59 +146,59 @@ public class PackageService {
     }
     
 //    public List<Package> findAllPackagesByHostId(Integer hostId) {
-//        List<Package> Packages = packageRepository.findAllByHost_Id(hostId);
+//        List<Package> Packages = packageRepository.findAllByHostId(hostId);
 //        return (Packages != null) ? Packages : Collections.emptyList();
 //    }
 
     
-//    public List<PackageDto> findAllPackageDtosByHostId(Integer hostId) {
-//        List<Package> Packages = packageRepository.findAllByHost_Id(hostId);
-//        if (Packages != null) {
-//            return Packages.stream()
-//                    .map(this::mapPackageToPackageDto)
-//                    .collect(Collectors.toList());
-//        }
-//        return Collections.emptyList();
-//    }
+    public List<PackageDto> findAllPackageDtosByHostId(Integer hostId) {
+        List<Package> Packages = packageRepository.findByHostIdWithServices(hostId);
+        if (Packages != null) {
+            return Packages.stream()
+                    .map(this::mapPackageToPackageDto)
+                    .collect(Collectors.toList());
+        }
+        return Collections.emptyList();
+    }
 
     
-//    public PackageDto findPackageByIdAndManagerId(Integer PackageId, Integer hostId) {
-//        Package Package = packageRepository.findByIdAndHost_Id(PackageId, hostId)
+//    public PackageDto findPackageByIdAndHostId(Integer PackageId, Integer hostId) {
+//        Package Package = packageRepository.findByIdAndHostId(PackageId, hostId)
 //                .orElseThrow(() -> new EntityNotFoundException("Package not found".getClass()));
 //        return mapPackageToPackageDto(Package);
 //    }
 
     
-//    @Transactional
-//    public PackageDto updatePackageByHostId(PackageDto packageDTO, Integer hostId) {
-//        log.info("Attempting to update Package with ID: {} for Manager ID: {}", packageDTO.getId(), hostId);
-//
-//        Package existingPackage = packageRepository.findByIdAndHost_Id(packageDTO.getId(), hostId)
-//                .orElseThrow(() -> new EntityNotFoundException("Package not found".getClass()));
-//
-//        if (PackageNameExistsAndNotSamePackage(packageDTO.getName(), packageDTO.getId())) {
-//            throw new PackageAlreadyExistException("This Package name is already registered!");
-//        }
-//
-//        existingPackage.setPackageName(packageDTO.getName());
-//
-//        existingPackage.setVenueWithPrice(packageDTO.getVenue());
-//
-////        packageDTO.getServiceDtos().forEach(serviceServiceService::updateService);
-//
-//        packageRepository.save(existingPackage);
-//        log.info("Successfully updated existing Package with ID: {} for Host ID: {}", packageDTO.getId(), hostId);
-//        return mapPackageTopackageDTO(existingPackage);
-//    }
+    @Transactional
+    public PackageDto updatePackageByHostId(PackageDto packageDTO, Integer hostId) {
+        Package existingPackage = packageRepository.findByIdAndHostId(packageDTO.getId(), hostId)
+                .orElseThrow(() -> new EntityNotFoundException("Package not found".getClass()));
+
+        if (PackageNameExistsAndNotSamePackage(packageDTO.getName(), packageDTO.getId())) {
+            throw new PackageAlreadyExistException("This Package name is already registered!");
+        }
+
+        existingPackage.setPackageName(packageDTO.getName());
+        existingPackage.setDescription(packageDTO.getDescription());
+        existingPackage.setCheckinTime(packageDTO.getCheckinTime());
+        existingPackage.setCheckoutTime(packageDTO.getCheckoutTime());
+
+        existingPackage.setVenueWithPrice(packageDTO.getVenue());
+
+        packageDTO.getServices().forEach(serviceServiceService::updateService);
+
+        packageRepository.save(existingPackage);
+        log.info("Successfully updated existing Package with ID: {} for Host ID: {}", packageDTO.getId(), hostId);
+        return mapPackageTopackageDTO(existingPackage);
+    }
 
     
-//    public void deletePackageByIdAndHostId(Integer packageId, Integer hostId) {
-//        log.info("Attempting to delete Package with ID: {} for Manager ID: {}", packageId, hostId);
-//        Package Package = packageRepository.findByIdAndHost_Id(packageId, hostId)
-//                .orElseThrow(() -> new EntityNotFoundException("Package not found".getClass()));
-//        packageRepository.delete(Package);
-//        log.info("Successfully deleted Package with ID: {} for Manager ID: {}", packageId, hostId);
-//    }
+    public void deletePackageByIdAndHostId(Integer packageId, Integer hostId) {
+        Package Package = packageRepository.findByIdAndHostId(packageId, hostId)
+                .orElseThrow(() -> new EntityNotFoundException("Package not found".getClass()));
+        packageRepository.delete(Package);
+        log.info("Successfully deleted Package with ID: {} for Host ID: {}", packageId, hostId);
+    }
 
     private Package mapPackageCreateDtoToPackage(PackageCreateDto dto) {
         return Package.builder()
@@ -207,15 +209,15 @@ public class PackageService {
     
     public PackageDto mapPackageTopackageDTO(Package Package) {
         List<ServiceDto> serviceDtos = Package.getServices().stream()
-                .map(serviceServiceService::mapServiceToServiceDto)  // convert each Room to RoomDTO
+                .map(serviceServiceService::mapServiceToServiceDto)
                 .toList();  // collect results to a list
 
         return PackageDto.builder()
                 .id(Package.getId())
                 .name(Package.getPackageName())
                 .venue(Package.getVenue())
-                .serviceDtos(serviceDtos)
-//                .managerUsername(Package.getHost().getUser().getUsername())
+                .services(serviceDtos)
+                .hostEmail(Package.getHost().getUser().getUsername())
                 .build();
     }
 

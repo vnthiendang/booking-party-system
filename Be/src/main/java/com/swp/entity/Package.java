@@ -41,7 +41,7 @@ public class Package {
     private Location venue;
     public void setVenueWithPrice(Location venue) {
         this.venue = venue;
-        this.price = venue.getPrice(); // Set the price based on the chosen location
+        this.price = venue.getPrice();
     }
 
     @OneToMany(mappedBy = "packageId", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -51,9 +51,9 @@ public class Package {
     @OneToMany(mappedBy = "packageId")
     private List<Booking> bookings = new ArrayList<>();
 
-//    @ManyToOne
-//    @JoinColumn(nullable = false)
-//    private Host host;
+    @ManyToOne
+    @JoinColumn(nullable = false)
+    private Host host;
 
     @Override
     public String toString() {
@@ -65,13 +65,13 @@ public class Package {
                 '}';
     }
 
-//    @Override
-//    public boolean equals(Object o) {
-//        if (this == o) return true;
-//        if (o == null || getClass() != o.getClass()) return false;
-//        Package packages = (Package) o;
-//        return Objects.equals(id, packages.id) && Objects.equals(packageName, packages.packageName) && Objects.equals(host, packages.host);
-//    }
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Package packages = (Package) o;
+        return Objects.equals(id, packages.id) && Objects.equals(packageName, packages.packageName) && Objects.equals(host, packages.host);
+    }
 
 //    @Override
 //    public int hashCode() {

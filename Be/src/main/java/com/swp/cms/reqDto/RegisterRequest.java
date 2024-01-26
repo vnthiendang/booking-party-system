@@ -30,8 +30,8 @@ public class RegisterRequest {
     @NotBlank(message = "Phone cannot be empty")
     private String phone;
     private Roles role;
-//    public Roles getRole_id() {
-//        return CUSTOMER;
-//    }
+    public Roles getRole() {
+        return CUSTOMER;
+    }
 
 }

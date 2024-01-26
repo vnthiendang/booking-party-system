@@ -4,6 +4,7 @@ import com.swp.cms.dto.ServiceDto;
 import com.swp.entity.PService;
 import com.swp.entity.Package;
 import com.swp.repositories.ServiceRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -46,8 +47,20 @@ public class PServiceService {
         return serviceRepository.findById(serviceId);
     }
 
-    public void deletePackage(Integer id) {
+    public PService updateService(ServiceDto serviceDto) {
 
+        PService existingService = serviceRepository.findById(serviceDto.getId())
+                .orElseThrow(() -> new EntityNotFoundException("Service not found"));
+
+        log.info("Service with ID: {} found", serviceDto.getId());
+
+        existingService.setServiceType(serviceDto.getServiceType());
+        existingService.setServiceAmount(serviceDto.getServiceAmount());
+        existingService.setPrice(serviceDto.getPrice());
+
+        PService updatedService = serviceRepository.save(existingService);
+        log.info("Successfully updated address with ID: {}", existingService.getServiceId());
+        return updatedService;
     }
 
     public PService mapServiceDtoToService(ServiceDto serviceDTO, Package aPackage) {

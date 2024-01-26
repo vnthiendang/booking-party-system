@@ -8,7 +8,6 @@ import lombok.Builder;
 import lombok.Data;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -17,13 +16,12 @@ public class PackageDto {
     private Integer id;
 
     @NotBlank(message = "Package name cannot be empty")
-    @Pattern(regexp = "^(?!\\s*$)[A-Za-z0-9 ]+$", message = "Package name must only contain letters and numbers")
+    @Pattern(regexp = "^(?=.*[A-Za-z0-9])[A-Za-z0-9 ]+$", message = "Package name must contain at least one letter or number")
     private String name;
 
     @Valid
-    private List<ServiceDto> serviceDtos = new ArrayList<>();
+    private List<ServiceDto> services;
 
-    @NotBlank(message = "Package venue cannot be empty")
     private Location venue;
 
     private String description;
@@ -33,4 +31,5 @@ public class PackageDto {
     private LocalDateTime checkoutTime;
 
     private Integer capacity;
+    private String hostEmail;
 }

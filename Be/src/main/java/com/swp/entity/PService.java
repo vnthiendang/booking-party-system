@@ -37,7 +37,7 @@ public class PService {
     private String serviceImage;
 
     @ManyToOne
-    @JoinColumn(nullable = true)
+    @JoinColumn(name = "id")
     private Package packageId;
 
     @OneToMany(mappedBy = "service")
