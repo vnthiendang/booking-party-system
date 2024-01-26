@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -23,7 +24,7 @@ public class BookingService {
                 .map(this::mapPackageToPackageDto)
                 .collect(Collectors.toList());
     }
-    private PackageDto mapPackageToPackageDto(Package aPackage){
+    public PackageDto mapPackageToPackageDto(Package aPackage){
         return PackageDto.builder()
                 .id(aPackage.getId())
                 .name(aPackage.getPackageName())
@@ -32,5 +33,12 @@ public class BookingService {
                 .capacity(aPackage.getCapacity())
                 .build();
     }
+    public Optional<PackageDto> findPackageById(Integer packageId) {
+        Optional<Package> packageOptional = packageRepository.findById(packageId);
+        return packageOptional.map(this::mapPackageToPackageDto);
+    }
+
+
+
 
 }
