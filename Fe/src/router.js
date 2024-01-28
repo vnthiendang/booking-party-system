@@ -7,6 +7,8 @@ import {
   LoginPage,
   BlogPage,
   PackagePageHost,
+  RevenueAdminPage,
+  RegisterPage
 } from "./page";
 
 export const routers = [
@@ -22,7 +24,7 @@ export const routers = [
   {
     path: ROUTER.USER,
     element: <UserPage />,
-    auth: true,
+    // auth: true,
   },
   {
     path: ROUTER.PRODUCT,
@@ -32,15 +34,23 @@ export const routers = [
   {
     path: ROUTER.BLOG,
     element: <BlogPage />,
-    auth: true,
+    // auth: true,
   },
   {
     path: ROUTER.PACKAGE_HOST,
     element: <PackagePageHost />,
-    auth: true,
+    // auth: true,
   },
   {
     path: ROUTER.AUTH,
     element: <LoginPage />,
   },
+  {
+    path: ROUTER.REVENUE_ADMIN,
+    element: <RevenueAdminPage/>
+  },
+  {
+    path: ROUTER.REGISTER,
+    element:  <RegisterPage />,
+  }
 ];
