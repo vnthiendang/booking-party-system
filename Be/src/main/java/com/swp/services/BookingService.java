@@ -8,6 +8,7 @@ import com.swp.entity.PService;
 import com.swp.entity.Package;
 import com.swp.repositories.BookingRepository;
 import com.swp.repositories.PackageRepository;
+import com.swp.repositories.ServiceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -21,6 +22,7 @@ public class BookingService {
     @Autowired
     private BookingRepository bookingRepository;
     private PackageRepository packageRepository;
+    private ServiceRepository serviceRepository;
     public List<PackageDto> viewListPackage(){
         List<Package> packageList = packageRepository.findAll();
         return packageList.stream()
@@ -30,12 +32,34 @@ public class BookingService {
     public PackageDto mapPackageToPackageDto(Package aPackage){
         return PackageDto.builder()
                 .id(aPackage.getId())
-                .name(aPackage.getPackageName())
-                .venue(aPackage.getVenue())
-                .description(aPackage.getDescription())
-                .capacity(aPackage.getCapacity())
-                .build();
+                         .name(aPackage.getPackageName())
+                         .description(aPackage.getDescription())
+                         .checkinTime(aPackage.getCheckinTime())
+                         .checkoutTime(aPackage.getCheckoutTime())
+                         .capacity(aPackage.getCapacity())
+                         .venue(aPackage.getVenue())
+                         .serviceDtos(mapServicesToDto(aPackage.getServices()))
+                         .build();
     }
+    public List<PService> getAllServices() {
+        return serviceRepository.findAll();
+    }
+    private List<ServiceDto> mapServicesToDto(List<PService> services) {
+        return services.stream()
+                .map(service -> ServiceDto.builder()
+                        .id(service.getServiceId())
+                        .packageId(service.getPackageId())
+                        .serviceType(service.getServiceType())
+                        .serviceAmount(service.getServiceAmount())
+                        .price(service.getPrice())
+                        .build())
+                .collect(Collectors.toList());
+    }
+    public List<ServiceDto> viewlistService(List<PService> services) {
+        return mapServicesToDto(services);
+    }
+
+
     public Optional<PackageDto> findPackageById(Integer packageId) {
         Optional<Package> packageOptional = packageRepository.findById(packageId);
         return packageOptional.map(this::mapPackageToPackageDto);
@@ -51,7 +75,7 @@ public class BookingService {
         ).orElse(Collections.emptyList());
     }
 
-    // ... các phương thức khác ...
+
 
     private ServiceDto mapServiceToServiceDto(PService pService) {
         return ServiceDto.builder()
@@ -62,6 +86,7 @@ public class BookingService {
                 .price(pService.getPrice())
                 .build();
     }
+
 
 
 

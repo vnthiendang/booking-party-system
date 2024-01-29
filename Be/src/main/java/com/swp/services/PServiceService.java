@@ -81,4 +81,5 @@ public class PServiceService {
     public Optional<ServiceDto> getServiceDetails(Integer serviceId) {
         return serviceRepository.findById(serviceId).map(this::mapServiceToServiceDto);
     }
+
 }
