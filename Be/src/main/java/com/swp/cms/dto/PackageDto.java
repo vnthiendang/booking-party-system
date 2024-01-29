@@ -7,7 +7,7 @@ import jakarta.validation.constraints.Pattern;
 import lombok.Builder;
 import lombok.Data;
 
-import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -20,15 +20,11 @@ public class PackageDto {
     private String name;
 
     @Valid
-    private List<ServiceDto> services;
+    private List<ServiceDto> services = new ArrayList<>();
 
     private Location venue;
 
     private String description;
-
-    private LocalDateTime checkinTime;
-
-    private LocalDateTime checkoutTime;
 
     private Integer capacity;
     private String hostEmail;

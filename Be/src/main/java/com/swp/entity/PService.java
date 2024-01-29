@@ -6,7 +6,6 @@ import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 @Entity
 @Getter
@@ -37,32 +36,9 @@ public class PService {
     private String serviceImage;
 
     @ManyToOne
-    @JoinColumn(name = "id")
+    @JoinColumn(name = "package_id")
     private Package packageId;
 
     @OneToMany(mappedBy = "service")
     private List<BookedService> bookingServices = new ArrayList<>();
-
-    @Override
-    public String toString() {
-        return "Service{" +
-                "id=" + serviceId +
-                ", package=" + packageId +
-                ", type=" + serviceType +
-                ", price=" + price +
-                '}';
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        PService service = (PService) o;
-        return Objects.equals(serviceId, service.serviceId) && Objects.equals(packageId, service.packageId);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(serviceId, packageId);
-    }
 }

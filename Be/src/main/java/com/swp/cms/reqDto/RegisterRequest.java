@@ -9,7 +9,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import static com.swp.entity.enums.Roles.CUSTOMER;
 
 @Data
 @Builder
@@ -30,8 +29,5 @@ public class RegisterRequest {
     @NotBlank(message = "Phone cannot be empty")
     private String phone;
     private Roles role;
-    public Roles getRole() {
-        return CUSTOMER;
-    }
 
 }

@@ -3,7 +3,6 @@ package com.swp.services;
 import com.swp.cms.dto.PackageCreateDto;
 import com.swp.cms.dto.PackageDto;
 import com.swp.cms.dto.ServiceDto;
-import com.swp.entity.Host;
 import com.swp.entity.PService;
 import com.swp.entity.Package;
 import com.swp.entity.User;
@@ -14,7 +13,6 @@ import com.swp.repositories.PackageRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -32,10 +30,9 @@ public class PackageService {
 
     private final PServiceService serviceServiceService;
     private final UserService userService;
-    private final HostService hostService;
 
     @Transactional
-    public Package createPackage(PackageCreateDto createDto) {
+    public PackageDto createPackage(PackageCreateDto createDto) {
         Optional<Package> existingPackage = packageRepository.findByPackageName(createDto.getName());
         if (existingPackage.isPresent()) {
             throw new PackageAlreadyExistException("This package name is already registered!");
@@ -47,15 +44,13 @@ public class PackageService {
         aPackage.setPackageName(createDto.getName());
         //aPackage.setPrice(createDto.getVenue().getPrice());
         aPackage.setDescription(createDto.getDescription());
-        aPackage.setCheckinTime(createDto.getCheckinTime());
-        aPackage.setCheckoutTime(createDto.getCheckoutTime());
 
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        Host host = hostService.findByUser(userService.findUserByUsername(username));
-        aPackage.setHost(host);
+        User usId = userService.findUserByUsername(username);
+        aPackage.setUserId(usId);
 
         //aPackage = packageRepository.save(aPackage);
-        List<Integer> serviceIds = createDto.getServiceDtos();
+        List<Integer> serviceIds = createDto.getServices();
 
         if (serviceIds != null && !serviceIds.isEmpty()){
             List<PService> savedServices = serviceServiceService.getServicesByIds(serviceIds);
@@ -63,7 +58,7 @@ public class PackageService {
         }
         Package savedPackage = packageRepository.save(aPackage);
         log.info("Successfully saved new package with ID: {}", aPackage.getId());
-        return savedPackage;
+        return mapPackageToPackageDto(savedPackage);
     }
 
     private Package mapPackageDtoToPackage(PackageCreateDto dto) {
@@ -81,11 +76,9 @@ public class PackageService {
                 .name(packages.getPackageName())
                 .venue(Location.valueOf(String.valueOf(packages.getVenue())))
                 .description(packages.getDescription())
-                .checkinTime(packages.getCheckinTime())
-                .checkoutTime(packages.getCheckoutTime())
                 .capacity(packages.getCapacity())
                 .services(serviceDtos)
-                .hostEmail(packages.getHost().getUser().getUsername())
+                .hostEmail(packages.getUserId().getUsername())
                 .build();
     }
 
@@ -152,7 +145,7 @@ public class PackageService {
 
     
     public List<PackageDto> findAllPackageDtosByHostId(Integer hostId) {
-        List<Package> Packages = packageRepository.findByHostIdWithServices(hostId);
+        List<Package> Packages = packageRepository.findByUserIdWithServices(hostId);
         if (Packages != null) {
             return Packages.stream()
                     .map(this::mapPackageToPackageDto)
@@ -170,8 +163,8 @@ public class PackageService {
 
     
     @Transactional
-    public PackageDto updatePackageByHostId(PackageDto packageDTO, Integer hostId) {
-        Package existingPackage = packageRepository.findByIdAndHostId(packageDTO.getId(), hostId)
+    public PackageDto updatePackageByUserId(PackageDto packageDTO, Integer userId) {
+        Package existingPackage = packageRepository.findByIdAndUserId_UsId(packageDTO.getId(), userId)
                 .orElseThrow(() -> new EntityNotFoundException("Package not found".getClass()));
 
         if (PackageNameExistsAndNotSamePackage(packageDTO.getName(), packageDTO.getId())) {
@@ -180,44 +173,35 @@ public class PackageService {
 
         existingPackage.setPackageName(packageDTO.getName());
         existingPackage.setDescription(packageDTO.getDescription());
-        existingPackage.setCheckinTime(packageDTO.getCheckinTime());
-        existingPackage.setCheckoutTime(packageDTO.getCheckoutTime());
 
         existingPackage.setVenueWithPrice(packageDTO.getVenue());
 
         packageDTO.getServices().forEach(serviceServiceService::updateService);
 
         packageRepository.save(existingPackage);
-        log.info("Successfully updated existing Package with ID: {} for Host ID: {}", packageDTO.getId(), hostId);
-        return mapPackageTopackageDTO(existingPackage);
+        log.info("Successfully updated existing Package with ID: {} for Host ID: {}", packageDTO.getId(), userId);
+        return mapPackageToPackageDTO(existingPackage);
     }
 
     
-    public void deletePackageByIdAndHostId(Integer packageId, Integer hostId) {
-        Package Package = packageRepository.findByIdAndHostId(packageId, hostId)
+    public void deletePackageByIdAndUserId(Integer packageId, Integer userId) {
+        Package Package = packageRepository.findByIdAndUserId_UsId(packageId, userId)
                 .orElseThrow(() -> new EntityNotFoundException("Package not found".getClass()));
         packageRepository.delete(Package);
-        log.info("Successfully deleted Package with ID: {} for Host ID: {}", packageId, hostId);
+        log.info("Successfully deleted Package with ID: {} for Host ID: {}", packageId, userId);
     }
-
-    private Package mapPackageCreateDtoToPackage(PackageCreateDto dto) {
-        return Package.builder()
-                .packageName(formatText(dto.getName()))
-                .build();
-    }
-
     
-    public PackageDto mapPackageTopackageDTO(Package Package) {
+    public PackageDto mapPackageToPackageDTO(Package Package) {
         List<ServiceDto> serviceDtos = Package.getServices().stream()
                 .map(serviceServiceService::mapServiceToServiceDto)
-                .toList();  // collect results to a list
+                .toList();
 
         return PackageDto.builder()
                 .id(Package.getId())
                 .name(Package.getPackageName())
                 .venue(Package.getVenue())
                 .services(serviceDtos)
-                .hostEmail(Package.getHost().getUser().getUsername())
+                .hostEmail(Package.getUserId().getUsername())
                 .build();
     }
 

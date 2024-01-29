@@ -1,6 +1,5 @@
 package com.swp.entity;
 
-import com.swp.entity.enums.Roles;
 import com.swp.token.Token;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -45,32 +44,20 @@ public class User implements UserDetails {
     @OneToMany(mappedBy = "user")
     private List<Token> tokens;
 
-    @Enumerated(EnumType.STRING)
-    private Roles role_id;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "role_id", nullable = false)
+    private Role role;
 
     @CreationTimestamp
     private LocalDateTime created_date;
 
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
-    private Admin admin;
-
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
-    private Customer customer;
-
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
-    private Host host;
-
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return role_id.getAuthorities();
+        List<GrantedAuthority> authorities = new ArrayList<>();
+        authorities.add(new SimpleGrantedAuthority("ROLE_" + getRole().getRoleType().name()));
+        return authorities;
     }
-
-//    public Collection<? extends GrantedAuthority> getAuthorities() {
-//        List<GrantedAuthority> authorities = new ArrayList<>();
-//        authorities.add(new SimpleGrantedAuthority("ROLE_" + getRole().getRoleType().name()));
-//        return authorities;
-//    }
 
     @Override
     public String getPassword() {

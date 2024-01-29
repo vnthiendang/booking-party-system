@@ -1,17 +1,15 @@
 package com.swp.entity;
 
+import com.swp.entity.enums.EBookingStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.CreationTimestamp;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
 
 @Entity
 @NoArgsConstructor
@@ -24,52 +22,32 @@ public class Booking {
     private Integer bookingId;
 
     @ManyToOne
-    @JoinColumn(nullable = true)
+    @JoinColumn(name = "package_id")
     private Package packageId;
 
     @ManyToOne
-    @JoinColumn(nullable = false)
-    private Customer customer;
+    @JoinColumn(name = "customer_id")
+    private User customer;
 
-    @CreationTimestamp
-    private LocalDateTime bookingDate;
+    @Column(name = "booking_date")
+    private Date bookingDate;
 
-    @Column(unique = true, nullable = false)
-    private String confirmNumber;
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "start_time")
+    private Date startTime;
 
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "end_time")
+    private Date endTime;
 
-    @Column(nullable = false)
-    private Double totalCost;
+    @Column(name = "party_size")
+    private int partySize;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status")
+    private EBookingStatus status;
 
     @OneToMany(mappedBy = "booking")
     private List<BookedService> bookingServices = new ArrayList<>();
 
-    @PrePersist
-    protected void onCreate() {
-        this.confirmNumber = UUID.randomUUID().toString().substring(0, 8);
-    }
-
-    @Override
-    public String toString() {
-        return "Booking{" +
-                "id=" + bookingId +
-                ", confirmationNumber='" + confirmNumber + '\'' +
-                ", bookingDate=" + bookingDate +
-                ", customer=" + customer +
-                ", package=" + packageId +
-                '}';
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Booking booking = (Booking) o;
-        return Objects.equals(packageId, booking.bookingId) && Objects.equals(confirmNumber, booking.confirmNumber);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(bookingId, confirmNumber);
-    }
 }
