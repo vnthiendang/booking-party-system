@@ -11,6 +11,8 @@ export const ROUTER = {
   AUTH: "/auth",
   BLOG: "/blog",
   PACKAGE_HOST: "/package",
+  REVENUE_ADMIN: "/revenueAdmin",
+  REGISTER: "/register"
 };
 
 export const ROLE = {
