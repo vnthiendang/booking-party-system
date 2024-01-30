@@ -8,6 +8,7 @@ const LoginPage = lazy(() => import("./login"));
 const ProductsPage = lazy(() => import("./products"));
 const Page404 = lazy(() => import("./page-not-found"));
 const PackagePageHost = lazy(() => import("./package-host"));
+const CRUDPackage = lazy(() => import("./CRUD_Package"));
 export {
   PackagePage,
   EventPage,
@@ -17,4 +18,5 @@ export {
   ProductsPage,
   Page404,
   PackagePageHost,
+  CRUDPackage,
 };

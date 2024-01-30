@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import Card from "@mui/material/Card";
 import Stack from "@mui/material/Stack";
@@ -21,11 +21,15 @@ import UserTableHead from "../user-table-head";
 import TableEmptyRows from "../table-empty-rows";
 import UserTableToolbar from "../user-table-toolbar";
 import { emptyRows, applyFilter, getComparator } from "../utils";
+import { HostApi } from "../../../api";
+import { useNavigate } from "react-router-dom";
+import { ROUTER } from "../../../util";
 
 // ----------------------------------------------------------------------
 
 export default function UserPage() {
   const [page, setPage] = useState(0);
+  const navigate = useNavigate();
 
   const [order, setOrder] = useState("asc");
 
@@ -94,6 +98,18 @@ export default function UserPage() {
 
   const notFound = !dataFiltered.length && !!filterName;
 
+  const gelistPackage = async () => {
+    try {
+      const res = await HostApi.getListPackage();
+      console.log("🚀 ~ gelistPackage ~ res:", res);
+    } catch (error) {
+      alert(error);
+    }
+  };
+  useEffect(() => {
+    gelistPackage();
+  }, []);
+
   return (
     <Container>
       <Stack
@@ -108,6 +124,7 @@ export default function UserPage() {
           variant="contained"
           color="inherit"
           startIcon={<Iconify icon="eva:plus-fill" />}
+          onClick={() => navigate(ROUTER.CREATE_PACKAGE_BY_HOST)}
         >
           New Package
         </Button>

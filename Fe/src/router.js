@@ -7,6 +7,8 @@ import {
   LoginPage,
   BlogPage,
   PackagePageHost,
+  CRUD_Package,
+  CRUDPackage,
 } from "./page";
 
 export const routers = [
@@ -37,6 +39,11 @@ export const routers = [
   {
     path: ROUTER.PACKAGE_HOST,
     element: <PackagePageHost />,
+    auth: true,
+  },
+  {
+    path: ROUTER.CREATE_PACKAGE_BY_HOST,
+    element: <CRUDPackage />,
     auth: true,
   },
   {
