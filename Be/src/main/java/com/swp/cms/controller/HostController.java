@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/host/package")
+@RequestMapping("/host")
 @RequiredArgsConstructor
 @Slf4j
 public class HostController {
@@ -39,38 +39,23 @@ public class HostController {
                 .collect(Collectors.toList());
     }
 
-    @PostMapping("/create")
-    public ResponseEntity<Package> createPackage(@Valid @RequestBody PackageCreateDto dto, BindingResult result) {
-        if (result.hasErrors()) {
-            log.warn("Package setup failed due to validation errors: {}", result.getAllErrors());
-            return ResponseEntity.badRequest().body(null);
-        }
-
-        try {
-            Package createdPackage = packageService.createPackage(dto);
-            return ResponseEntity.ok(createdPackage);
-        } catch (PackageAlreadyExistException e) {
-            result.rejectValue("name", "package.exists", e.getMessage());
-
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(null);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-
+    @PostMapping("/createPackage")
+    public PackageDto createPackage(@Valid @RequestBody PackageCreateDto dto) {
+            return packageService.createPackage(dto);
     }
-    @GetMapping
+    @GetMapping("/packages")
     public List<PackageDto> listPackages() {
         Integer hostId = getCurrentHostId();
 
         return packageService.findAllPackageDtosByHostId(hostId);
     }
 
-    @PostMapping("/edit/{id}")
+    @PostMapping("/editPackage/{id}")
     public ResponseEntity<Package> editPackage(@PathVariable Integer id, @Valid @RequestBody PackageDto packageDto, BindingResult result) {
         try {
             Integer hostId = getCurrentHostId();
             packageDto.setId(id);
-            packageService.updatePackageByHostId(packageDto, hostId);
+            packageService.updatePackageByUserId(packageDto, hostId);
 
             return ResponseEntity.ok().build();
 
@@ -79,10 +64,10 @@ public class HostController {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(null);
         }
     }
-    @PostMapping("/delete/{id}")
+    @PostMapping("/deletePackage/{id}")
     public ResponseEntity<?> deletePackage(@PathVariable Integer id) {
         Integer hostId = getCurrentHostId();
-        packageService.deletePackageByIdAndHostId(id, hostId);
+        packageService.deletePackageByIdAndUserId(id, hostId);
         return ResponseEntity.ok("Deleted package successfully!");
     }
 

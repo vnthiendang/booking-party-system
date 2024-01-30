@@ -4,10 +4,8 @@ import com.swp.entity.enums.Location;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 @Entity
 @NoArgsConstructor
@@ -29,13 +27,7 @@ public class Package {
     private Double price;
 
     @Column(nullable = false)
-    private LocalDateTime checkinTime;
-
-    @Column(nullable = false)
-    private LocalDateTime checkoutTime;
-
-    @Column(nullable = false)
-    private Integer capacity;
+    private int capacity;
 
     @Enumerated(EnumType.STRING)
     private Location venue;
@@ -45,36 +37,12 @@ public class Package {
     }
 
     @OneToMany(mappedBy = "packageId", cascade = CascadeType.ALL, orphanRemoval = true)
-    @Builder.Default
-    private List<PService> services = new ArrayList<>();
+    private List<PService> services;
 
     @OneToMany(mappedBy = "packageId")
     private List<Booking> bookings = new ArrayList<>();
 
     @ManyToOne
-    @JoinColumn(nullable = false)
-    private Host host;
-
-    @Override
-    public String toString() {
-        return "Package{" +
-                "id=" + id +
-                ", name='" + packageName + '\'' +
-                ", venue=" + venue +
-                ", services=" + services +
-                '}';
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Package packages = (Package) o;
-        return Objects.equals(id, packages.id) && Objects.equals(packageName, packages.packageName) && Objects.equals(host, packages.host);
-    }
-
-//    @Override
-//    public int hashCode() {
-//        return Objects.hash(id, packageName);
-//    }
+    @JoinColumn(name = "hostId",nullable = false)
+    private User userId;
 }

@@ -8,6 +8,7 @@ import com.swp.config.JwtService;
 import com.swp.entity.Role;
 import com.swp.entity.User;
 import com.swp.entity.enums.Roles;
+import com.swp.repositories.RoleRepository;
 import com.swp.repositories.UserRepository;
 import com.swp.token.Token;
 import com.swp.token.TokenRepository;
@@ -23,7 +24,6 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.Arrays;
 
 @Service
 @RequiredArgsConstructor
@@ -33,15 +33,19 @@ public class AuthService {
     private final AuthenticationManager authenticationManager;
 
     private final UserRepository userRepository;
+    private final RoleRepository roleRepository;
     private final TokenRepository tokenRepository;
     public AuthenticationResponse register(RegisterRequest request) {
 
+        Role customerRole = roleRepository.findByRoleType(Roles.CUSTOMER);
+
+        System.out.println(customerRole);
         var user = User.builder()
                 .display_name(request.getDisplayName())
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
                 .phone(request.getPhone())
-                .role_id(request.getRole())
+                .role(customerRole)
                 .created_date(LocalDateTime.now())
                 .build();
 
@@ -71,7 +75,7 @@ public class AuthService {
         saveUserToken(user, jwtToken);
 
         return AuthenticationResponse.builder()
-                .role(String.valueOf(user.getRole_id()))
+                .role(String.valueOf(user.getRole().getRoleType()))
                 .token(jwtToken)
                 .refreshToken(refreshToken)
                 .email(user.getEmail())

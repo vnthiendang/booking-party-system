@@ -9,6 +9,8 @@ const ProductsPage = lazy(() => import("./products"));
 const Page404 = lazy(() => import("./page-not-found"));
 const PackagePageHost = lazy(() => import("./package-host"));
 const CRUDPackage = lazy(() => import("./CRUD_Package"));
+const RevenueAdminPage = lazy(() => import("./revenueAdmin"));
+const RegisterPage = lazy(() => import("./register"));
 export {
   PackagePage,
   EventPage,
@@ -19,4 +21,6 @@ export {
   Page404,
   PackagePageHost,
   CRUDPackage,
+  RevenueAdminPage,
+  RegisterPage,
 };

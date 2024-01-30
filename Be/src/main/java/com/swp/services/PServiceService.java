@@ -79,9 +79,9 @@ public class PServiceService {
     public ServiceDto mapServiceToServiceDto(PService service) {
         return ServiceDto.builder()
                 .id(service.getServiceId())
-                .packageId(service.getPackageId())
                 .serviceType(service.getServiceType())
                 .serviceAmount(service.getServiceAmount())
+                .serviceImage(service.getServiceImage())
                 .price(service.getPrice())
                 .description(service.getDescription())
                 .serviceName(service.getServiceName())

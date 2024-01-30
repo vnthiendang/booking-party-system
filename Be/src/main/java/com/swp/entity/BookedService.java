@@ -20,11 +20,11 @@ public class BookedService {
     private Integer id;
 
     @ManyToOne
-    @JoinColumn(nullable = false)
+    @JoinColumn( name = "bookingId", nullable = false)
     private Booking booking;
 
     @ManyToOne
-    @JoinColumn(nullable = false)
+    @JoinColumn(name = "serviceId", nullable = false)
     private PService service;
 
     @Column(nullable = false)

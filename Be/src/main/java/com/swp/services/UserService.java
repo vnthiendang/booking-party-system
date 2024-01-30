@@ -78,7 +78,7 @@ public class UserService {
                 .email(user.getEmail())
                 .display_name(user.getDisplay_name())
                 .phone(user.getPhone())
-                .role_id(user.getRole_id())
+                .role_id(user.getRole().getRoleType())
                 .build();
     }
 
