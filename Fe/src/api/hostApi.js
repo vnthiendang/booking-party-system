@@ -12,7 +12,7 @@ export default class hostApi extends Api {
     return axiosClient.get(url);
   }
   getListLocation() {
-    const url = `${this.HOSTNAME}${this.table}/package/locations`;
+    const url = `${this.HOSTNAME}${this.table}/locations`;
     return axiosClient.get(url);
   }
 }

@@ -41,6 +41,7 @@ public class HostController {
 
     @PostMapping("/createPackage")
     public PackageDto createPackage(@Valid @RequestBody PackageCreateDto dto) {
+
             return packageService.createPackage(dto);
     }
     @GetMapping("/packages")

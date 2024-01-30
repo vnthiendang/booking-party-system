@@ -25,6 +25,5 @@ public class ServiceDto {
     @PositiveOrZero(message = "Price must be 0 or more")
     private Double price;
 
-    private String description;
     private String serviceName;
 }

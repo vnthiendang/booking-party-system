@@ -37,6 +37,7 @@ public class SecurityConfiguration {
             "/swagger-ui.html",
             "/booking/**",
             "/host/**"
+
     };
     private final AuthTokenFilter jwtAuthFilter;
     private final AuthenticationProvider authenticationProvider;
