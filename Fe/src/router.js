@@ -26,7 +26,7 @@ export const routers = [
   {
     path: ROUTER.USER,
     element: <UserPage />,
-    // auth: true,
+    auth: true,
   },
   {
     path: ROUTER.PRODUCT,
@@ -36,12 +36,12 @@ export const routers = [
   {
     path: ROUTER.BLOG,
     element: <BlogPage />,
-    // auth: true,
+    auth: true,
   },
   {
     path: ROUTER.PACKAGE_HOST,
     element: <PackagePageHost />,
-    // auth: true,
+    auth: true,
   },
   {
     path: ROUTER.CREATE_PACKAGE_BY_HOST,

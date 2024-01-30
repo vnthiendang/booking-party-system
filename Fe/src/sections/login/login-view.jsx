@@ -41,6 +41,8 @@ export default function LoginView() {
         return navigate(ROUTER.USER);
       case ROLE.HOST:
         return navigate(ROUTER.PACKAGE_HOST);
+      case ROLE.CUSTOMER:
+        return navigate(ROUTER.PACKAGE);
       default:
         break;
     }
@@ -166,7 +168,7 @@ export default function LoginView() {
 
             <Typography variant="body2" sx={{ mt: 2, mb: 5 }}>
               Don’t have an account?
-              <Link href="register" variant="subtitle2" sx={{ ml: 0.5 }} >
+              <Link href="register" variant="subtitle2" sx={{ ml: 0.5 }}>
                 Get started
               </Link>
             </Typography>

@@ -10,7 +10,7 @@ import Typography from "@mui/material/Typography";
 import TableContainer from "@mui/material/TableContainer";
 import TablePagination from "@mui/material/TablePagination";
 
-import { users } from "../../../_mock/user";
+import { convertpackagagesList, users } from "../../../_mock/user";
 
 import Iconify from "../../../components/iconify";
 import Scrollbar from "../../../components/scrollbar";
@@ -40,6 +40,8 @@ export default function UserPage() {
   const [filterName, setFilterName] = useState("");
 
   const [rowsPerPage, setRowsPerPage] = useState(5);
+
+  const [packagaeList, setPackagaeList] = useState([]);
 
   const handleSort = (event, id) => {
     const isAsc = orderBy === id && order === "asc";
@@ -91,7 +93,7 @@ export default function UserPage() {
   };
 
   const dataFiltered = applyFilter({
-    inputData: users,
+    inputData: convertpackagagesList(packagaeList),
     comparator: getComparator(order, orderBy),
     filterName,
   });
@@ -102,6 +104,7 @@ export default function UserPage() {
     try {
       const res = await HostApi.getListPackage();
       console.log("🚀 ~ gelistPackage ~ res:", res);
+      setPackagaeList(res);
     } catch (error) {
       alert(error);
     }
@@ -144,15 +147,17 @@ export default function UserPage() {
                 order={order}
                 orderBy={orderBy}
                 rowCount={users.length}
-                numSelected={selected.length}
+                // numSelected={selected.length}
                 onRequestSort={handleSort}
-                onSelectAllClick={handleSelectAllClick}
+                // onSelectAllClick={handleSelectAllClick}
                 headLabel={[
-                  { id: "name", label: "Name" },
-                  { id: "company", label: "Company" },
-                  { id: "role", label: "Role" },
-                  { id: "isVerified", label: "Verified", align: "center" },
-                  { id: "status", label: "Status" },
+                  { id: "name", label: "Host" },
+                  { id: "company", label: "Package Name" },
+                  { id: "description", label: "Description" },
+                  { id: "capacity", label: "Capacity" },
+                  { id: "venue", label: "Venue" },
+                  // { id: "isVerified", label: "Verified", align: "center" },
+                  // { id: "status", label: "Status" },
                   { id: "" },
                 ]}
               />
@@ -162,14 +167,18 @@ export default function UserPage() {
                   .map((row) => (
                     <UserTableRow
                       key={row.id}
+                      id={row.id}
                       name={row.name}
-                      role={row.role}
+                      role={row.venue}
                       status={row.status}
+                      description={row.description}
+                      capacity={row.capacity}
                       company={row.company}
                       avatarUrl={row.avatarUrl}
                       isVerified={row.isVerified}
                       selected={selected.indexOf(row.name) !== -1}
                       handleClick={(event) => handleClick(event, row.name)}
+                      gelistPackage={gelistPackage}
                     />
                   ))}
 

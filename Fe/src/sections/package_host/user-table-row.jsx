@@ -13,6 +13,8 @@ import IconButton from "@mui/material/IconButton";
 
 import Label from "../../components/label";
 import Iconify from "../../components/iconify";
+import { HostApi } from "../../api";
+import { Bounce, toast } from "react-toastify";
 
 // ----------------------------------------------------------------------
 
@@ -25,6 +27,10 @@ export default function UserTableRow({
   isVerified,
   status,
   handleClick,
+  description,
+  capacity,
+  gelistPackage,
+  id,
 }) {
   const [open, setOpen] = useState(null);
 
@@ -36,14 +42,44 @@ export default function UserTableRow({
     setOpen(null);
   };
 
+  const handleDeletePackage = async (id) => {
+    try {
+      await HostApi.deletePackage(id);
+      gelistPackage();
+      toast.success("🦄 Delete success!", {
+        position: "top-center",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+        transition: Bounce,
+      });
+    } catch (error) {
+      toast.error("🦄 Something went wrong!", {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+        transition: Bounce,
+      });
+    }
+  };
+
   return (
     <>
       <TableRow hover tabIndex={-1} role="checkbox" selected={selected}>
-        <TableCell padding="checkbox">
+        {/* <TableCell padding="checkbox">
           <Checkbox disableRipple checked={selected} onChange={handleClick} />
-        </TableCell>
+        </TableCell> */}
 
-        <TableCell component="th" scope="row" padding="none">
+        <TableCell component="th" scope="row" padding="1">
           <Stack direction="row" alignItems="center" spacing={2}>
             <Avatar alt={name} src={avatarUrl} />
             <Typography variant="subtitle2" noWrap>
@@ -53,16 +89,18 @@ export default function UserTableRow({
         </TableCell>
 
         <TableCell>{company}</TableCell>
+        <TableCell>{description}</TableCell>
+        <TableCell>{capacity}</TableCell>
 
         <TableCell>{role}</TableCell>
 
-        <TableCell align="center">{isVerified ? "Yes" : "No"}</TableCell>
+        {/* <TableCell align="center">{isVerified ? "Yes" : "No"}</TableCell>
 
         <TableCell>
           <Label color={(status === "banned" && "error") || "success"}>
             {status}
           </Label>
-        </TableCell>
+        </TableCell> */}
 
         <TableCell align="right">
           <IconButton onClick={handleOpenMenu}>
@@ -86,7 +124,10 @@ export default function UserTableRow({
           Edit
         </MenuItem>
 
-        <MenuItem onClick={handleCloseMenu} sx={{ color: "error.main" }}>
+        <MenuItem
+          onClick={() => handleDeletePackage(id)}
+          sx={{ color: "error.main" }}
+        >
           <Iconify icon="eva:trash-2-outline" sx={{ mr: 2 }} />
           Delete
         </MenuItem>
@@ -104,4 +145,8 @@ UserTableRow.propTypes = {
   role: PropTypes.any,
   selected: PropTypes.any,
   status: PropTypes.string,
+  description: PropTypes.any,
+  capacity: PropTypes.any,
+  id: PropTypes.any,
+  gelistPackage: PropTypes.func,
 };
