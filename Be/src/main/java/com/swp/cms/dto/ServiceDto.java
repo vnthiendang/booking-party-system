@@ -24,4 +24,6 @@ public class ServiceDto {
     @NotNull(message = "Price cannot be empty")
     @PositiveOrZero(message = "Price must be 0 or more")
     private Double price;
+
+    private String serviceName;
 }

@@ -1,6 +1,9 @@
 export const ROUTER_API = {
   DEMO: "/demo",
   AUTH: "/booking/auth",
+  HOST: "/host",
+  SERVICE: "/service",
+  BOOKING: "/booking",
 };
 
 export const ROUTER = {
@@ -11,8 +14,9 @@ export const ROUTER = {
   AUTH: "/auth",
   BLOG: "/blog",
   PACKAGE_HOST: "/package",
+  CREATE_PACKAGE_BY_HOST: "/package_crud",
   REVENUE_ADMIN: "/revenueAdmin",
-  REGISTER: "/register"
+  REGISTER: "/register",
 };
 
 export const ROLE = {

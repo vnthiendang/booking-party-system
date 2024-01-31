@@ -89,6 +89,9 @@ public class PServiceService {
                 .serviceAmount(service.getServiceAmount())
                 .serviceImage(service.getServiceImage())
                 .price(service.getPrice())
+                .description(service.getDescription())
+                .serviceName(service.getServiceName())
+
                 .build();
     }
 

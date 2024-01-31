@@ -7,8 +7,10 @@ import {
   LoginPage,
   BlogPage,
   PackagePageHost,
+  CRUD_Package,
+  CRUDPackage,
   RevenueAdminPage,
-  RegisterPage
+  RegisterPage,
 } from "./page";
 
 export const routers = [
@@ -24,7 +26,7 @@ export const routers = [
   {
     path: ROUTER.USER,
     element: <UserPage />,
-    // auth: true,
+    auth: true,
   },
   {
     path: ROUTER.PRODUCT,
@@ -34,12 +36,17 @@ export const routers = [
   {
     path: ROUTER.BLOG,
     element: <BlogPage />,
-    // auth: true,
+    auth: true,
   },
   {
     path: ROUTER.PACKAGE_HOST,
     element: <PackagePageHost />,
-    // auth: true,
+    auth: true,
+  },
+  {
+    path: ROUTER.CREATE_PACKAGE_BY_HOST,
+    element: <CRUDPackage />,
+    auth: true,
   },
   {
     path: ROUTER.AUTH,
@@ -47,10 +54,10 @@ export const routers = [
   },
   {
     path: ROUTER.REVENUE_ADMIN,
-    element: <RevenueAdminPage/>
+    element: <RevenueAdminPage />,
   },
   {
     path: ROUTER.REGISTER,
-    element:  <RegisterPage />,
-  }
+    element: <RegisterPage />,
+  },
 ];

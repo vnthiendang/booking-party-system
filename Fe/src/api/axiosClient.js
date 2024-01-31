@@ -6,7 +6,13 @@ import queryString from "query-string";
 const axiosClient = axios.create({
   headers: {
     "content-type": "application/json",
-    // Authorization: `Bearer ${getToken()}`,
+    Authorization: `Bearer ${
+      localStorage.getItem("token")
+        ? JSON.parse(localStorage.getItem("token"))
+        : ""
+    }`,
+    withCredentials: false,
+    "Access-Control-Allow-Origin": "*",
   },
   paramsSerializer: (params) => queryString.stringify(params),
 });
@@ -14,11 +20,13 @@ const axiosClient = axios.create({
 axiosClient.defaults.baseURL = env.REACT_APP_API;
 
 // axiosClient.interceptors.request.use(async (config) => {
-// 	const accessToken = getToken();
-// 	if (accessToken) {
-// 		config.headers.common.Authorization = `Bearer ${JSON.parse(accessToken)}`;
-// 	}
-// 	return config;
+//   const accessToken = localStorage.getItem("token")
+//     ? localStorage.getItem("token")
+//     : "";
+//   if (accessToken) {
+//     config.headers.common.Authorization = `Bearer ${JSON.parse(accessToken)}`;
+//   }
+//   return config;
 // });
 
 axiosClient.interceptors.response.use(

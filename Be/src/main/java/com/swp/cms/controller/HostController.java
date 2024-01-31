@@ -3,7 +3,6 @@ package com.swp.cms.controller;
 import com.swp.cms.dto.LocationDto;
 import com.swp.cms.dto.PackageCreateDto;
 import com.swp.cms.dto.PackageDto;
-import com.swp.cms.resDto.ApiResponse;
 import com.swp.entity.Package;
 import com.swp.entity.enums.Location;
 import com.swp.exception.PackageAlreadyExistException;
@@ -41,15 +40,9 @@ public class HostController {
     }
 
     @PostMapping("/createPackage")
-    public ResponseEntity<ApiResponse> createPackage(@Valid @RequestBody PackageCreateDto dto) {
-            try{
-                packageService.createPackage(dto);
-                return ResponseEntity.ok(new ApiResponse("Successfully saved new package!"));
-            } catch (PackageAlreadyExistException e) {
-                return ResponseEntity.status(HttpStatus.CONFLICT).body(new ApiResponse(e.getMessage()));
-            } catch (Exception e) {
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ApiResponse("Internal server error"));
-            }
+    public PackageDto createPackage(@Valid @RequestBody PackageCreateDto dto) {
+
+            return packageService.createPackage(dto);
     }
     @GetMapping("/packages")
     public List<PackageDto> listPackages() {
@@ -59,16 +52,17 @@ public class HostController {
     }
 
     @PostMapping("/editPackage/{id}")
-    public ResponseEntity<ApiResponse> editPackage(@PathVariable Integer id, @Valid @RequestBody PackageDto packageDto) {
+    public ResponseEntity<Package> editPackage(@PathVariable Integer id, @Valid @RequestBody PackageDto packageDto, BindingResult result) {
         try {
             Integer hostId = getCurrentHostId();
             packageDto.setId(id);
             packageService.updatePackageByUserId(packageDto, hostId);
 
-            return ResponseEntity.ok(new ApiResponse("Successfully updated package!"));
+            return ResponseEntity.ok().build();
 
         } catch (PackageAlreadyExistException e) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(new ApiResponse(e.getMessage()));
+            result.rejectValue("name", "package.exists", e.getMessage());
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(null);
         }
     }
     @PostMapping("/deletePackage/{id}")
