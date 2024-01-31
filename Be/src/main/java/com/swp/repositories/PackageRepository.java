@@ -12,12 +12,13 @@ import java.util.Optional;
 @Repository
 public interface PackageRepository extends JpaRepository<Package, Integer> {
     Optional<Package> findByPackageName(String packageName);
-    @Query("SELECT p FROM Package p LEFT JOIN FETCH p.services WHERE p.userId.usId = :userId")
+    @Query("SELECT p FROM Package p WHERE p.userId.usId = :userId")
     List<Package> findByUserIdWithServices(@Param("userId") Integer userId);
 
     Optional<Package> findByIdAndUserId_UsId(Integer id, Integer userId);
 
-    @Query("SELECT p FROM Package p JOIN FETCH p.services")
+    @Query("SELECT DISTINCT p FROM Package p LEFT JOIN FETCH p.pServices ps LEFT JOIN FETCH ps.service")
     List<Package> findAllPackagesWithServices();
+
 
 }

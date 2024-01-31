@@ -35,10 +35,6 @@ public class PService {
     @Column(nullable = true)
     private String serviceImage;
 
-    @ManyToOne
-    @JoinColumn(name = "package_id")
-    private Package packageId;
-
     @OneToMany(mappedBy = "service")
     private List<BookedService> bookingServices = new ArrayList<>();
 }

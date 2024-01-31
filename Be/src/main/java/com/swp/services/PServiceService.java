@@ -5,6 +5,7 @@ import com.swp.entity.PService;
 import com.swp.entity.Package;
 import com.swp.repositories.ServiceRepository;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -31,6 +32,11 @@ public class PServiceService {
         return service;
     }
 
+    @Transactional
+    public List<PService> saveAll(List<PService> services) {
+        return serviceRepository.saveAll(services);
+    }
+
     public List<PService> saveServices(List<ServiceDto> ServiceDTOs, Package aPackage) {
         log.info("Attempting to save Services: {}", ServiceDTOs);
         List<PService> Services = ServiceDTOs.stream()
@@ -43,8 +49,9 @@ public class PServiceService {
     public List<PService> getServicesByIds(List<Integer> serviceIds) {
         return serviceRepository.findAllById(serviceIds);
     }
-    public Optional<PService> getServicesById(Integer serviceId) {
-        return serviceRepository.findById(serviceId);
+    public Optional<ServiceDto> getServicesById(Integer serviceId) {
+        PService pService = serviceRepository.findById(serviceId).orElseThrow(() -> new EntityNotFoundException("Package not found"));
+        return Optional.ofNullable(mapServiceToServiceDto(pService));
     }
 
     public PService updateService(ServiceDto serviceDto) {
@@ -66,7 +73,6 @@ public class PServiceService {
     public PService mapServiceDtoToService(ServiceDto serviceDTO, Package aPackage) {
         log.debug("Mapping ServiceDTO to Service: {}", serviceDTO);
         PService service = PService.builder()
-                .packageId(aPackage)
                 .serviceType(serviceDTO.getServiceType())
                 .serviceAmount(serviceDTO.getServiceAmount())
                 .price(serviceDTO.getPrice())

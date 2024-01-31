@@ -75,26 +75,16 @@ public class BookingController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
-    @GetMapping("/{packageId}/services")
-    public ResponseEntity<List<ServiceDto>> getServicesForPackage(@PathVariable Integer packageId) {
-        List<ServiceDto> serviceDtoList = bookingService.getServicesForPackage(packageId);
 
-        if (!serviceDtoList.isEmpty()) {
-            return new ResponseEntity<>(serviceDtoList, HttpStatus.OK);
+    @GetMapping("service/{serviceId}")
+    public ResponseEntity<ServiceDto> getServiceDetails(@PathVariable Integer serviceId) {
+        Optional<ServiceDto> serviceDto = pserviceService.getServicesById(serviceId);
+
+        if (serviceDto.isPresent()) {
+            return new ResponseEntity<>(serviceDto.get(), HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-
     }
-//    @GetMapping("/{serviceId}")
-//    public ResponseEntity<ServiceDto> getServiceDetails(@PathVariable Integer serviceId) {
-//        Optional<ServiceDto> serviceDtoOptional = pserviceService.getServiceDetails(serviceId);
-//
-//        if (serviceDtoOptional.isPresent()) {
-//            return new ResponseEntity<>(serviceDtoOptional.get(), HttpStatus.OK);
-//        } else {
-//            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-//        }
-//    }
 
 }

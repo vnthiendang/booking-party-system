@@ -17,12 +17,13 @@ public class PackageDto {
 
     @NotBlank(message = "Package name cannot be empty")
     @Pattern(regexp = "^(?=.*[A-Za-z0-9])[A-Za-z0-9 ]+$", message = "Package name must contain at least one letter or number")
-    private String name;
+    private String packageName;
 
     @Valid
-    private List<ServiceDto> services = new ArrayList<>();
+    private List<Integer> services = new ArrayList<>();
 
     private Location venue;
+    private Double price;
 
     private String description;
 

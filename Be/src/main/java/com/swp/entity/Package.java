@@ -24,6 +24,7 @@ public class Package {
     @Column(nullable = false)
     private String description;
 
+    @Getter
     private Double price;
 
     @Column(nullable = false)
@@ -36,8 +37,8 @@ public class Package {
         this.price = venue.getPrice();
     }
 
-    @OneToMany(mappedBy = "packageId", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<PService> services;
+    @OneToMany(mappedBy = "packages", cascade = CascadeType.ALL)
+    private List<PackageServiceEntity> pServices = new ArrayList<>();
 
     @OneToMany(mappedBy = "packageId")
     private List<Booking> bookings = new ArrayList<>();
