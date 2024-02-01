@@ -17,17 +17,12 @@ import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -137,7 +132,6 @@ public class PackageService {
                 .collect(Collectors.toList());
     }
 
-    
     @Transactional
     public PackageDto updatePackage(PackageDto packageDTO) {
         log.info("Attempting to update Package with ID: {}", packageDTO.getId());
@@ -161,18 +155,6 @@ public class PackageService {
     }
 
     
-    public void deletePackageById(Integer id) {
-        log.info("Attempting to delete Package with ID: {}", id);
-        packageRepository.deleteById(id);
-        log.info("Successfully deleted Package with ID: {}", id);
-    }
-    
-//    public List<Package> findAllPackagesByHostId(Integer hostId) {
-//        List<Package> Packages = packageRepository.findAllByHostId(hostId);
-//        return (Packages != null) ? Packages : Collections.emptyList();
-//    }
-
-    
     public List<PackageDto> findAllPackageDtosByHostId(Integer hostId) {
         List<Package> packages = packageRepository.findByUserIdWithServices(hostId);
         if (packages != null) {
@@ -183,13 +165,12 @@ public class PackageService {
         return Collections.emptyList();
     }
 
-    
-//    public PackageDto findPackageByIdAndHostId(Integer PackageId, Integer hostId) {
-//        Package Package = packageRepository.findByIdAndHostId(PackageId, hostId)
-//                .orElseThrow(() -> new EntityNotFoundException("Package not found".getClass()));
-//        return mapPackageToPackageDto(Package);
-//    }
+    public boolean validateNumberOfServices(List<Integer> serviceIds) {
+        List<PService> availableServices = serviceRepository.findAll();
 
+        // Check if the number of requested services is greater than available services
+        return serviceIds.size() <= availableServices.size();
+    }
 
     @Transactional
     public void updatePackageByUserId(PackageDto updateDto, Integer userId) {
@@ -197,7 +178,6 @@ public class PackageService {
                 .orElseThrow(() -> new EntityNotFoundException("Package not found"));
 
         if (!existingPackage.getPackageName().equals(updateDto.getPackageName())) {
-            // Check if the new package name is not the same as an existing package
             Optional<Package> existingPackageWithName = packageRepository.findByPackageName(updateDto.getPackageName());
             if (existingPackageWithName.isPresent()) {
                 throw new PackageAlreadyExistException("This package name is already registered!");
@@ -210,16 +190,23 @@ public class PackageService {
         existingPackage.setVenueWithPrice(updateDto.getVenue());
         existingPackage.setCapacity(updateDto.getCapacity());
 
-        // Update or add new services
+        // Validate the number of services
+        if (!validateNumberOfServices(updateDto.getServices())) {
+            throw new IllegalArgumentException("Number of requested services exceeds available services.");
+        }
+
+        // Validate and update services
         List<Integer> serviceIds = updateDto.getServices();
         if (serviceIds != null && !serviceIds.isEmpty()) {
-            List<PService> savedServices = serviceServiceService.getServicesByIds(serviceIds);
+            Set<Integer> existingServiceIds = existingPackage.getPServices().stream()
+                    .map(packageServiceEntity -> packageServiceEntity.getService().getServiceId())
+                    .collect(Collectors.toSet());
 
-            // Remove existing associations
-            existingPackage.getPServices().clear();
+            List<PService> updatedServices = serviceServiceService.getServicesByIds(serviceIds);
 
-            // Create new PackageServiceEntity instances and associate them with the package
-            List<PackageServiceEntity> packageServiceEntities = savedServices.stream()
+            // Add only new services that are not already associated with the package
+            List<PackageServiceEntity> packageServiceList = updatedServices.stream()
+                    .filter(service -> !existingServiceIds.contains(service.getServiceId()))
                     .map(service -> {
                         PackageServiceEntity packageServiceEntity = new PackageServiceEntity();
                         packageServiceEntity.setPackages(existingPackage);
@@ -228,20 +215,17 @@ public class PackageService {
                     })
                     .collect(Collectors.toList());
 
-            // Save the PackageServiceEntity instances
-            pServiceRepository.saveAll(packageServiceEntities);
-        } else {
-            // If no services provided, you may choose to clear existing services or keep them unchanged.
-            existingPackage.getPServices().clear();
+            existingPackage.getPServices().addAll(packageServiceList);
         }
 
         // Save the updated package
         packageRepository.save(existingPackage);
-        log.info("Successfully updated existing Package for Host ID: {}", userId);
     }
 
 
-    
+
+
+
     public void deletePackageByIdAndUserId(Integer packageId, Integer userId) {
         Package Package = packageRepository.findByIdAndUserId_UsId(packageId, userId)
                 .orElseThrow(() -> new EntityNotFoundException("Package not found"));
