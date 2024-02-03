@@ -40,7 +40,7 @@ public class Package {
     @OneToMany(mappedBy = "packages", cascade = CascadeType.ALL)
     private List<PackageServiceEntity> pServices = new ArrayList<>();
 
-    @OneToMany(mappedBy = "packageId")
+    @OneToMany(mappedBy = "packages")
     private List<Booking> bookings = new ArrayList<>();
 
     @ManyToOne

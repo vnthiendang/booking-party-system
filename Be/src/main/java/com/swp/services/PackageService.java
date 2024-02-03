@@ -106,19 +106,17 @@ public class PackageService {
                 .build();
     }
 
-    public PackageDto findPackageDtoByName(String name) {
-        Package aPackage = packageRepository.findByPackageName(name)
-                .orElseThrow(() -> new EntityNotFoundException("Package not found"));
-        return mapPackageToPackageDto(aPackage);
+    public Package getById(Integer id) {
+        return packageRepository.findById(id).orElseThrow(EntityNotFoundException::new);
     }
 
-    
-    public PackageDto findPackageDtoById(Integer id) {
-        Package aPackage = packageRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Package not found"));
-        return mapPackageToPackageDto(aPackage);
+    public Boolean isBooked(Integer id) {
+        Package table = packageRepository.findById(id).orElse(null);
+        if (table == null) {
+            throw new EntityNotFoundException();
+        }
+        return false;
     }
-
     
     public Optional<Package> findPackageById(Integer id) {
         return packageRepository.findById(id);
@@ -130,6 +128,10 @@ public class PackageService {
         return packages.stream()
                 .map(this::mapPackageToPackageDto)
                 .collect(Collectors.toList());
+    }
+
+    public List<Package> getAll() {
+        return packageRepository.findAll();
     }
 
     @Transactional

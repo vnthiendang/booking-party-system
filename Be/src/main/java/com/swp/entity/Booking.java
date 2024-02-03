@@ -23,7 +23,7 @@ public class Booking {
 
     @ManyToOne
     @JoinColumn(name = "package_id")
-    private Package packageId;
+    private Package packages;
 
     @ManyToOne
     @JoinColumn(name = "customer_id")

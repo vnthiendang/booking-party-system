@@ -2,9 +2,9 @@ package com.swp.services;
 
 import com.swp.cms.dto.PackageDto;
 import com.swp.cms.dto.ServiceDto;
-import com.swp.entity.PService;
+import com.swp.entity.Booking;
 import com.swp.entity.Package;
-import com.swp.entity.PackageServiceEntity;
+import com.swp.entity.enums.EBookingStatus;
 import com.swp.entity.enums.Location;
 import com.swp.repositories.BookingRepository;
 import com.swp.repositories.PServiceRepository;
@@ -12,10 +12,9 @@ import com.swp.repositories.PackageRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -28,7 +27,6 @@ public class BookingService {
     private final PackageRepository packageRepository;
     private final PServiceRepository pServiceRepository;
     private final PServiceService pServiceService;
-    private ModelMapper modelMapper;
 
     @Transactional
     public List<PackageDto> viewListPackage(){
@@ -38,6 +36,9 @@ public class BookingService {
                 .map(this::mapPackageToPackageDto)
                 .collect(Collectors.toList());
     }
+
+    public Booking getByUserIdAndPackageId(Integer userId, Integer packageId) {
+        return bookingRepository.findByCustomerUsIdAndPackagesId(userId, packageId);}
 
     public PackageDto mapPackageToPackageDto(Package packages){
 
@@ -58,17 +59,30 @@ public class BookingService {
                 .build();
     }
 
+    public Boolean isValidStatus(String status) {
+        for (EBookingStatus e : EBookingStatus.values()) {
+            if (e.equals(status)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+
+    public List<Booking> getAllByDate(Date date) {
+        return bookingRepository.findAllByDate(date);
+    }
+
     public Optional<PackageDto> findPackageById(Integer packageId) {
         Optional<Package> packageOptional = packageRepository.findById(packageId);
         return packageOptional.map(this::mapPackageToPackageDto);
     }
 
-    private ServiceDto mapServiceToServiceDto(PService pService) {
-        return ServiceDto.builder()
-                .id(pService.getServiceId())
-                .serviceType(pService.getServiceType())
-                .serviceAmount(pService.getServiceAmount())
-                .price(pService.getPrice())
-                .build();
+    public List<Booking> getAllAcceptedReservationsInTime(Date startTime, Date endTime) {
+        return bookingRepository.findAllApprovedReservationsInTime( startTime, endTime);
+    }
+
+    public Booking addReservation(Booking reservation) {
+        return bookingRepository.save(reservation);
     }
 }

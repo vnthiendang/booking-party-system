@@ -11,9 +11,11 @@ import java.util.Date;
 public class BookingDto {
 
     @NotNull
-    private Integer packageId;
+    private Integer packagesId;
     @NotNull
     private Date startTime;
     @NotNull
     private Date endTime;
+    @NotNull
+    private Integer partySize;
 }
