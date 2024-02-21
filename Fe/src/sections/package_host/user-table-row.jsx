@@ -15,6 +15,7 @@ import Label from "../../components/label";
 import Iconify from "../../components/iconify";
 import { HostApi } from "../../api";
 import { Bounce, toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 
 // ----------------------------------------------------------------------
 
@@ -33,6 +34,7 @@ export default function UserTableRow({
   id,
 }) {
   const [open, setOpen] = useState(null);
+  const navigate = useNavigate();
 
   const handleOpenMenu = (event) => {
     setOpen(event.currentTarget);
@@ -42,6 +44,9 @@ export default function UserTableRow({
     setOpen(null);
   };
 
+  const handleEditPackage = (id) => {
+    navigate(`/edit_package/${id}`);
+  };
   const handleDeletePackage = async (id) => {
     try {
       await HostApi.deletePackage(id);
@@ -119,7 +124,7 @@ export default function UserTableRow({
           sx: { width: 140 },
         }}
       >
-        <MenuItem onClick={handleCloseMenu}>
+        <MenuItem onClick={() => handleEditPackage(id)}>
           <Iconify icon="eva:edit-fill" sx={{ mr: 2 }} />
           Edit
         </MenuItem>

@@ -12,7 +12,7 @@ import {
   TextField,
 } from "@mui/material";
 import { Bounce, toast } from "react-toastify";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { ROUTER } from "../util";
 // import DatePicker from "react-multi-date-picker";
 // import DatePanel from "react-multi-date-picker/plugins/date_panel";
@@ -25,6 +25,7 @@ const CRUD_Package = () => {
   // tomorrow.setDate(tomorrow.getDate() + 1);
 
   // init package
+  const params = useParams();
   const navigate = useNavigate();
   // Init state
   const [locationList, setLocationList] = useState([]);
@@ -48,6 +49,14 @@ const CRUD_Package = () => {
     try {
       const res = await HostApi.getListLocation();
       setLocationList(res);
+    } catch (error) {
+      alert(error);
+    }
+  };
+  const getPackagedetail = async (id) => {
+    try {
+      const res = await HostApi.getDetail(id);
+      console.log("🚀 ~ getPackagedetail ~ res:", res);
     } catch (error) {
       alert(error);
     }
@@ -77,14 +86,16 @@ const CRUD_Package = () => {
       return;
     } else {
       const body = {
-        name: namePackage,
         description: descPackage,
         capacity: capacityPackage,
         venue: locationValue,
         services: [...ServiceId.map((item) => item.id)],
       };
+      !params.id ? (body.name = namePackage) : (body.packageName = namePackage);
       console.log("🚀 ~ handleSubmit ~ body:", body);
-      const res = await HostApi.createPackage(body);
+      const res = !params?.id
+        ? await HostApi.createPackage(body)
+        : await HostApi.editPackage(params?.id, body);
       res &&
         toast.success("🦄 create success!", {
           position: "top-center",
@@ -116,10 +127,13 @@ const CRUD_Package = () => {
     }
   };
   useEffect(() => {
+    const { id } = params;
+    // if (id) {
+    //   getPackagedetail(id);
+    // }
     getListAService();
     getListLocation();
   }, []);
-  console.log("🚀 ~ ServiceId:", ServiceId);
 
   return (
     <div>

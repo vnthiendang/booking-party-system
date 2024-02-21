@@ -29,7 +29,7 @@ export const convertpackagagesList = (array) => {
     id: item?.id,
     avatarUrl: `/assets/images/avatars/avatar_${index + 1}.jpg`,
     name: item?.hostEmail,
-    company: item?.name,
+    company: item?.packageName,
     isVerified: faker.datatype.boolean(),
     status: sample(["active", "banned"]),
     venue: item?.venue,

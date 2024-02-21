@@ -49,6 +49,11 @@ export const routers = [
     auth: true,
   },
   {
+    path: ROUTER.EDIT_PACKAGE_BY_HOST,
+    element: <CRUDPackage />,
+    auth: true,
+  },
+  {
     path: ROUTER.AUTH,
     element: <LoginPage />,
   },
