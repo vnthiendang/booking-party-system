@@ -59,6 +59,21 @@ public class HostController {
         return packageService.findAllPackageDtosByHostId(hostId);
     }
 
+    @GetMapping("/packages/{id}")
+    public PackageDto viewPackageDetails(@PathVariable Integer id) {
+        Integer hostId = getCurrentHostId();
+
+        List<PackageDto> dtoList = packageService.findAllPackageDtosByHostId(hostId);
+
+//        PackageDto dto = packageService.findPackageById(id);
+        PackageDto dto = dtoList.stream()
+                .filter(packageDto -> packageDto.getId().equals(id))
+                .findFirst()
+                .orElse(null);
+
+        return dto;
+    }
+
     @PutMapping("/editPackage/{id}")
     public ResponseEntity<ApiResponse> editPackage(@PathVariable Integer id, @Valid @RequestBody PackageDto packageDto) {
         try {
