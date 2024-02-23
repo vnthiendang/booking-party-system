@@ -24,7 +24,7 @@ export default class hostApi extends Api {
     return axiosClient.put(url, body);
   }
   getDetail(id) {
-    const url = `${this.HOSTNAME}${this.table}/booking/package/${id}`;
+    const url = `${this.HOSTNAME}${this.table}/packages/${id}`;
     return axiosClient.get(url);
   }
 }

@@ -50,7 +50,7 @@ const CustomPackage = () => {
         <div className="sigContainer">
           <SignatureCanvas
             penColor="black"
-            canvasProps={{ width: 500, height: 200, className: "sigCanvas" }}
+            canvasProps={{ width: 1114, height: 200, className: "sigCanvas" }}
             ref={(ref) => {
               sigPad = ref;
             }}

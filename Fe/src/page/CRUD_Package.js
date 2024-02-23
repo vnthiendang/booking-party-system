@@ -57,6 +57,20 @@ const CRUD_Package = () => {
     try {
       const res = await HostApi.getDetail(id);
       console.log("🚀 ~ getPackagedetail ~ res:", res);
+      /**
+       * capacity 
+description
+packageName
+
+price
+
+services :[2, 3]
+venue :"ThuDuc"
+       */
+      setNamePackage(res.packageName);
+      setDescPackage(res.description);
+      setCapacityPackage(res.capacity);
+      setLocationValue(res.venue);
     } catch (error) {
       alert(error);
     }
@@ -128,9 +142,9 @@ const CRUD_Package = () => {
   };
   useEffect(() => {
     const { id } = params;
-    // if (id) {
-    //   getPackagedetail(id);
-    // }
+    if (id) {
+      getPackagedetail(id);
+    }
     getListAService();
     getListLocation();
   }, []);
@@ -249,7 +263,7 @@ const CRUD_Package = () => {
                 />
               </Stack>
               <Button type="submit" onClick={handleSubmit} variant="contained">
-                Create
+                {params.id ? "Edit" : "Create"}
               </Button>
             </Stack>
           </form>

@@ -7,7 +7,7 @@ export const ROUTER_API = {
 };
 
 export const ROUTER = {
-  EVENT: "/event",
+  EVENT: "/event/:id",
   PACKAGE: "/",
   USER: "/user",
   PRODUCT: "/products",

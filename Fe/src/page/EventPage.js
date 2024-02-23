@@ -16,7 +16,7 @@ import {
 } from "../components";
 
 const steps = [
-  "Select package",
+  // "Select package",
   "Pick a Date",
   "Custom package",
   "Infomation",
@@ -71,15 +71,15 @@ export default function EventPage() {
 
   const checkRenderStep = (step) => {
     switch (step) {
+      // case 0:
+      // return <SelectPackage handleNextStep={handleNext} />;
       case 0:
-        return <SelectPackage handleNextStep={handleNext} />;
-      case 1:
         return <SelectDate />;
-      case 2:
+      case 1:
         return <CustomPackage />;
-      case 3:
+      case 2:
         return <InfomationForm />;
-      case 4:
+      case 3:
         return <Order />;
       default:
         return <p> Step {step + 1}</p>;

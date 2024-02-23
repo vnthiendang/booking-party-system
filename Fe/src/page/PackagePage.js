@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import LayoutWeb from "../layout/LayoutWeb";
 import {
   Box,
@@ -15,20 +15,31 @@ import "./../style/style.css";
 import { discountImg, bgFullbox, pizzaImg } from "../asset";
 import { useNavigate } from "react-router-dom";
 import { ROUTER } from "../util";
+import { ServiceApi } from "../api";
 
 const PackagePage = () => {
   // init state
   const navigate = useNavigate();
-  const [PackageList, setPackageList] = useState(
-    Array.from({ length: 4 }, (value, index) => index + 1)
-  );
+  const [PackageList, setPackageList] = useState([]);
 
   const [stepList, setStepList] = useState(
     Array.from({ length: 4 }, (value, index) => index + 1)
   );
   // hanle click funtion
 
-  const handleClickBook = () => navigate(ROUTER.EVENT);
+  const handleClickBook = (id) => navigate(`/event/${id}`);
+  const getAllPackaged = async () => {
+    try {
+      const res = await ServiceApi.getListpackageByCustomer();
+      setPackageList(res);
+    } catch (error) {
+      alert(error);
+    }
+  };
+
+  useEffect(() => {
+    getAllPackaged();
+  }, []);
 
   return (
     <LayoutWeb>
@@ -64,7 +75,11 @@ const PackagePage = () => {
         <Container maxWidth="lg">
           <Grid container spacing={2} columns={16}>
             {PackageList?.map((item, index) => (
-              <CardPackage key={index} handleClickBook={handleClickBook} />
+              <CardPackage
+                key={index}
+                handleClickBook={handleClickBook}
+                item={item}
+              />
             ))}
           </Grid>
         </Container>
@@ -85,6 +100,7 @@ const PackagePage = () => {
                 <CardPackage
                   key={index}
                   column={8}
+                  item={item}
                   PackageCardDefault={false}
                 />
               )
@@ -201,11 +217,21 @@ const HeaderTextPackage = ({ text }) => {
 };
 
 const CardPackage = ({
-  itemm,
+  item,
   column = 4,
   PackageCardDefault = true,
   handleClickBook,
 }) => {
+  /**
+       * capacity 
+description
+packageName
+id
+price
+
+services :[2, 3]
+venue :"ThuDuc"
+       */
   return (
     <Grid item xs={column}>
       <Card sx={{ maxWidth: "100%", background: "black", color: "white" }}>
@@ -222,37 +248,21 @@ const CardPackage = ({
               component="div"
               sx={{ textAlign: "center", textTransform: "uppercase" }}
             >
-              Lizard
+              {item?.packageName}
             </Typography>
           </div>
           {PackageCardDefault ? (
             <>
               <p className="price">
-                $649.99
+                ${item?.price?.toLocaleString()}
                 <br />
                 <span className="details">
-                  + GST for 10 participants
-                  <br />
-                  $54.99 per additional participant
+                  + GST for{item?.capacity} participants
                 </span>
               </p>
               <div>
                 <ul>
-                  <li>Includes 10 kids admissions to Leisure Lagoon</li>
-                  <li>Includes up to 20 adult admissions to Leisure Lagoon</li>
-                  <li>Private party space for 90 minutes</li>
-                  <li>Unlimited Play time before &amp; after the party time</li>
-                  <li>
-                    1000 E-tickets for the birthday child to redeem Prizes
-                  </li>
-                  <li>40 arcade credits for each child</li>
-                  <li>1 bumper car ride for each child</li>
-                  <li>1 Virtual box ride for each child</li>
-                  <li>1 On-the-fly ropes course for each child</li>
-                  <li>1 Grip socks for each child</li>
-                  <li>Buddy shirt for the birthday child</li>
-                  <li>Goodie bag for each child</li>
-                  <li>Plates, cups, cutlery, napkins &amp; table cloth</li>
+                  <li>{item?.description}</li>
                 </ul>
               </div>
               <div>
@@ -273,7 +283,7 @@ const CardPackage = ({
                     background: "red",
                     height: 57,
                   }}
-                  onClick={handleClickBook}
+                  onClick={() => handleClickBook(item.id)}
                 >
                   Book now
                 </Button>
