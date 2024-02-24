@@ -47,7 +47,4 @@ public class Booking {
     @Column(name = "status")
     private EBookingStatus status;
 
-    @OneToMany(mappedBy = "booking")
-    private List<BookedService> bookingServices = new ArrayList<>();
-
 }

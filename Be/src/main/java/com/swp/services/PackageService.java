@@ -136,8 +136,6 @@ public class PackageService {
 
     @Transactional
     public PackageDto updatePackage(PackageDto packageDTO) {
-        log.info("Attempting to update Package with ID: {}", packageDTO.getId());
-
         Package existingPackage = packageRepository.findById(packageDTO.getId())
                 .orElseThrow(() -> new EntityNotFoundException("Package not found"));
 

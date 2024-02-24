@@ -34,7 +34,4 @@ public class PService {
 
     @Column(nullable = true)
     private String serviceImage;
-
-    @OneToMany(mappedBy = "service")
-    private List<BookedService> bookingServices = new ArrayList<>();
 }

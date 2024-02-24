@@ -46,4 +46,7 @@ public class Package {
     @ManyToOne
     @JoinColumn(name = "hostId",nullable = false)
     private User userId;
+
+    @OneToMany(mappedBy = "packages")
+    private List<TimeSlot> timeSlots = new ArrayList<>();
 }

@@ -3,6 +3,8 @@ package com.swp.services;
 import com.swp.cms.dto.ServiceDto;
 import com.swp.entity.PService;
 import com.swp.entity.Package;
+import com.swp.entity.PackageServiceEntity;
+import com.swp.repositories.PServiceRepository;
 import com.swp.repositories.ServiceRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
@@ -19,6 +21,7 @@ import java.util.stream.Collectors;
 @Slf4j
 public class PServiceService {
     private final ServiceRepository serviceRepository;
+    private final PServiceRepository pServiceRepository;
 
     public List<ServiceDto> getAllServices() {
         List<PService> services = serviceRepository.findAll();
@@ -33,8 +36,8 @@ public class PServiceService {
     }
 
     @Transactional
-    public List<PService> saveAll(List<PService> services) {
-        return serviceRepository.saveAll(services);
+    public List<PackageServiceEntity> saveAll(List<PackageServiceEntity> services) {
+        return pServiceRepository.saveAll(services);
     }
 
     public List<PService> saveServices(List<ServiceDto> ServiceDTOs, Package aPackage) {
@@ -54,20 +57,9 @@ public class PServiceService {
         return Optional.ofNullable(mapServiceToServiceDto(pService));
     }
 
-    public PService updateService(ServiceDto serviceDto) {
-
-        PService existingService = serviceRepository.findById(serviceDto.getId())
-                .orElseThrow(() -> new EntityNotFoundException("Service not found"));
-
-        log.info("Service with ID: {} found", serviceDto.getId());
-
-        existingService.setServiceType(serviceDto.getServiceType());
-        existingService.setServiceAmount(serviceDto.getServiceAmount());
-        existingService.setPrice(serviceDto.getPrice());
-
-        PService updatedService = serviceRepository.save(existingService);
-        log.info("Successfully updated address with ID: {}", existingService.getServiceId());
-        return updatedService;
+    public PService getServiceId(Integer serviceId) {
+        PService pService = serviceRepository.findById(serviceId).orElseThrow(() -> new EntityNotFoundException("Package not found"));
+        return pService;
     }
 
     public PService mapServiceDtoToService(ServiceDto serviceDTO, Package aPackage) {

@@ -7,8 +7,8 @@ import com.swp.entity.Package;
 import com.swp.entity.enums.EBookingStatus;
 import com.swp.entity.enums.Location;
 import com.swp.repositories.BookingRepository;
-import com.swp.repositories.PServiceRepository;
 import com.swp.repositories.PackageRepository;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,7 +25,6 @@ import java.util.stream.Collectors;
 public class BookingService {
     private final BookingRepository bookingRepository;
     private final PackageRepository packageRepository;
-    private final PServiceRepository pServiceRepository;
     private final PServiceService pServiceService;
 
     @Transactional
@@ -84,5 +83,9 @@ public class BookingService {
 
     public Booking addReservation(Booking reservation) {
         return bookingRepository.save(reservation);
+    }
+
+    public Booking findBookingById(Integer bookingId) {
+        return bookingRepository.findById(bookingId).orElseThrow(EntityNotFoundException::new);
     }
 }

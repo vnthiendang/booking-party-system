@@ -1,5 +1,6 @@
 package com.swp.cms.controller;
 
+import com.swp.cms.dto.BookedServiceDto;
 import com.swp.cms.dto.BookingDto;
 import com.swp.cms.dto.PackageDto;
 import com.swp.cms.dto.ServiceDto;
@@ -7,18 +8,16 @@ import com.swp.cms.mapper.BookingMapper;
 import com.swp.cms.reqDto.AvailablePackageAtTimeDto;
 import com.swp.cms.reqDto.BookingUpdateDto;
 import com.swp.cms.resDto.ApiMessageDto;
-import com.swp.cms.resDto.ApiResponse;
 import com.swp.cms.resDto.GetAvailablePackageResDto;
-import com.swp.entity.Booking;
+import com.swp.entity.*;
 import com.swp.entity.Package;
-import com.swp.entity.User;
 import com.swp.entity.enums.EBookingStatus;
 import com.swp.exception.BadRequestException;
 import com.swp.services.BookingService;
 import com.swp.services.PServiceService;
 import com.swp.services.PackageService;
 import com.swp.services.UserService;
-import jakarta.transaction.Transactional;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -32,10 +31,7 @@ import org.springframework.web.bind.annotation.*;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 @RestController
 @RequestMapping("/booking")
@@ -149,6 +145,40 @@ public class BookingController {
             return makeResponse(false, "An error occurred during booking", e.getMessage());
         }
     }
+
+    @PostMapping("/addServices")
+    public ApiMessageDto<Object> addServices(@Valid @RequestBody BookedServiceDto dto) {
+        try {
+            Booking booking = bookingService.findBookingById(dto.getBookingId());
+
+            if (!booking.getStatus().equals(EBookingStatus.PENDING)) {
+                throw new BadRequestException("Cannot add services to a booking with status " + booking.getStatus());
+            }
+
+            Package packageEntity = booking.getPackages();
+
+            List<Integer> serviceIds = dto.getService();
+
+            if (serviceIds != null && !serviceIds.isEmpty()) {
+                List<PService> savedServices = serviceService.getServicesByIds(serviceIds);
+
+                // Create PackageServiceEntity instances & associate them with the package
+                List<PackageServiceEntity> packageServiceEntities = new ArrayList<>();
+                for (PService service : savedServices) {
+                    PackageServiceEntity packageServiceEntity = new PackageServiceEntity();
+                    packageServiceEntity.setPackages(packageEntity);
+                    packageServiceEntity.setService(service);
+                    packageServiceEntities.add(packageServiceEntity);
+                }
+                pserviceService.saveAll(packageServiceEntities);
+            }
+
+            return makeResponse(true, serviceIds, "Services added successfully");
+        } catch (Exception e) {
+            return makeResponse(false, "An error occurred during adding services", e.getMessage());
+        }
+    }
+
 
     // Update reservation status
     @PostMapping("/update")
