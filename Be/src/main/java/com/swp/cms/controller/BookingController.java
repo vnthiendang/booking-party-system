@@ -12,11 +12,9 @@ import com.swp.cms.resDto.GetAvailablePackageResDto;
 import com.swp.entity.*;
 import com.swp.entity.Package;
 import com.swp.entity.enums.EBookingStatus;
+import com.swp.entity.enums.ESlotStatus;
 import com.swp.exception.BadRequestException;
-import com.swp.services.BookingService;
-import com.swp.services.PServiceService;
-import com.swp.services.PackageService;
-import com.swp.services.UserService;
+import com.swp.services.*;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -43,6 +41,7 @@ public class BookingController {
     private final BookingService bookingService;
     private final PackageService packageService;
     private final PServiceService pserviceService;
+    private final TimeSlotService timeSlotService;
 
     @Autowired
     private BookingMapper mapper;
@@ -121,11 +120,27 @@ public class BookingController {
             if (Boolean.TRUE.equals(packageService.isBooked(bookReservationDto.getPackagesId()))) {
                 throw new BadRequestException("Package is already booked");
             }
+
             // Check if start time is before end time
             if (bookReservationDto.getStartTime().after(bookReservationDto.getEndTime())) {
                 throw new BadRequestException("Start time is after end time");
             }
+
             Package aPackage = packageService.getById(bookReservationDto.getPackagesId());
+
+            // Kiểm tra và cập nhật trạng thái của các TimeSlot
+            List<TimeSlot> timeSlots = aPackage.getTimeSlots();
+            Date startTime = bookReservationDto.getStartTime();
+            Date endTime = bookReservationDto.getEndTime();
+            for (TimeSlot slot : timeSlots) {
+                if (slot.getStart().compareTo(startTime) >= 0 && slot.getEnd().compareTo(endTime) <= 0) {
+                    if (slot.getStatus() != ESlotStatus.AVAILABLE) {
+                        throw new BadRequestException("Selected time is not available");
+                    }
+                    slot.setStatus(ESlotStatus.END);
+                    timeSlotService.updateTimeSlot(slot); // Cập nhật trạng thái của TimeSlot
+                }
+            }
             // Check if party size is greater than package capacity
             if (bookReservationDto.getPartySize() > aPackage.getCapacity()) {
                 throw new BadRequestException("Party size is greater than package capacity");
@@ -171,6 +186,7 @@ public class BookingController {
                     packageServiceEntities.add(packageServiceEntity);
                 }
                 pserviceService.saveAll(packageServiceEntities);
+
             }
 
             return makeResponse(true, serviceIds, "Services added successfully");

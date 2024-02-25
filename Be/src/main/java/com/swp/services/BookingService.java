@@ -4,10 +4,13 @@ import com.swp.cms.dto.PackageDto;
 import com.swp.cms.dto.ServiceDto;
 import com.swp.entity.Booking;
 import com.swp.entity.Package;
+import com.swp.entity.TimeSlot;
 import com.swp.entity.enums.EBookingStatus;
+import com.swp.entity.enums.ESlotStatus;
 import com.swp.entity.enums.Location;
 import com.swp.repositories.BookingRepository;
 import com.swp.repositories.PackageRepository;
+import com.swp.repositories.TimeSlotRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +29,7 @@ public class BookingService {
     private final BookingRepository bookingRepository;
     private final PackageRepository packageRepository;
     private final PServiceService pServiceService;
+
 
     @Transactional
     public List<PackageDto> viewListPackage(){
@@ -88,4 +92,7 @@ public class BookingService {
     public Booking findBookingById(Integer bookingId) {
         return bookingRepository.findById(bookingId).orElseThrow(EntityNotFoundException::new);
     }
+
+
+
 }

@@ -7,5 +7,6 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum ESlotStatus {
     AVAILABLE,
-    INTIME
+    INTIME,
+    END
 }
