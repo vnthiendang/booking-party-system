@@ -1,11 +1,7 @@
 package com.swp.cms.controller;
 
-import com.swp.cms.dto.LocationDto;
 import com.swp.cms.dto.PackageCreateDto;
-import com.swp.cms.dto.PackageDto;
-import com.swp.cms.resDto.ApiResponse;
 import com.swp.entity.Package;
-import com.swp.entity.enums.Location;
 import com.swp.exception.PackageAlreadyExistException;
 import com.swp.services.BookingService;
 import com.swp.services.PackageService;
@@ -15,15 +11,14 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
-
-@RestController
+@Controller
 @RequestMapping("/host")
 @RequiredArgsConstructor
 @Slf4j
@@ -33,70 +28,23 @@ public class HostController {
     private final UserService userService;
     private final BookingService bookingService;
 
-    @GetMapping("/locations")
-    public List<LocationDto> getLocations() {
-        return Arrays.stream(Location.values())
-                .map(LocationDto::fromLocation)
-                .collect(Collectors.toList());
-    }
-
-    @PostMapping("/createPackage")
-    public ResponseEntity<ApiResponse> createPackage(@Valid @RequestBody PackageCreateDto dto) {
-
-        try{
-            packageService.createPackage(dto);
-            return ResponseEntity.ok(new ApiResponse("Successfully saved new package!"));
-        } catch (PackageAlreadyExistException e) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(new ApiResponse(e.getMessage()));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ApiResponse("Internal server error"));
+    @PostMapping("/package/create")
+    public ResponseEntity<Package> createPackage(@Valid @RequestBody PackageCreateDto dto, BindingResult result) {
+        if (result.hasErrors()) {
+            log.warn("Package setup failed due to validation errors: {}", result.getAllErrors());
+            return ResponseEntity.badRequest().body(null);
         }
-    }
-    @GetMapping("/packages")
-    public List<PackageDto> listPackages() {
-        Integer hostId = getCurrentHostId();
 
-        return packageService.findAllPackageDtosByHostId(hostId);
-    }
-
-    @GetMapping("/packages/{id}")
-    public PackageDto viewPackageDetails(@PathVariable Integer id) {
-        Integer hostId = getCurrentHostId();
-
-        List<PackageDto> dtoList = packageService.findAllPackageDtosByHostId(hostId);
-
-//        PackageDto dto = packageService.findPackageById(id);
-        PackageDto dto = dtoList.stream()
-                .filter(packageDto -> packageDto.getId().equals(id))
-                .findFirst()
-                .orElse(null);
-
-        return dto;
-    }
-
-    @PutMapping("/editPackage/{id}")
-    public ResponseEntity<ApiResponse> editPackage(@PathVariable Integer id, @Valid @RequestBody PackageDto packageDto) {
         try {
-            Integer hostId = getCurrentHostId();
-            packageDto.setId(id);
-            packageService.updatePackageByUserId(packageDto, hostId);
-
-            return ResponseEntity.ok(new ApiResponse("Successfully updated package!"));
-
+            Package createdPackage = packageService.createPackage(dto);
+            return ResponseEntity.ok(createdPackage);
         } catch (PackageAlreadyExistException e) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(new ApiResponse(e.getMessage()));
+            result.rejectValue("name", "package.exists", e.getMessage());
+            log.warn("Package creation failed: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(null);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
-    }
 
-    @PostMapping("/deletePackage/{id}")
-    public ResponseEntity<ApiResponse> deletePackage(@PathVariable Integer id) {
-        Integer hostId = getCurrentHostId();
-        packageService.deletePackageByIdAndUserId(id, hostId);
-        return ResponseEntity.ok(new ApiResponse("Deleted package successfully!"));
-    }
-
-    private Integer getCurrentHostId() {
-        String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        return userService.findUserByUsername(username).getUsId();
     }
 }

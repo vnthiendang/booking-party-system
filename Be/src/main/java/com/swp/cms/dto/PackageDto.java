@@ -7,6 +7,7 @@ import jakarta.validation.constraints.Pattern;
 import lombok.Builder;
 import lombok.Data;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,17 +17,20 @@ public class PackageDto {
     private Integer id;
 
     @NotBlank(message = "Package name cannot be empty")
-    @Pattern(regexp = "^(?=.*[A-Za-z0-9])[A-Za-z0-9 ]+$", message = "Package name must contain at least one letter or number")
-    private String packageName;
+    @Pattern(regexp = "^(?!\\s*$)[A-Za-z0-9 ]+$", message = "Package name must only contain letters and numbers")
+    private String name;
 
     @Valid
-    private List<Integer> services = new ArrayList<>();
+    private List<ServiceDto> serviceDtos = new ArrayList<>();
 
+    @NotBlank(message = "Package venue cannot be empty")
     private Location venue;
-    private Double price;
 
     private String description;
 
+    private LocalDateTime checkinTime;
+
+    private LocalDateTime checkoutTime;
+
     private Integer capacity;
-    private String hostEmail;
 }

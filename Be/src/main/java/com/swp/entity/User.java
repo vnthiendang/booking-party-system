@@ -1,52 +1,60 @@
 package com.swp.entity;
 
+import com.swp.entity.enums.Roles;
 import com.swp.token.Token;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 
 @Entity
-@NoArgsConstructor
+@RequiredArgsConstructor
 @Builder
 @AllArgsConstructor
+@Table(name = "app_user", uniqueConstraints = {
+        @UniqueConstraint(columnNames = "email")})
 @Getter
 @Setter
 public class User implements UserDetails {
+    public User(Integer usId) {
+        this.usId = usId;
+    }
 
+    public User(String name) {
+        this.display_name = name;
+    }
+
+    @Getter
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private Integer usId;
 
-    @Column(nullable = false)
+    @Column(name = "display_name", nullable = false)
     private String display_name;
 
-    @Column(nullable = false)
+    @Column(name = "phone", nullable = false)
     private String phone;
 
     @NotNull
-    @Column(unique = true, nullable = false)
+    @Column(name = "email", nullable = false)
     private String email;
 
     @NotNull
-    @Column(nullable = false)
+    @Column(name = "password", nullable = false)
     private String password;
-
     @OneToMany(mappedBy = "user")
     private List<Token> tokens;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "role_id", nullable = false)
-    private Role role;
+    @Enumerated(EnumType.STRING)
+    private Roles role_id;
 
     @CreationTimestamp
     private LocalDateTime created_date;
@@ -54,9 +62,7 @@ public class User implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        List<GrantedAuthority> authorities = new ArrayList<>();
-        authorities.add(new SimpleGrantedAuthority("ROLE_" + getRole().getRoleType().name()));
-        return authorities;
+        return role_id.getAuthorities();
     }
 
     @Override

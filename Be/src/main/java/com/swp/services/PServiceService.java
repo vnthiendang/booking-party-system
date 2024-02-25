@@ -3,11 +3,7 @@ package com.swp.services;
 import com.swp.cms.dto.ServiceDto;
 import com.swp.entity.PService;
 import com.swp.entity.Package;
-import com.swp.entity.PackageServiceEntity;
-import com.swp.repositories.PServiceRepository;
 import com.swp.repositories.ServiceRepository;
-import jakarta.persistence.EntityNotFoundException;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -21,7 +17,6 @@ import java.util.stream.Collectors;
 @Slf4j
 public class PServiceService {
     private final ServiceRepository serviceRepository;
-    private final PServiceRepository pServiceRepository;
 
     public List<ServiceDto> getAllServices() {
         List<PService> services = serviceRepository.findAll();
@@ -33,11 +28,6 @@ public class PServiceService {
         service = serviceRepository.save(service);
         log.info("Successfully saved Service with ID: {}", service.getServiceId());
         return service;
-    }
-
-    @Transactional
-    public List<PackageServiceEntity> saveAll(List<PackageServiceEntity> services) {
-        return pServiceRepository.saveAll(services);
     }
 
     public List<PService> saveServices(List<ServiceDto> ServiceDTOs, Package aPackage) {
@@ -52,19 +42,18 @@ public class PServiceService {
     public List<PService> getServicesByIds(List<Integer> serviceIds) {
         return serviceRepository.findAllById(serviceIds);
     }
-    public Optional<ServiceDto> getServicesById(Integer serviceId) {
-        PService pService = serviceRepository.findById(serviceId).orElseThrow(() -> new EntityNotFoundException("Package not found"));
-        return Optional.ofNullable(mapServiceToServiceDto(pService));
+    public Optional<PService> getServicesById(Integer serviceId) {
+        return serviceRepository.findById(serviceId);
     }
 
-    public PService getServiceId(Integer serviceId) {
-        PService pService = serviceRepository.findById(serviceId).orElseThrow(() -> new EntityNotFoundException("Package not found"));
-        return pService;
+    public void deletePackage(Integer id) {
+
     }
 
     public PService mapServiceDtoToService(ServiceDto serviceDTO, Package aPackage) {
         log.debug("Mapping ServiceDTO to Service: {}", serviceDTO);
         PService service = PService.builder()
+                .packageId(aPackage)
                 .serviceType(serviceDTO.getServiceType())
                 .serviceAmount(serviceDTO.getServiceAmount())
                 .price(serviceDTO.getPrice())
@@ -77,13 +66,10 @@ public class PServiceService {
     public ServiceDto mapServiceToServiceDto(PService service) {
         return ServiceDto.builder()
                 .id(service.getServiceId())
+                .packageId(service.getPackageId())
                 .serviceType(service.getServiceType())
                 .serviceAmount(service.getServiceAmount())
-                .serviceImage(service.getServiceImage())
                 .price(service.getPrice())
-                .description(service.getDescription())
-                .serviceName(service.getServiceName())
-
                 .build();
     }
 

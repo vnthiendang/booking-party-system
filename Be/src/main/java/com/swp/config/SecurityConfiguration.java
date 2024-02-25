@@ -2,16 +2,14 @@ package com.swp.config;
 
 import com.swp.security_jwt.AuthTokenFilter;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationProvider;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
@@ -21,10 +19,17 @@ import org.springframework.web.filter.CorsFilter;
 
 import java.util.Arrays;
 
+import static com.swp.entity.enums.Roles.*;
+import static com.swp.token.Permission.*;
+import static org.springframework.http.HttpMethod.GET;
+import static org.springframework.http.HttpMethod.POST;
+import static org.springframework.http.HttpMethod.PUT;
+import static org.springframework.http.HttpMethod.DELETE;
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity
 @RequiredArgsConstructor
 public class SecurityConfiguration {
     private static final String[] WHITE_LIST_URL = {"/booking/auth/**",
@@ -34,14 +39,10 @@ public class SecurityConfiguration {
             "/configuration/security",
             "/swagger-ui/**",
             "/webjars/**",
-            "/swagger-ui.html",
-            "/host/**",
-            "/booking/**"
-    };
+            "/swagger-ui.html"};
     private final AuthTokenFilter jwtAuthFilter;
     private final AuthenticationProvider authenticationProvider;
     private final LogoutHandler logoutHandler;
-    private final UserDetailsService userDetailsService;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -51,9 +52,9 @@ public class SecurityConfiguration {
                 .authorizeHttpRequests(req ->
                         req.requestMatchers(WHITE_LIST_URL)
                                 .permitAll()
-                                .requestMatchers("/host/**").hasRole("HOST")
                                 .requestMatchers("/admin/**").hasRole("ADMIN")
-                                .requestMatchers("/customer/**", "/booking/**").hasRole("CUSTOMER")
+                                .requestMatchers("/customer/**").hasRole("CUSTOMER")
+                                .requestMatchers("/host/**", "/booking/**").hasRole("HOST")
                                 .anyRequest()
                                 .authenticated()
                 )
@@ -72,13 +73,8 @@ public class SecurityConfiguration {
     @Bean
     public CorsFilter corsFilter() {
         CorsConfiguration configuration = new CorsConfiguration();
-
-        configuration.setAllowedOriginPatterns(Arrays.asList(
-                "http://127.0.0.1:5501",
-                "http://localhost:5501"
-        ));
-
-        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH"));
+        configuration.setAllowedOriginPatterns(Arrays.asList("http://127.0.0.1:5501")); // Specify the allowed origin patterns
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE"));
         configuration.setAllowedHeaders(Arrays.asList("*"));
         configuration.setAllowCredentials(true);
 
@@ -86,11 +82,5 @@ public class SecurityConfiguration {
         source.registerCorsConfiguration("/**", configuration);
 
         return new CorsFilter(source);
-    }
-
-    @Autowired
-    public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
-        auth
-                .userDetailsService(userDetailsService);
     }
 }

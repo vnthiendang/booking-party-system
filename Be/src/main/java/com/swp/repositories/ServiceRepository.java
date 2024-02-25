@@ -6,5 +6,5 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface ServiceRepository extends JpaRepository<PService, Integer> {
+public interface ServiceRepository extends JpaRepository<PService, Integer>, JpaSpecificationExecutor<PService> {
 }
