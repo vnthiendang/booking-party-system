@@ -1,5 +1,6 @@
 package com.swp.services;
 
+import com.swp.cms.dto.BookingDto;
 import com.swp.cms.dto.PackageDto;
 import com.swp.cms.dto.ServiceDto;
 import com.swp.entity.Booking;
@@ -92,7 +93,15 @@ public class BookingService {
     public Booking findBookingById(Integer bookingId) {
         return bookingRepository.findById(bookingId).orElseThrow(EntityNotFoundException::new);
     }
-
+    public boolean isPackageBookedInDateRange(BookingDto bookingDto){
+        if(bookingDto.getStartTime().compareTo(bookingDto.getEndTime()) > 0)
+            throw new IllegalArgumentException("Start date must before end date");
+        Integer packageId = bookingDto.getPackagesId();
+        Date startDate = bookingDto.getStartTime();
+        Date endDate = bookingDto.getEndTime();
+        List<Booking> bookingList = bookingRepository.findByDateRangeOverlap(startDate , endDate , packageId);
+        return bookingList != null && !bookingList.isEmpty();
+    }
 
 
 }

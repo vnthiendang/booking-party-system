@@ -128,7 +128,7 @@ public class BookingController {
 
             Package aPackage = packageService.getById(bookReservationDto.getPackagesId());
 
-            // Kiểm tra và cập nhật trạng thái của các TimeSlot
+            /*// Kiểm tra và cập nhật trạng thái của các TimeSlot
             List<TimeSlot> timeSlots = aPackage.getTimeSlots();
             Date startTime = bookReservationDto.getStartTime();
             Date endTime = bookReservationDto.getEndTime();
@@ -140,7 +140,7 @@ public class BookingController {
                     slot.setStatus(ESlotStatus.END);
                     timeSlotService.updateTimeSlot(slot); // Cập nhật trạng thái của TimeSlot
                 }
-            }
+            }*/
             // Check if party size is greater than package capacity
             if (bookReservationDto.getPartySize() > aPackage.getCapacity()) {
                 throw new BadRequestException("Party size is greater than package capacity");
@@ -231,6 +231,13 @@ public class BookingController {
             return makeResponse(false, "An error occurred during fetching booking", e.getMessage());
         }
 
+    }
+    @PostMapping("/checkPackageAvailableInDateRange")
+    public ResponseEntity<Boolean> checkPackageAvailableInDateRange(@Valid @RequestBody BookingDto bookingDto){
+        try {
+            return ResponseEntity.ok(bookingService.isPackageBookedInDateRange(bookingDto));
+        }catch (IllegalArgumentException exception){}
+        return ResponseEntity.badRequest().body(null);
     }
 
 }
