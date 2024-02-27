@@ -88,16 +88,7 @@ public class BookingController {
         return apiMessageDto;
     }
 
-    @GetMapping("/package/{packageId}")
-    public ResponseEntity<PackageDto> getPackageDetails(@PathVariable Integer packageId) {
-        Optional<PackageDto> packageDtoOptional = bookingService.findPackageById(packageId);
 
-        if (packageDtoOptional.isPresent()) {
-            return new ResponseEntity<>(packageDtoOptional.get(), HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-    }
     @GetMapping("package{packageId}")
     public ResponseEntity<PackageDto> getPackageDetail(@PathVariable Integer packageId){
         Optional<PackageDto> packageDtoOptional = bookingService.findPackageById(packageId);
