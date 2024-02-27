@@ -15,24 +15,7 @@ import java.util.List;
 @Slf4j
 public class TimeSlotService {
     private final TimeSlotRepository timeSlotRepository;
-    @Transactional
-    public void updateSlotStatus(Integer packageId, Date startTime, Date endTime) {
-        List<TimeSlot> timeSlots = timeSlotRepository.findByPackagesIdAndStartGreaterThanEqualAndEndLessThanEqual(packageId, startTime, endTime);
-        for (TimeSlot slot : timeSlots) {
-            slot.setStatus(ESlotStatus.END);
-        }
-        timeSlotRepository.saveAll(timeSlots);
-    }
 
-    public boolean isSlotAvailable(Integer packageId, Date startTime, Date endTime) {
-        List<TimeSlot> timeSlots = timeSlotRepository.findByPackagesIdAndStartGreaterThanEqualAndEndLessThanEqual(packageId, startTime, endTime);
-        for (TimeSlot slot : timeSlots) {
-            if (slot.getStatus() == ESlotStatus.END) {
-                return false;
-            }
-        }
-        return true;
-    }
     @Transactional
     public void updateTimeSlot(TimeSlot timeSlot) {
         timeSlotRepository.save(timeSlot);

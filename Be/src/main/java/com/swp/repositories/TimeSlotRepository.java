@@ -10,5 +10,5 @@ import java.util.List;
 @Repository
 public interface TimeSlotRepository extends JpaRepository<TimeSlot, Integer> {
 
-    List<TimeSlot> findByPackagesIdAndStartGreaterThanEqualAndEndLessThanEqual(Integer packageId, Date startTime, Date endTime);
+//    List<TimeSlot> findByPackagesIdAndStartGreaterThanEqualAndEndLessThanEqual(Integer packageId, Date startTime, Date endTime);
 }

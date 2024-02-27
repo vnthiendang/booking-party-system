@@ -40,26 +40,12 @@ public class PServiceService {
         return pServiceRepository.saveAll(services);
     }
 
-    public List<PService> saveServices(List<ServiceDto> ServiceDTOs, Package aPackage) {
-        log.info("Attempting to save Services: {}", ServiceDTOs);
-        List<PService> Services = ServiceDTOs.stream()
-                .map(ServiceDTO -> saveService(ServiceDTO, aPackage)) // save each Service
-                .collect(Collectors.toList());
-        log.info("Successfully saved Services: {}", Services);
-        return Services;
-    }
-
     public List<PService> getServicesByIds(List<Integer> serviceIds) {
         return serviceRepository.findAllById(serviceIds);
     }
     public Optional<ServiceDto> getServicesById(Integer serviceId) {
         PService pService = serviceRepository.findById(serviceId).orElseThrow(() -> new EntityNotFoundException("Package not found"));
         return Optional.ofNullable(mapServiceToServiceDto(pService));
-    }
-
-    public PService getServiceId(Integer serviceId) {
-        PService pService = serviceRepository.findById(serviceId).orElseThrow(() -> new EntityNotFoundException("Package not found"));
-        return pService;
     }
 
     public PService mapServiceDtoToService(ServiceDto serviceDTO, Package aPackage) {

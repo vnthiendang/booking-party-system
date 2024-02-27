@@ -40,13 +40,13 @@ public class Package {
     @OneToMany(mappedBy = "packages", cascade = CascadeType.ALL)
     private List<PackageServiceEntity> pServices = new ArrayList<>();
 
+    @OneToMany(mappedBy = "packages", cascade = CascadeType.ALL)
+    private List<PackageSlot> timeSlots = new ArrayList<>();
+
     @OneToMany(mappedBy = "packages")
     private List<Booking> bookings = new ArrayList<>();
 
     @ManyToOne
     @JoinColumn(name = "hostId",nullable = false)
     private User userId;
-
-    @OneToMany(mappedBy = "packages")
-    private List<TimeSlot> timeSlots = new ArrayList<>();
 }
