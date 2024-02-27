@@ -98,6 +98,17 @@ public class BookingController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
+    @GetMapping("package{packageId}")
+    public ResponseEntity<PackageDto> getPackageDetail(@PathVariable Integer packageId){
+        Optional<PackageDto> packageDtoOptional = bookingService.findPackageById(packageId);
+        if(packageDtoOptional.isPresent()){
+            return new ResponseEntity<>(packageDtoOptional.get(), HttpStatus.OK);
+
+        }
+        else{
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
 
     @GetMapping("service/{serviceId}")
     public ResponseEntity<ServiceDto> getServiceDetails(@PathVariable Integer serviceId) {
@@ -202,7 +213,7 @@ public class BookingController {
         try {
             Booking reservation = bookingService.getByUserIdAndPackageId(reservationUpdateDto.getUserId(), reservationUpdateDto.getPackageId());
             if (reservation == null) {
-                throw new BadRequestException("Booking does not exist");
+                throw new BadRequestException("Booking not exit");
             }
             if (Boolean.TRUE.equals(bookingService.isValidStatus(reservationUpdateDto.getStatus()))) {
                 throw new BadRequestException("Invalid status");
@@ -211,7 +222,7 @@ public class BookingController {
             Booking updatedReservation = bookingService.addReservation(reservation);
             return makeResponse(true, mapper.fromEntityToBookingDto(updatedReservation), "Booking updated successfully");
         }catch (Exception e){
-            return makeResponse(false, "An error occurred during updating status", e.getMessage());
+            return makeResponse(false, " Error, occurred during updating status", e.getMessage());
         }
     }
 

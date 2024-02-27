@@ -95,7 +95,7 @@ public class BookingService {
     }
     public boolean isPackageBookedInDateRange(BookingDto bookingDto){
         if(bookingDto.getStartTime().compareTo(bookingDto.getEndTime()) > 0)
-            throw new IllegalArgumentException("Start date must before end date");
+            throw new IllegalArgumentException("StartDate must before EndDate and not equal");
         Integer packageId = bookingDto.getPackagesId();
         Date startDate = bookingDto.getStartTime();
         Date endDate = bookingDto.getEndTime();
