@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -29,5 +30,9 @@ public class PackageSlotService {
 
     public List<TimeSlot> getSlotsById(List<Integer> slotIds) {
         return timeSlotRepository.findAllById(slotIds);
+    }
+
+    public List<PackageSlot> getAllByPackageIdAndDate(Integer packageId, Date date){
+       return packageSlotRepository.findAllByPackagesIdAndBookingTime(packageId, date);
     }
 }

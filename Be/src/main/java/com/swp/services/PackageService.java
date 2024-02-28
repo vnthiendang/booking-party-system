@@ -103,6 +103,7 @@ public class PackageService {
                 .services(serviceIds)
                 .price(packages.getPrice())
                 .hostEmail(packages.getUserId().getUsername())
+                .status(packages.getStatus().name())
                 .build();
     }
 

@@ -1,6 +1,7 @@
 package com.swp.services;
 
 import com.swp.cms.dto.BookingDto;
+import com.swp.cms.dto.CheckSlotDto;
 import com.swp.cms.dto.PackageDto;
 import com.swp.cms.dto.ServiceDto;
 import com.swp.entity.Booking;
@@ -93,7 +94,7 @@ public class BookingService {
     public Booking findBookingById(Integer bookingId) {
         return bookingRepository.findById(bookingId).orElseThrow(EntityNotFoundException::new);
     }
-    public boolean isPackageBookedInDateRange(BookingDto bookingDto){
+    public boolean isPackageBookedInDateRange(CheckSlotDto bookingDto){
         if(bookingDto.getStartTime().compareTo(bookingDto.getEndTime()) > 0)
             throw new IllegalArgumentException("StartDate must before EndDate and not equal");
         Integer packageId = bookingDto.getPackagesId();

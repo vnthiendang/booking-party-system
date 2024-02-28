@@ -50,4 +50,7 @@ public class Booking {
     @Column(name = "status")
     private EBookingStatus status;
 
+    @OneToMany(mappedBy = "booking", cascade = CascadeType.ALL)
+    private List<BookingPackageService> bookingPackageService = new ArrayList<>();
+
 }

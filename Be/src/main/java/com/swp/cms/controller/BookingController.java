@@ -1,9 +1,6 @@
 package com.swp.cms.controller;
 
-import com.swp.cms.dto.BookedServiceDto;
-import com.swp.cms.dto.BookingDto;
-import com.swp.cms.dto.PackageDto;
-import com.swp.cms.dto.ServiceDto;
+import com.swp.cms.dto.*;
 import com.swp.cms.mapper.BookingMapper;
 import com.swp.cms.reqDto.AvailablePackageAtTimeDto;
 import com.swp.cms.reqDto.BookingUpdateDto;
@@ -88,13 +85,11 @@ public class BookingController {
         return apiMessageDto;
     }
 
-
-    @GetMapping("package{packageId}")
+    @GetMapping("package/{packageId}")
     public ResponseEntity<PackageDto> getPackageDetail(@PathVariable Integer packageId){
         Optional<PackageDto> packageDtoOptional = bookingService.findPackageById(packageId);
         if(packageDtoOptional.isPresent()){
             return new ResponseEntity<>(packageDtoOptional.get(), HttpStatus.OK);
-
         }
         else{
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -130,19 +125,6 @@ public class BookingController {
 
             Package aPackage = packageService.getById(bookReservationDto.getPackagesId());
 
-            /*// Kiểm tra và cập nhật trạng thái của các TimeSlot
-            List<TimeSlot> timeSlots = aPackage.getTimeSlots();
-            Date startTime = bookReservationDto.getStartTime();
-            Date endTime = bookReservationDto.getEndTime();
-            for (TimeSlot slot : timeSlots) {
-                if (slot.getStart().compareTo(startTime) >= 0 && slot.getEnd().compareTo(endTime) <= 0) {
-                    if (slot.getStatus() != ESlotStatus.AVAILABLE) {
-                        throw new BadRequestException("Selected time is not available");
-                    }
-                    slot.setStatus(ESlotStatus.END);
-                    timeSlotService.updateTimeSlot(slot); // Cập nhật trạng thái của TimeSlot
-                }
-            }*/
             // Check if party size is greater than package capacity
             if (bookReservationDto.getPartySize() > aPackage.getCapacity()) {
                 throw new BadRequestException("Party size is greater than package capacity");
@@ -199,9 +181,9 @@ public class BookingController {
     }
 
     @PostMapping("/checkPackageAvailableInDateRange")
-    public ResponseEntity<Boolean> checkPackageAvailableInDateRange(@Valid @RequestBody BookingDto bookingDto){
+    public ResponseEntity<Boolean> checkPackageAvailableInDateRange(@Valid @RequestBody CheckSlotDto dto){
         try {
-            return ResponseEntity.ok(bookingService.isPackageBookedInDateRange(bookingDto));
+            return ResponseEntity.ok(bookingService.isPackageBookedInDateRange(dto));
         }catch (IllegalArgumentException exception){}
         return ResponseEntity.badRequest().body(null);
     }

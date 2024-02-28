@@ -29,4 +29,5 @@ public class PackageDto {
 
     private Integer capacity;
     private String hostEmail;
+    private String status;
 }

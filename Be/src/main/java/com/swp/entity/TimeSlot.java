@@ -24,8 +24,8 @@ public class TimeSlot {
     private Date start;
     @Column(name = "end_time")
     private Date end;
-
-    @OneToMany(mappedBy = "timeSlot", cascade = CascadeType.ALL)
-    private List<PackageSlot> packageSlots = new ArrayList<>();
+//
+//    @OneToMany(mappedBy = "timeSlot", cascade = CascadeType.ALL)
+//    private List<PackageSlot> packageSlots = new ArrayList<>();
 
 }
