@@ -6,14 +6,13 @@ import com.swp.cms.reqDto.AvailablePackageAtTimeDto;
 import com.swp.cms.reqDto.BookingUpdateDto;
 import com.swp.cms.resDto.ApiMessageDto;
 import com.swp.cms.resDto.GetAvailablePackageResDto;
-import com.swp.entity.*;
 import com.swp.entity.Package;
+import com.swp.entity.*;
 import com.swp.entity.enums.EBookingStatus;
 import com.swp.entity.enums.EPackageStatus;
-import com.swp.entity.enums.ESlotStatus;
+import com.swp.entity.enums.EPaymentStatus;
 import com.swp.exception.BadRequestException;
 import com.swp.services.*;
-import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -39,6 +38,7 @@ public class BookingController {
     private final BookingService bookingService;
     private final PackageService packageService;
     private final PServiceService pserviceService;
+    private final TimeSlotService timeSlotService;
 
     @Autowired
     private BookingMapper mapper;
@@ -85,11 +85,13 @@ public class BookingController {
         return apiMessageDto;
     }
 
+
     @GetMapping("package/{packageId}")
     public ResponseEntity<PackageDto> getPackageDetail(@PathVariable Integer packageId){
         Optional<PackageDto> packageDtoOptional = bookingService.findPackageById(packageId);
         if(packageDtoOptional.isPresent()){
             return new ResponseEntity<>(packageDtoOptional.get(), HttpStatus.OK);
+
         }
         else{
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -136,6 +138,7 @@ public class BookingController {
             reservation.setPackages(aPackage);
             reservation.setCustomer(user);
             reservation.setStatus(EBookingStatus.PENDING);
+            reservation.setPaymentStatus(EPaymentStatus.NOT_PAID);
             reservation.setBookingDate(new Date());
             reservation.setPartySize(bookReservationDto.getPartySize());
             aPackage.setStatus(EPackageStatus.BOOKED);
@@ -180,12 +183,54 @@ public class BookingController {
         }
     }
 
-    @PostMapping("/checkPackageAvailableInDateRange")
-    public ResponseEntity<Boolean> checkPackageAvailableInDateRange(@Valid @RequestBody CheckSlotDto dto){
+
+    // Update reservation status
+    @PostMapping("/update")
+    public ApiMessageDto<Object> updateReservationStatus(@Valid @RequestBody BookingUpdateDto reservationUpdateDto) {
         try {
-            return ResponseEntity.ok(bookingService.isPackageBookedInDateRange(dto));
+            Booking reservation = bookingService.getByUserIdAndPackageId(reservationUpdateDto.getUserId(), reservationUpdateDto.getPackageId());
+            if (reservation == null) {
+                throw new BadRequestException("Booking not exit");
+            }
+            if (Boolean.TRUE.equals(bookingService.isValidStatus(reservationUpdateDto.getStatus()))) {
+                throw new BadRequestException("Invalid status");
+            }
+            reservation.setStatus(EBookingStatus.valueOf(reservationUpdateDto.getStatus()));
+            Booking updatedReservation = bookingService.addReservation(reservation);
+            return makeResponse(true, mapper.fromEntityToBookingDto(updatedReservation), "Booking updated successfully");
+        }catch (Exception e){
+            return makeResponse(false, " Error, occurred during updating status", e.getMessage());
+        }
+    }
+
+    @GetMapping("/getByDate")
+    public ApiMessageDto<Object> getBookingByDate(@RequestParam String dateStr) {
+
+        try {
+            String dateFormat = "dd-MM-yyyy";
+            DateFormat formatter = new SimpleDateFormat(dateFormat);
+            try {
+                Date date = formatter.parse(dateStr);
+                return makeResponse(true, mapper.fromEntityToReservationDtoList(bookingService.getAllByDate(date)), "Booking retrieved successfully");
+            } catch (Exception e) {
+                throw new BadRequestException("Invalid date format");
+            }
+        }catch (Exception e){
+            return makeResponse(false, "An error occurred during fetching booking", e.getMessage());
+        }
+
+    }
+    @PostMapping("/checkPackageAvailableInDateRange")
+    public ResponseEntity<Boolean> checkPackageAvailableInDateRange(@Valid @RequestBody CheckSlotDto bookingDto){
+        try {
+            return ResponseEntity.ok(bookingService.isPackageBookedInDateRange(bookingDto));
         }catch (IllegalArgumentException exception){}
         return ResponseEntity.badRequest().body(null);
+    }
+    @GetMapping("/history/{userId}")
+    public ResponseEntity<List<Object[]>> getBookingHistoryForCustomer(@PathVariable Integer userId) {
+        List<Object[]> bookingHistory = bookingService.getBookingHistoryForCustomer(userId);
+        return ResponseEntity.ok(bookingHistory);
     }
 
 }

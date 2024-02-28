@@ -1,7 +1,7 @@
 import { Box, Button, Stack } from "@mui/material";
 import React from "react";
 import { logo } from "../asset";
-const pages = ["Products", "Package", "Blog"];
+const pages = ["Package"];
 const HeaderWeb = () => {
   const [anchorElNav, setAnchorElNav] = React.useState(null);
 

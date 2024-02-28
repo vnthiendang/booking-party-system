@@ -31,7 +31,7 @@ export const convertpackagagesList = (array) => {
     name: item?.hostEmail,
     company: item?.packageName,
     isVerified: faker.datatype.boolean(),
-    status: sample(["active", "banned"]),
+    status: item?.status,
     venue: item?.venue,
     description: item?.description,
     capacity: item?.capacity,

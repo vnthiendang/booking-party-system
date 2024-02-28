@@ -4,4 +4,19 @@ import bgFullbox from "./img/bg-boxes-full.png";
 import pizzaImg from "./img/traditional-cheese-pizza.png";
 import PartyImg from "./img/party_img.jpg";
 import giftImg from "./img/gift.jpg";
-export { logo, discountImg, bgFullbox, pizzaImg, PartyImg, giftImg };
+import Step1 from "./img/birthday1.jpeg";
+import Step2 from "./img/birthday2.jpeg";
+import Step3 from "./img/birthday2.jpeg";
+import Step4 from "./img/fruit-platter.png";
+export {
+  logo,
+  discountImg,
+  bgFullbox,
+  pizzaImg,
+  PartyImg,
+  giftImg,
+  Step1,
+  Step2,
+  Step3,
+  Step4,
+};

@@ -2,7 +2,6 @@ package com.swp.services;
 
 import com.swp.cms.dto.ServiceDto;
 import com.swp.entity.PService;
-import com.swp.entity.Package;
 import com.swp.entity.PackageServiceEntity;
 import com.swp.repositories.PServiceRepository;
 import com.swp.repositories.ServiceRepository;
@@ -27,13 +26,6 @@ public class PServiceService {
         List<PService> services = serviceRepository.findAll();
         return mapServicesToServiceDtos(services);
     }
-    public PService saveService(ServiceDto serviceDTO, Package aPackage) {
-        log.info("Attempting to save a new Service: {}", serviceDTO);
-        PService service = mapServiceDtoToService(serviceDTO, aPackage);
-        service = serviceRepository.save(service);
-        log.info("Successfully saved Service with ID: {}", service.getServiceId());
-        return service;
-    }
 
     @Transactional
     public List<PackageServiceEntity> saveAll(List<PackageServiceEntity> services) {
@@ -46,18 +38,6 @@ public class PServiceService {
     public Optional<ServiceDto> getServicesById(Integer serviceId) {
         PService pService = serviceRepository.findById(serviceId).orElseThrow(() -> new EntityNotFoundException("Package not found"));
         return Optional.ofNullable(mapServiceToServiceDto(pService));
-    }
-
-    public PService mapServiceDtoToService(ServiceDto serviceDTO, Package aPackage) {
-        log.debug("Mapping ServiceDTO to Service: {}", serviceDTO);
-        PService service = PService.builder()
-                .serviceType(serviceDTO.getServiceType())
-                .serviceAmount(serviceDTO.getServiceAmount())
-                .price(serviceDTO.getPrice())
-                .build();
-        log.debug("Mapped Service: {}", service);
-        return service;
-
     }
 
     public ServiceDto mapServiceToServiceDto(PService service) {

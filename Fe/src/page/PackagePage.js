@@ -12,7 +12,15 @@ import {
   Typography,
 } from "@mui/material";
 import "./../style/style.css";
-import { discountImg, bgFullbox, pizzaImg } from "../asset";
+import {
+  discountImg,
+  bgFullbox,
+  pizzaImg,
+  Step1,
+  Step2,
+  Step3,
+  Step4,
+} from "../asset";
 import { useNavigate } from "react-router-dom";
 import { ROUTER } from "../util";
 import { ServiceApi } from "../api";
@@ -329,12 +337,13 @@ venue :"ThuDuc"
 };
 
 const CardStepBooking = ({ item, index }) => {
+  const listImg = [Step1, Step2, Step3, Step4];
   return (
     <Grid item xs={4}>
       <Card sx={{ maxWidth: 345, background: "#240044", color: "white" }}>
         <CardMedia
-          sx={{ height: 189, background: "black" }}
-          image="https://picsum.photos/id/237/200/300"
+          sx={{ height: 189, background: "black", objectFit: "contain" }}
+          image={listImg[index]}
           title="green iguana"
         />
         <CardContent>

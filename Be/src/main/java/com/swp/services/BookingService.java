@@ -104,5 +104,8 @@ public class BookingService {
         return bookingList != null && !bookingList.isEmpty();
     }
 
+    public List<Object[]> getBookingHistoryForCustomer(Integer userId) {
+        return bookingRepository.findBookingHistoryForCustomer(userId);
+    }
 
 }

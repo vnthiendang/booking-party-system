@@ -102,15 +102,7 @@ export default function UserPage() {
         justifyContent="space-between"
         mb={5}
       >
-        <Typography variant="h4">Users</Typography>
-
-        <Button
-          variant="contained"
-          color="inherit"
-          startIcon={<Iconify icon="eva:plus-fill" />}
-        >
-          New User
-        </Button>
+        <Typography variant="h4">Bookings</Typography>
       </Stack>
 
       <Card>
@@ -133,7 +125,7 @@ export default function UserPage() {
                 headLabel={[
                   { id: "name", label: "Name" },
                   { id: "company", label: "Company" },
-                  { id: "role", label: "Role" },
+                  // { id: "role", label: "Role" },
                   { id: "isVerified", label: "Verified", align: "center" },
                   { id: "status", label: "Status" },
                   { id: "" },

@@ -9,14 +9,14 @@ export const ROUTER_API = {
 export const ROUTER = {
   EVENT: "/event/:id",
   PACKAGE: "/",
-  USER: "/user",
+  USER: "/booking",
   PRODUCT: "/products",
   AUTH: "/auth",
   BLOG: "/blog",
   PACKAGE_HOST: "/package",
   CREATE_PACKAGE_BY_HOST: "/package_crud",
   EDIT_PACKAGE_BY_HOST: "/edit_package/:id",
-  REVENUE_ADMIN: "/revenueAdmin",
+  REVENUE: "/revenue",
   REGISTER: "/register",
 };
 

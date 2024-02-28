@@ -17,11 +17,13 @@ export const routers = [
   {
     path: ROUTER.PACKAGE,
     element: <PackagePage />,
+    auth: true,
   },
 
   {
     path: ROUTER.EVENT,
     element: <EventPage />,
+    auth: true,
   },
   {
     path: ROUTER.USER,
@@ -58,7 +60,7 @@ export const routers = [
     element: <LoginPage />,
   },
   {
-    path: ROUTER.REVENUE_ADMIN,
+    path: ROUTER.REVENUE,
     element: <RevenueAdminPage />,
   },
   {

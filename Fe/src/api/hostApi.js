@@ -27,4 +27,8 @@ export default class hostApi extends Api {
     const url = `${this.HOSTNAME}${this.table}/packages/${id}`;
     return axiosClient.get(url);
   }
+  ChangeStatus(body) {
+    const url = `${this.HOSTNAME}${this.table}/changeStatus`;
+    return axiosClient.post(url, body);
+  }
 }

@@ -1,6 +1,7 @@
 package com.swp.entity;
 
 import com.swp.entity.enums.EBookingStatus;
+import com.swp.entity.enums.EPaymentStatus;
 import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -49,6 +50,10 @@ public class Booking {
     @Enumerated(EnumType.STRING)
     @Column(name = "status")
     private EBookingStatus status;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "payment_status")
+    private EPaymentStatus paymentStatus;
 
     @OneToMany(mappedBy = "booking", cascade = CascadeType.ALL)
     private List<BookingPackageService> bookingPackageService = new ArrayList<>();
