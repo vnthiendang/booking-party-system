@@ -17,7 +17,7 @@ public interface PackageRepository extends JpaRepository<Package, Integer> {
 
     Optional<Package> findByIdAndUserId_UsId(Integer id, Integer userId);
 
-    @Query("SELECT DISTINCT p FROM Package p LEFT JOIN FETCH p.pServices ps LEFT JOIN FETCH ps.service")
+    @Query("SELECT DISTINCT p FROM Package p LEFT JOIN FETCH p.pServices ps LEFT JOIN FETCH ps.service where p.status = 'ON'")
     List<Package> findAllPackagesWithServices();
 
 

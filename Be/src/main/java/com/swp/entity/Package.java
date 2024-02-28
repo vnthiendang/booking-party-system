@@ -1,5 +1,6 @@
 package com.swp.entity;
 
+import com.swp.entity.enums.EPackageStatus;
 import com.swp.entity.enums.Location;
 import jakarta.persistence.*;
 import lombok.*;
@@ -36,6 +37,10 @@ public class Package {
         this.venue = venue;
         this.price = venue.getPrice();
     }
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "package_status")
+    private EPackageStatus status;
 
     @OneToMany(mappedBy = "packages", cascade = CascadeType.ALL)
     private List<PackageServiceEntity> pServices = new ArrayList<>();

@@ -4,10 +4,10 @@ import com.swp.cms.dto.PackageCreateDto;
 import com.swp.cms.dto.PackageDto;
 import com.swp.cms.dto.ServiceDto;
 import com.swp.cms.mapper.PackageMapper;
-import com.swp.entity.PService;
+import com.swp.entity.*;
 import com.swp.entity.Package;
-import com.swp.entity.PackageServiceEntity;
-import com.swp.entity.User;
+import com.swp.entity.enums.EBookingStatus;
+import com.swp.entity.enums.EPackageStatus;
 import com.swp.entity.enums.Location;
 import com.swp.exception.PackageAlreadyExistException;
 import com.swp.repositories.PServiceRepository;
@@ -50,7 +50,7 @@ public class PackageService {
         aPackage.setVenueWithPrice(createDto.getVenue());
         aPackage.setCapacity(createDto.getCapacity());
         aPackage.setPackageName(createDto.getName());
-        //aPackage.setPrice(createDto.getVenue().getPrice());
+        aPackage.setStatus(EPackageStatus.OFF);
         aPackage.setDescription(createDto.getDescription());
 
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
@@ -112,12 +112,20 @@ public class PackageService {
 
     public Boolean isBooked(Integer id) {
         Package table = packageRepository.findById(id).orElse(null);
-        if (table == null) {
-            throw new EntityNotFoundException();
+        return table.getStatus().name().equals("BOOKED");
+    }
+
+    public Boolean isValidStatus(String status) {
+        for (EPackageStatus e : EPackageStatus.values()) {
+            if (e.name().equals(status)) {
+                return true;
+            }
         }
         return false;
     }
-    
+    public Package savePackage(Package packages) {
+        return packageRepository.save(packages);
+    }
     public Optional<Package> findPackageById(Integer id) {
         return packageRepository.findById(id);
     }
@@ -174,8 +182,13 @@ public class PackageService {
 
     @Transactional
     public void updatePackageByUserId(PackageDto updateDto, Integer userId) {
+
         Package existingPackage = packageRepository.findByIdAndUserId_UsId(updateDto.getId(), userId)
                 .orElseThrow(() -> new EntityNotFoundException("Package not found"));
+
+        if (existingPackage.getStatus().equals(EPackageStatus.BOOKED)) {
+            throw new PackageAlreadyExistException("This package is being booked by customer, can not be edited!");
+        }
 
         if (!existingPackage.getPackageName().equals(updateDto.getPackageName())) {
             Optional<Package> existingPackageWithName = packageRepository.findByPackageName(updateDto.getPackageName());
@@ -189,6 +202,7 @@ public class PackageService {
         existingPackage.setDescription(updateDto.getDescription());
         existingPackage.setVenueWithPrice(updateDto.getVenue());
         existingPackage.setCapacity(updateDto.getCapacity());
+        existingPackage.setStatus(EPackageStatus.OFF);
 
         // Validate the number of services
         if (!validateNumberOfServices(updateDto.getServices())) {
@@ -222,14 +236,13 @@ public class PackageService {
         packageRepository.save(existingPackage);
     }
 
-
-
-
-
     public void deletePackageByIdAndUserId(Integer packageId, Integer userId) {
-        Package Package = packageRepository.findByIdAndUserId_UsId(packageId, userId)
+        Package packages = packageRepository.findByIdAndUserId_UsId(packageId, userId)
                 .orElseThrow(() -> new EntityNotFoundException("Package not found"));
-        packageRepository.delete(Package);
+        if (packages.getStatus().equals(EPackageStatus.BOOKED)) {
+            throw new PackageAlreadyExistException("This package is being booked by customer, can not be deleted!");
+        }
+        packageRepository.delete(packages);
         log.info("Successfully deleted Package with ID: {} for Host ID: {}", packageId, userId);
     }
 

@@ -65,7 +65,7 @@ public class BookingService {
 
     public Boolean isValidStatus(String status) {
         for (EBookingStatus e : EBookingStatus.values()) {
-            if (e.equals(status)) {
+            if (e.name().equals(status)) {
                 return true;
             }
         }

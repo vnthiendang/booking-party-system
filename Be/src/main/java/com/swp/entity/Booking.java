@@ -1,6 +1,7 @@
 package com.swp.entity;
 
 import com.swp.entity.enums.EBookingStatus;
+import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -42,6 +43,8 @@ public class Booking {
 
     @Column(name = "party_size")
     private int partySize;
+    @Column(nullable = true)
+    private Double totalCost;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status")
