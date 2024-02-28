@@ -7,10 +7,11 @@ import { PartyImg } from "../../asset";
 import { useParams } from "react-router-dom";
 import { ServiceApi } from "../../api";
 
-const timeZoneList = ["10:00am", "12:00pm", "2:00pm", "4:00pm", "6:00pm"];
-const SelectDate = () => {
+const timeZoneList = ["7:00am", "1:00pm", "6:00pm"];
+const SelectDate = ({ handleNext }) => {
   const params = useParams();
   const [packageDetail, setPackageDetail] = useState(null);
+  const [dateValue, setDateValue] = useState("");
   const getPackagedetail = async (id) => {
     try {
       const res = await ServiceApi.getPackageDetailByCustomer(id);
@@ -27,6 +28,52 @@ const SelectDate = () => {
     }
   }, [params.id]);
 
+  const checkTime = async (index) => {
+    let startTime = new Date();
+    let ednTime = new Date();
+    if (index === 0) {
+      // startTime = '2024-02-29 07:00:00';
+      // ednTime = '2024-02-29 07:00:00';
+      startTime.setUTCHours(7);
+      startTime.setMinutes(0);
+      ednTime.setUTCHours(11);
+      ednTime.setMinutes(0);
+    }
+    if (index === 1) {
+      // startTime = '2024-02-29 07:00:00';
+      // ednTime = '2024-02-29 07:00:00';
+      startTime.setUTCHours(13);
+      startTime.setMinutes(0);
+      ednTime.setUTCHours(17);
+      ednTime.setMinutes(0);
+    }
+    if (index === 1) {
+      // startTime = '2024-02-29 07:00:00';
+      // ednTime = '2024-02-29 07:00:00';
+      startTime.setUTCHours(18);
+      startTime.setMinutes(0);
+      ednTime.setUTCHours(22);
+      ednTime.setMinutes(0);
+    }
+
+    const res = await ServiceApi.checkTime({
+      packagesId: 8,
+      startTime: new Date(
+        startTime.toLocaleString("en-US", { timeZone: "Asia/Ho_Chi_Minh" })
+      )
+        .toISOString()
+        .replace(/\.\d{3}Z$/, ""),
+      endTime: new Date(
+        ednTime.toLocaleString("en-US", { timeZone: "Asia/Ho_Chi_Minh" })
+      )
+        .toISOString()
+        .replace(/\.\d{3}Z$/, ""),
+    });
+    if (res.data === false) {
+      handleNext();
+    }
+  };
+
   return (
     <LocalizationProvider dateAdapter={AdapterMoment}>
       <div>
@@ -36,7 +83,10 @@ const SelectDate = () => {
             margin: "10px 0",
           }}
         >
-          <DatePicker />
+          <DatePicker
+            value={dateValue}
+            onChange={(value) => setDateValue(value)}
+          />
         </Box> */}
         <Stack direction={"column"}>
           <p>Select an item</p>
@@ -44,7 +94,9 @@ const SelectDate = () => {
             Pick an available time that you want to reserve next to the desired
             item, then click Next Step.
           </Alert>
-          {packageDetail && <CartItem item={packageDetail} />}
+          {packageDetail && (
+            <CartItem item={packageDetail} checkTime={checkTime} />
+          )}
         </Stack>
       </div>
     </LocalizationProvider>
@@ -53,7 +105,7 @@ const SelectDate = () => {
 
 export default SelectDate;
 
-const CartItem = ({ item }) => {
+const CartItem = ({ item, checkTime }) => {
   /**
        * capacity 
 description
@@ -90,6 +142,7 @@ venue :"ThuDuc"
                   background: "#f1f1f1",
                   color: "black",
                 }}
+                onClick={() => checkTime(index)}
               >
                 {item}
               </Button>

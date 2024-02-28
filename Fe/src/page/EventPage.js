@@ -74,7 +74,7 @@ export default function EventPage() {
       // case 0:
       // return <SelectPackage handleNextStep={handleNext} />;
       case 0:
-        return <SelectDate />;
+        return <SelectDate handleNext={handleNext} />;
       case 1:
         return <CustomPackage />;
       case 2:

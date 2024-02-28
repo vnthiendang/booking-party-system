@@ -10,6 +10,7 @@ import MenuItem from "@mui/material/MenuItem";
 import TableCell from "@mui/material/TableCell";
 import Typography from "@mui/material/Typography";
 import IconButton from "@mui/material/IconButton";
+import Switch from "@mui/material/Switch";
 
 import Label from "../../components/label";
 import Iconify from "../../components/iconify";
@@ -77,6 +78,39 @@ export default function UserTableRow({
     }
   };
 
+  const handleChangeStatus = async (id, value) => {
+    try {
+      await HostApi.ChangeStatus({
+        packageId: id,
+        status: value === "ON" ? "OFF" : "ON",
+      });
+      gelistPackage();
+      toast.success("🦄 Update success!", {
+        position: "top-center",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+        transition: Bounce,
+      });
+    } catch (error) {
+      toast.error("🦄 Something went wrong!", {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+        transition: Bounce,
+      });
+    }
+  };
+
   return (
     <>
       <TableRow hover tabIndex={-1} role="checkbox" selected={selected}>
@@ -98,6 +132,13 @@ export default function UserTableRow({
         <TableCell>{capacity}</TableCell>
 
         <TableCell>{role}</TableCell>
+        <TableCell>
+          <Switch
+            value={status}
+            checked={status === "ON" ? true : status === "OFF" ? false : true}
+            onChange={(e) => handleChangeStatus(id, e.target.value)}
+          />
+        </TableCell>
 
         {/* <TableCell align="center">{isVerified ? "Yes" : "No"}</TableCell>
 
