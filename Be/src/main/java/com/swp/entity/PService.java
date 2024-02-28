@@ -32,6 +32,7 @@ public class PService {
 
     private Integer serviceAmount;
 
+
     @Column(nullable = true)
     private String serviceImage;
     @OneToMany(mappedBy = "service", cascade = CascadeType.ALL)

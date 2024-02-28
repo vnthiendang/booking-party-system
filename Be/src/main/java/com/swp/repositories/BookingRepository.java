@@ -21,6 +21,10 @@ public interface BookingRepository extends JpaRepository<Booking, Integer>, JpaS
     List<Booking> findAllByDate(@Param("date") Date date);
     @Query(value = "SELECT * FROM Booking r WHERE r.end_time >= ?1 and r.start_time <= ?2 and r.package_id = ?3" , nativeQuery = true)
     List<Booking> findByDateRangeOverlap(Date startTime, Date endTime , Integer packageId);
-
+    @Query(value = "SELECT * " +
+            "FROM booking b " +
+            "WHERE b.customer_id = :userId",
+            nativeQuery = true)
+    List<Object[]> findBookingHistoryForCustomer(@Param("userId") Integer userId);
 }
 
