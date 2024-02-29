@@ -126,7 +126,9 @@ public class HostController {
             if (reservation == null) {
                 throw new BadRequestException("Booking not exit");
             }
-
+            if (Boolean.TRUE.equals(bookingService.isValidStatus(reservationUpdateDto.getStatus()))) {
+                throw new BadRequestException("Invalid status");
+            }
             reservation.setStatus(EBookingStatus.valueOf(reservationUpdateDto.getStatus()));
             Booking updatedReservation = bookingService.addReservation(reservation);
             return makeResponse(true, bookingMapper.fromEntityToBookingDto(updatedReservation), "Booking updated successfully");
@@ -142,7 +144,10 @@ public class HostController {
             if (packages == null) {
                 throw new BadRequestException("Package not exit");
             }
-
+            //ONLY switch on or off status
+          /*  if (Boolean.TRUE.equals(packageService.isValidStatus(dto.getStatus()))) {
+                throw new BadRequestException("Invalid status");
+            }*/
             packages.setStatus(EPackageStatus.valueOf(dto.getStatus()));
             Package updatedPackage = packageService.savePackage(packages);
             return makeResponse(true, mapper.fromEntityToPackageDto(updatedPackage), "Package updated successfully");

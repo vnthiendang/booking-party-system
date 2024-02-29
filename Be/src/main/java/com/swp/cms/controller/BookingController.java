@@ -4,6 +4,7 @@ import com.swp.cms.dto.*;
 import com.swp.cms.mapper.BookingMapper;
 import com.swp.cms.reqDto.AvailablePackageAtTimeDto;
 import com.swp.cms.reqDto.BookingUpdateDto;
+import com.swp.cms.reqDto.PackageUpdateDto;
 import com.swp.cms.resDto.ApiMessageDto;
 import com.swp.cms.resDto.GetAvailablePackageResDto;
 import com.swp.entity.Package;
@@ -182,7 +183,7 @@ public class BookingController {
 
             }
 
-            return makeResponse(true, serviceIds, "Services added successfully");
+            return makeResponse(true, serviceIds, "Services added to packages successfully");
         } catch (Exception e) {
             return makeResponse(false, "An error occurred during adding services", e.getMessage());
         }
@@ -236,6 +237,21 @@ public class BookingController {
     public ResponseEntity<List<Object[]>> getBookingHistoryForCustomer(@PathVariable Integer userId) {
         List<Object[]> bookingHistory = bookingService.getBookingHistoryForCustomer(userId);
         return ResponseEntity.ok(bookingHistory);
+    }
+    @PostMapping("/cancelBooking")
+    public ApiMessageDto<Object> cancelBooking(@Valid @RequestBody BookingUpdateDto dto) {
+        try {
+            Booking booking = bookingService.findBookingById(dto.getBookingId());
+            if (booking == null) {
+                throw new BadRequestException("Package not exit");
+            }
+
+            booking.setStatus(EBookingStatus.valueOf(dto.getStatus()));
+            Booking updatedBooking = bookingService.addReservation(booking);
+            return makeResponse(true, mapper.fromEntityToBookingDto(updatedBooking), "Booking updated successfully");
+        }catch (Exception e){
+            return makeResponse(false, " Error, occurred during updating status", e.getMessage());
+        }
     }
 
 }
