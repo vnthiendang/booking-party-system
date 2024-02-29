@@ -6,13 +6,13 @@ import com.swp.cms.reqDto.AvailablePackageAtTimeDto;
 import com.swp.cms.reqDto.BookingUpdateDto;
 import com.swp.cms.resDto.ApiMessageDto;
 import com.swp.cms.resDto.GetAvailablePackageResDto;
-import com.swp.entity.*;
 import com.swp.entity.Package;
+import com.swp.entity.*;
 import com.swp.entity.enums.EBookingStatus;
-import com.swp.entity.enums.ESlotStatus;
+import com.swp.entity.enums.EPackageStatus;
+import com.swp.entity.enums.EPaymentStatus;
 import com.swp.exception.BadRequestException;
 import com.swp.services.*;
-import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -127,19 +127,6 @@ public class BookingController {
 
             Package aPackage = packageService.getById(bookReservationDto.getPackagesId());
 
-            /*// Kiểm tra và cập nhật trạng thái của các TimeSlot
-            List<TimeSlot> timeSlots = aPackage.getTimeSlots();
-            Date startTime = bookReservationDto.getStartTime();
-            Date endTime = bookReservationDto.getEndTime();
-            for (TimeSlot slot : timeSlots) {
-                if (slot.getStart().compareTo(startTime) >= 0 && slot.getEnd().compareTo(endTime) <= 0) {
-                    if (slot.getStatus() != ESlotStatus.AVAILABLE) {
-                        throw new BadRequestException("Selected time is not available");
-                    }
-                    slot.setStatus(ESlotStatus.END);
-                    timeSlotService.updateTimeSlot(slot); // Cập nhật trạng thái của TimeSlot
-                }
-            }*/
             // Check if party size is greater than package capacity
             if (bookReservationDto.getPartySize() > aPackage.getCapacity()) {
                 throw new BadRequestException("Party size is greater than package capacity");
@@ -151,8 +138,10 @@ public class BookingController {
             reservation.setPackages(aPackage);
             reservation.setCustomer(user);
             reservation.setStatus(EBookingStatus.PENDING);
+            reservation.setPaymentStatus(EPaymentStatus.NOT_PAID);
             reservation.setBookingDate(new Date());
             reservation.setPartySize(bookReservationDto.getPartySize());
+            aPackage.setStatus(EPackageStatus.BOOKED);
             Booking savedReservation = bookingService.addReservation(reservation);
             return makeResponse(true, mapper.fromEntityToBookingDto(savedReservation), "Booking added successfully");
         }catch (Exception e){

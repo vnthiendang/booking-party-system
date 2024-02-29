@@ -157,7 +157,7 @@ export default function UserPage() {
                   { id: "capacity", label: "Capacity" },
                   { id: "venue", label: "Venue" },
                   // { id: "isVerified", label: "Verified", align: "center" },
-                  // { id: "status", label: "Status" },
+                  { id: "status", label: "Status" },
                   { id: "" },
                 ]}
               />

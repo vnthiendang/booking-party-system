@@ -54,7 +54,7 @@ export default function UserTableRow({
 
         <TableCell>{company}</TableCell>
 
-        <TableCell>{role}</TableCell>
+        {/* <TableCell>{role}</TableCell> */}
 
         <TableCell align="center">{isVerified ? "Yes" : "No"}</TableCell>
 

@@ -59,7 +59,7 @@ public class PackageService {
 
         //aPackage = packageRepository.save(aPackage);
         Package savedPackage = packageRepository.save(aPackage);
-        List<Integer> serviceIds = createDto.getServices();
+        List<Integer> serviceIds = serviceRepository.getServiceIds();
 
         if (serviceIds != null && !serviceIds.isEmpty()) {
             List<PService> savedServices = serviceServiceService.getServicesByIds(serviceIds);
@@ -205,33 +205,10 @@ public class PackageService {
         existingPackage.setCapacity(updateDto.getCapacity());
         existingPackage.setStatus(EPackageStatus.OFF);
 
-        // Validate the number of services
-        if (!validateNumberOfServices(updateDto.getServices())) {
-            throw new IllegalArgumentException("Number of requested services exceeds available services.");
-        }
-
-        // Validate and update services
-        List<Integer> serviceIds = updateDto.getServices();
-        if (serviceIds != null && !serviceIds.isEmpty()) {
-            Set<Integer> existingServiceIds = existingPackage.getPServices().stream()
-                    .map(packageServiceEntity -> packageServiceEntity.getService().getServiceId())
-                    .collect(Collectors.toSet());
-
-            List<PService> updatedServices = serviceServiceService.getServicesByIds(serviceIds);
-
-            // Add only new services that are not already associated with the package
-            List<PackageServiceEntity> packageServiceList = updatedServices.stream()
-                    .filter(service -> !existingServiceIds.contains(service.getServiceId()))
-                    .map(service -> {
-                        PackageServiceEntity packageServiceEntity = new PackageServiceEntity();
-                        packageServiceEntity.setPackages(existingPackage);
-                        packageServiceEntity.setService(service);
-                        return packageServiceEntity;
-                    })
-                    .collect(Collectors.toList());
-
-            existingPackage.getPServices().addAll(packageServiceList);
-        }
+//        // Validate the number of services
+//        if (!validateNumberOfServices(updateDto.getServices())) {
+//            throw new IllegalArgumentException("Number of requested services exceeds available services.");
+//        }
 
         // Save the updated package
         packageRepository.save(existingPackage);
