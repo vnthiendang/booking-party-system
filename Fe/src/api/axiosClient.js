@@ -7,8 +7,8 @@ const axiosClient = axios.create({
   headers: {
     "content-type": "application/json",
     Authorization: `Bearer ${
-      localStorage.getItem("token")
-        ? JSON.parse(localStorage.getItem("token"))
+      sessionStorage.getItem("token")
+        ? JSON.parse(sessionStorage.getItem("token"))
         : ""
     }`,
     withCredentials: false,

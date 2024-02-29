@@ -54,8 +54,8 @@ export default function LoginView() {
         email,
         password,
       });
-      localStorage.setItem("token", JSON.stringify(res.access_token));
-      localStorage.setItem("info", JSON.stringify(res));
+      sessionStorage.setItem("token", JSON.stringify(res.access_token));
+      sessionStorage.setItem("info", JSON.stringify(res));
       toast.success("🦄 Login success!", {
         position: "top-center",
         autoClose: 5000,

@@ -7,8 +7,8 @@ import { useNavigate } from "react-router-dom";
 export default function LoginPage() {
   const navigate = useNavigate();
   useEffect(() => {
-    const token = localStorage.getItem("token")
-      ? localStorage.getItem("token")
+    const token = sessionStorage.getItem("token")
+      ? sessionStorage.getItem("token")
       : "";
     if (token) navigate(-1);
   }, []);

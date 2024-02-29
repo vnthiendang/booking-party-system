@@ -43,7 +43,7 @@ export default function Header({ onOpenNav }) {
         <Button
           variant="contained"
           onClick={() => {
-            localStorage.clear();
+            sessionStorage.clear();
             window.location.reload();
           }}
         >

@@ -27,8 +27,8 @@ import navConfigHost from "./config-navigation-host";
 
 export default function Nav({ openNav, onCloseNav }) {
   // const pathname = usePathname();
-  const info = localStorage.getItem("info")
-    ? JSON.parse(localStorage.getItem("info"))
+  const info = sessionStorage.getItem("info")
+    ? JSON.parse(sessionStorage.getItem("info"))
     : "";
 
   const upLg = useResponsive("up", "lg");
