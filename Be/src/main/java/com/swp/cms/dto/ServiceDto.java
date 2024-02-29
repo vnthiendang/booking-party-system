@@ -1,6 +1,5 @@
 package com.swp.cms.dto;
 
-import com.swp.entity.enums.ServiceType;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PositiveOrZero;
 import lombok.AllArgsConstructor;
@@ -15,15 +14,17 @@ import lombok.NoArgsConstructor;
 public class ServiceDto {
     private Integer id;
     private String description;
-    private ServiceType serviceType;
 
-    @NotNull(message = "Amount cannot be empty")
-    @PositiveOrZero(message = "Amount must be 0 or more")
-    private Integer serviceAmount;
-    private String serviceImage;
     @NotNull(message = "Price cannot be empty")
     @PositiveOrZero(message = "Price must be 0 or more")
     private Double price;
 
+    @PositiveOrZero(message = "Amount must be 0 or more")
+    private Integer serviceAmount;
+
+    private String serviceImage;
+
     private String serviceName;
+
+    private String serviceType;
 }

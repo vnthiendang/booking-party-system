@@ -1,5 +1,6 @@
 package com.swp.repositories;
 
+import com.swp.cms.dto.ServiceDto;
 import com.swp.entity.PackageServiceEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -10,9 +11,15 @@ import java.util.List;
 
 @Repository
 public interface PServiceRepository extends JpaRepository<PackageServiceEntity, Integer> {
-    @Query(value = "SELECT service_id " +
-            "FROM package_service b " +
-            "WHERE b.package_id = :id",
+    @Query(value = "SELECT p.* " +
+            "FROM package_service ps " +
+            "INNER JOIN pservice p ON ps.service_id = p.service_id" +
+            " WHERE ps.package_id = :id",
             nativeQuery = true)
-    List<Integer> getListServicePackageId(@Param("id") Integer id);
+    List<Object[]> getListServicePackageId(@Param("id") Integer id);
+//    @Query(value = "SELECT p.serviceName, p.description " +
+//            "FROM PackageService ps " +
+//            "INNER JOIN ps.service p " +
+//            "WHERE ps.package.id = :id")
+
 }

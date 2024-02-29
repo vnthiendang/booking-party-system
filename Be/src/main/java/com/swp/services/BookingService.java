@@ -4,22 +4,20 @@ import com.swp.cms.dto.BookingDto;
 import com.swp.cms.dto.CheckSlotDto;
 import com.swp.cms.dto.PackageDto;
 import com.swp.cms.dto.ServiceDto;
-import com.swp.entity.Booking;
+import com.swp.entity.*;
 import com.swp.entity.Package;
-import com.swp.entity.TimeSlot;
 import com.swp.entity.enums.EBookingStatus;
 import com.swp.entity.enums.ESlotStatus;
 import com.swp.entity.enums.Location;
-import com.swp.repositories.BookingRepository;
-import com.swp.repositories.PServiceRepository;
-import com.swp.repositories.PackageRepository;
-import com.swp.repositories.TimeSlotRepository;
+import com.swp.entity.enums.ServiceType;
+import com.swp.repositories.*;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -32,12 +30,15 @@ public class BookingService {
     private final BookingRepository bookingRepository;
     private final PackageRepository packageRepository;
     private final PServiceRepository pServiceRepository;
+    private final ServiceRepository serviceRepository;
     private final PServiceService pServiceService;
+    private final BookingPServiceService bookingPServiceService;
 
 
     @Transactional
     public List<PackageDto> viewListPackage(){
         List<Package> packageList = packageRepository.findAllPackagesWithServices();
+        //
 
         return packageList.stream()
                 .map(this::mapPackageToPackageDto)
@@ -48,9 +49,28 @@ public class BookingService {
         return bookingRepository.findByCustomerUsIdAndPackagesId(userId, packageId);}
 
 
-    public List<Integer> getServicesPackage(Integer id){
-        return pServiceRepository.getListServicePackageId(id);
+//    public List<Object[]> getServicesPackage(Integer id){
+//        return pServiceRepository.getListServicePackageId(id);
+//    }
+
+    public List<ServiceDto> getServicesPackage(Integer id) {
+        List<Object[]> resultList = pServiceRepository.getListServicePackageId(id);
+        List<ServiceDto> dtoList = new ArrayList<>();
+        for (Object[] result : resultList) {
+            Integer serviceId = (Integer) result[0];
+            String desc = (String) result[1];
+            Double price = (Double) result[2];
+            Integer amount = (Integer) result[3];
+            String img = (String) result[4];
+            String serviceName = (String) result[5];
+            String type = (String) result[6];
+
+            ServiceDto dto = new ServiceDto(serviceId, desc, price, amount, img, serviceName, type);
+            dtoList.add(dto);
+        }
+        return dtoList;
     }
+
 
     public PackageDto mapPackageToPackageDto(Package packages){
 

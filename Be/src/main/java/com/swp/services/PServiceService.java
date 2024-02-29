@@ -39,11 +39,14 @@ public class PServiceService {
         PService pService = serviceRepository.findById(serviceId).orElseThrow(() -> new EntityNotFoundException("Package not found"));
         return Optional.ofNullable(mapServiceToServiceDto(pService));
     }
+    public PService getServiceById(Integer serviceId) {
+        return serviceRepository.findById(serviceId).orElseThrow(() -> new EntityNotFoundException("Package not found"));
+    }
 
     public ServiceDto mapServiceToServiceDto(PService service) {
         return ServiceDto.builder()
                 .id(service.getServiceId())
-                .serviceType(service.getServiceType())
+                .serviceType(String.valueOf(service.getServiceType()))
                 .serviceAmount(service.getServiceAmount())
                 .serviceImage(service.getServiceImage())
                 .price(service.getPrice())

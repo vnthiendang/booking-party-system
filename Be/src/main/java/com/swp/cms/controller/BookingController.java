@@ -19,6 +19,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -86,7 +87,6 @@ public class BookingController {
         return apiMessageDto;
     }
 
-
     @GetMapping("package/{packageId}")
     public ResponseEntity<PackageDto> getPackageDetail(@PathVariable Integer packageId){
         Optional<PackageDto> packageDtoOptional = bookingService.findPackageById(packageId);
@@ -111,7 +111,7 @@ public class BookingController {
     }
 
     @GetMapping("{packageId}/services")
-    public List<Integer> getServicesPackageId(@PathVariable Integer packageId) {
+    public List<ServiceDto> getServicesPackageId(@PathVariable Integer packageId) {
         return bookingService.getServicesPackage(packageId);
     }
 
@@ -140,6 +140,12 @@ public class BookingController {
             Booking reservation = modelMapper.map(bookReservationDto, Booking.class);
             String username = SecurityContextHolder.getContext().getAuthentication().getName();
             User user = userService.findUserByUsername(username);
+
+            List<PService> chosenServices = new ArrayList<>();
+            for (Integer serviceId : bookReservationDto.getServiceIds()) { // Get service IDs from request
+                PService service = pserviceService.getServiceById(serviceId);
+                chosenServices.add(service);
+            }
             // Set package to booked
             reservation.setPackages(aPackage);
             reservation.setCustomer(user);
@@ -148,6 +154,23 @@ public class BookingController {
             reservation.setBookingDate(new Date());
             reservation.setPartySize(bookReservationDto.getPartySize());
             aPackage.setStatus(EPackageStatus.BOOKED);
+
+            List<BookingPackageService> bookingPS = new ArrayList<>();
+            for (PService chosenService : chosenServices) {
+                BookingPackageService bookingPService = new BookingPackageService();
+                bookingPService.setBooking(reservation);
+                bookingPService.setService(chosenService);
+
+                // Access quantity directly from BookingDto using serviceId
+
+                Integer quantity = bookReservationDto.getQuantity();
+                bookingPService.setQuantity(quantity != null ? quantity : 1);
+
+                bookingPS.add(bookingPService);
+            }
+
+            reservation.setBookingPackageService(bookingPS);
+
             Booking savedReservation = bookingService.addReservation(reservation);
             return makeResponse(true, mapper.fromEntityToBookingDto(savedReservation), "Booking added successfully");
         }catch (Exception e){
