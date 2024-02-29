@@ -35,10 +35,12 @@ public class SecurityConfiguration {
             "/swagger-ui/**",
             "/webjars/**",
             "/swagger-ui.html",
-              "/host/*",
+            "/host/*",
             "/booking/**",
             "/booking/service/*",
-            "/booking/package/*"
+            "/booking/package/*",
+            "host/packages/*",
+            "host/editPackage/*"
     };
     private final AuthTokenFilter jwtAuthFilter;
     private final AuthenticationProvider authenticationProvider;
