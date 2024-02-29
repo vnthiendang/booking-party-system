@@ -188,7 +188,7 @@ public class BookingController {
 
             }
 
-            return makeResponse(true, serviceIds, "Services added successfully");
+            return makeResponse(true, serviceIds, "Services added to packages successfully");
         } catch (Exception e) {
             return makeResponse(false, "An error occurred during adding services", e.getMessage());
         }

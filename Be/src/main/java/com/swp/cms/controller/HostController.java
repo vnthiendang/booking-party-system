@@ -145,9 +145,9 @@ public class HostController {
                 throw new BadRequestException("Package not exit");
             }
             //ONLY switch on or off status
-            if (Boolean.TRUE.equals(packageService.isValidStatus(dto.getStatus()))) {
+          /*  if (Boolean.TRUE.equals(packageService.isValidStatus(dto.getStatus()))) {
                 throw new BadRequestException("Invalid status");
-            }
+            }*/
             packages.setStatus(EPackageStatus.valueOf(dto.getStatus()));
             Package updatedPackage = packageService.savePackage(packages);
             return makeResponse(true, mapper.fromEntityToPackageDto(updatedPackage), "Package updated successfully");
