@@ -42,6 +42,7 @@ public class BookingController {
     private final PServiceService pserviceService;
     private final TimeSlotService timeSlotService;
 
+
     @Autowired
     private BookingMapper mapper;
     @Autowired
@@ -268,6 +269,9 @@ public class BookingController {
             if (booking == null) {
                 throw new BadRequestException("Package not exit");
             }
+           /* if (booking.getStatus() == EBookingStatus.APPROVED) {
+                throw new BadRequestException("Cannot update status of a APPROVED booking");
+            }*/
 
             booking.setStatus(EBookingStatus.valueOf(dto.getStatus()));
             Booking updatedBooking = bookingService.addReservation(booking);
@@ -276,5 +280,6 @@ public class BookingController {
             return makeResponse(false, " Error, occurred during updating status", e.getMessage());
         }
     }
+
 
 }
