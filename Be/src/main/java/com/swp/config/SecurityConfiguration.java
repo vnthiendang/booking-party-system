@@ -36,7 +36,7 @@ public class SecurityConfiguration {
             "/webjars/**",
             "/swagger-ui.html",
               "/host/*",
-            "/booking/*",
+            "/booking/**",
             "/booking/service/*",
             "/booking/package/*"
     };

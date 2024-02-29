@@ -2,7 +2,7 @@ import * as React from "react";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Modal from "@mui/material/Modal";
-import { Stack } from "@mui/material";
+import { Button, Stack } from "@mui/material";
 import { giftImg } from "../asset";
 
 const style = {
@@ -70,6 +70,9 @@ export default function ModalBuyService({ open, handleClose }) {
                     width: 100,
                   }}
                 />
+                <Button sx={{
+                  marginTop : '10px'
+                }} variant="contained">Add service</Button>
               </Stack>
             </Stack>
           </Stack>

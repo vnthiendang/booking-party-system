@@ -109,6 +109,11 @@ public class BookingController {
         }
     }
 
+    @GetMapping("{packageId}/services")
+    public List<Integer> getServicesPackageId(@PathVariable Integer packageId) {
+        return bookingService.getServicesPackage(packageId);
+    }
+
     @PostMapping("/bookPackage")
     public ApiMessageDto<Object> bookPackage(@Valid @RequestBody BookingDto bookReservationDto) {
         try {

@@ -14,6 +14,10 @@ export default class servicdeApi extends Api {
     const url = `${this.HOSTNAME}${this.table}/package/${id}`;
     return axiosClient.get(url);
   }
+  getListservicePk(id) {
+    const url = `${this.HOSTNAME}${this.table}/${id}/services`;
+    return axiosClient.get(url);
+  }
   checkTime(body) {
     const url = `${this.HOSTNAME}${this.table}/checkPackageAvailableInDateRange`;
     return axiosClient.post(url, body);

@@ -1,15 +1,30 @@
 import { Box, Button, Grid, Stack } from "@mui/material";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { giftImg } from "../../asset";
 import AddIcon from "@mui/icons-material/Add";
 import ModalBuyService from "../ModalBuyService";
 import SignatureCanvas from "react-signature-canvas";
 import "./style.css";
+import { ServiceApi } from "../../api";
+import { useParams } from "react-router-dom";
 
 const CustomPackage = () => {
   const [openPopupBuy, setOpenPopupBuy] = useState(false);
+  const [listService,setListService] = useState([]);
+  const params = useParams();
   let sigPad = {};
+  const getListService = async (id)=>{
+    try {
+      const res = await ServiceApi.getListservicePk(id);
+      console.log(res);
+    } catch (error) {
+      alert(error)
+    }
+  }
 
+  useEffect(()=>{
+    getListService(params?.id)
+  },[params?.id])
   return (
     <Box
       sx={{

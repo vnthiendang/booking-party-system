@@ -11,6 +11,7 @@ import com.swp.entity.enums.EBookingStatus;
 import com.swp.entity.enums.ESlotStatus;
 import com.swp.entity.enums.Location;
 import com.swp.repositories.BookingRepository;
+import com.swp.repositories.PServiceRepository;
 import com.swp.repositories.PackageRepository;
 import com.swp.repositories.TimeSlotRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -30,6 +31,7 @@ import java.util.stream.Collectors;
 public class BookingService {
     private final BookingRepository bookingRepository;
     private final PackageRepository packageRepository;
+    private final PServiceRepository pServiceRepository;
     private final PServiceService pServiceService;
 
 
@@ -44,6 +46,11 @@ public class BookingService {
 
     public Booking getByUserIdAndPackageId(Integer userId, Integer packageId) {
         return bookingRepository.findByCustomerUsIdAndPackagesId(userId, packageId);}
+
+
+    public List<Integer> getServicesPackage(Integer id){
+        return pServiceRepository.getListServicePackageId(id);
+    }
 
     public PackageDto mapPackageToPackageDto(Package packages){
 
