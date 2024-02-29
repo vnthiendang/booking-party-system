@@ -10,6 +10,7 @@ export default function LoginPage() {
     const token = sessionStorage.getItem("token")
       ? sessionStorage.getItem("token")
       : "";
+    console.log(123);
     if (token) navigate(-1);
   }, []);
 
