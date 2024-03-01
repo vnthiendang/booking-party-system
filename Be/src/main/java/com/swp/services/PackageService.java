@@ -38,9 +38,6 @@ public class PackageService {
     private final UserService userService;
     private final PackageServiceRepository packageServiceRepository;
 
-    @Autowired
-    private PackageMapper modelMapper;
-
     public void addPackageService(Integer packageId, Integer serviceId){
         PackageServiceEntity ps = new PackageServiceEntity();
         Package p = packageRepository.getById(packageId);
@@ -72,7 +69,7 @@ public class PackageService {
 
         //aPackage = packageRepository.save(aPackage);
         Package savedPackage = packageRepository.save(aPackage);
-        List<Integer> serviceIds = serviceRepository.getServiceIds();
+        List<Integer> serviceIds = createDto.getServices();
 
         if (serviceIds != null && !serviceIds.isEmpty()) {
             List<PService> savedServices = serviceServiceService.getServicesByIds(serviceIds);
@@ -129,14 +126,6 @@ public class PackageService {
         return table.getStatus().name().equals("BOOKED");
     }
 
-    public Boolean isValidStatus(String status) {
-        for (EPackageStatus e : EPackageStatus.values()) {
-            if (e.name().equals(status)) {
-                return true;
-            }
-        }
-        return false;
-    }
     public Package savePackage(Package packages) {
         return packageRepository.save(packages);
     }
@@ -155,27 +144,6 @@ public class PackageService {
     public List<Package> getAll() {
         return packageRepository.findAll();
     }
-
-    @Transactional
-    public PackageDto updatePackage(PackageDto packageDTO) {
-        Package existingPackage = packageRepository.findById(packageDTO.getId())
-                .orElseThrow(() -> new EntityNotFoundException("Package not found"));
-
-        if (PackageNameExistsAndNotSamePackage(packageDTO.getPackageName(), packageDTO.getId())) {
-            throw new PackageAlreadyExistException("This Package name is already registered!");
-        }
-
-        existingPackage.setPackageName(packageDTO.getPackageName());
-
-        existingPackage.setVenueWithPrice(packageDTO.getVenue());
-
-//        packageDTO.getServiceDtos().forEach(serviceServiceService::updateService);
-
-        packageRepository.save(existingPackage);
-        log.info("Successfully updated existing Package with ID: {}", packageDTO.getId());
-        return mapPackageToPackageDto(existingPackage);
-    }
-
     
     public List<PackageDto> findAllPackageDtosByHostId(Integer hostId) {
         List<Package> packages = packageRepository.findByUserIdWithServices(hostId);
@@ -185,13 +153,6 @@ public class PackageService {
                     .collect(Collectors.toList());
         }
         return Collections.emptyList();
-    }
-
-    public boolean validateNumberOfServices(List<Integer> serviceIds) {
-        List<PService> availableServices = serviceRepository.findAll();
-
-        // Check if the number of requested services is greater than available services
-        return serviceIds.size() <= availableServices.size();
     }
 
     @Transactional
@@ -223,7 +184,25 @@ public class PackageService {
 //            throw new IllegalArgumentException("Number of requested services exceeds available services.");
 //        }
 
-        // Save the updated package
+        Set<Integer> newServiceIds = new HashSet<>(updateDto.getServices());
+        List<PackageServiceEntity> newPackageServiceEntities = new ArrayList<>();
+
+        for (Integer serviceId : newServiceIds) {
+            PackageServiceEntity existingAssociation = pServiceRepository.findByPackages_IdAndService_ServiceId(updateDto.getId(), serviceId)
+                    .orElse(null);
+
+            if (existingAssociation == null) {
+                PService service = serviceServiceService.getServiceById(serviceId);
+                PackageServiceEntity packageServiceEntity = new PackageServiceEntity();
+                packageServiceEntity.setPackages(existingPackage);
+                packageServiceEntity.setService(service);
+                newPackageServiceEntities.add(packageServiceEntity);
+            }else {
+                throw new PackageAlreadyExistException("Cannot add duplicate service!");
+            }
+        }
+
+        pServiceRepository.saveAll(newPackageServiceEntities);
         packageRepository.save(existingPackage);
     }
 
@@ -237,18 +216,8 @@ public class PackageService {
         log.info("Successfully deleted Package with ID: {} for Host ID: {}", packageId, userId);
     }
 
-    private boolean PackageNameExistsAndNotSamePackage(String name, Integer PackageId) {
-        Optional<Package> existingPackageWithSameName = packageRepository.findByPackageName(name);
-        if (existingPackageWithSameName.isEmpty()) return false;
-        existingPackageWithSameName.get();
-        return true;
-    }
-
     private String formatText(String text) {
         return StringUtils.capitalize(text.trim());
     }
-
-
-
 }
 

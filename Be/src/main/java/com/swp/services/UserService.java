@@ -41,6 +41,9 @@ public class UserService {
         User us = userRepository.findByEmail(userDetails.getUsername());
         return us;
     }
+    public boolean isEmailExist(String email) {
+        return userRepository.checkEmailExist(email) != null;
+    }
 
     public UserDto getById() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();

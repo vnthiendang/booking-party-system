@@ -35,10 +35,9 @@ public class SecurityConfiguration {
             "/swagger-ui/**",
             "/webjars/**",
             "/swagger-ui.html",
-              "/host/*",
+            "/host/**",
             "/booking/**",
-            "/booking/service/*",
-            "/booking/package/*"
+            "/customer/**"
     };
     private final AuthTokenFilter jwtAuthFilter;
     private final AuthenticationProvider authenticationProvider;
@@ -55,7 +54,7 @@ public class SecurityConfiguration {
                                 .permitAll()
                                 .requestMatchers("/host/**").hasRole("HOST")
                                 .requestMatchers("/admin/**").hasRole("ADMIN")
-                                .requestMatchers("/customer/**", "/booking/**").hasRole("CUSTOMER")
+                                .requestMatchers("/booking/bookPackage", "/booking/addServices", "/booking/cancelBooking/**", "/booking/history/**", "/booking/getByDate").hasRole("CUSTOMER")
                                 .anyRequest()
                                 .authenticated()
                 )

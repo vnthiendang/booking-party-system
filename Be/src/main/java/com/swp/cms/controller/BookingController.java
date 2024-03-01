@@ -4,7 +4,6 @@ import com.swp.cms.dto.*;
 import com.swp.cms.mapper.BookingMapper;
 import com.swp.cms.reqDto.AvailablePackageAtTimeDto;
 import com.swp.cms.reqDto.BookingUpdateDto;
-import com.swp.cms.reqDto.PackageUpdateDto;
 import com.swp.cms.resDto.ApiMessageDto;
 import com.swp.cms.resDto.GetAvailablePackageResDto;
 import com.swp.entity.Package;
@@ -19,7 +18,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -40,11 +38,7 @@ public class BookingController {
     private final BookingService bookingService;
     private final PackageService packageService;
     private final PServiceService pserviceService;
-    private final TimeSlotService timeSlotService;
     private final BookingPServiceService bookingPServiceService;
-
-
-
 
     @Autowired
     private BookingMapper mapper;
@@ -216,7 +210,14 @@ public class BookingController {
         }
     }
 
-
+    @GetMapping("/checkEmail")
+    public ResponseEntity<Boolean> isEmailExist(@RequestParam(value = "email") String email) {
+        if (email == null || email.isBlank()) {
+            return ResponseEntity.badRequest().body(false);
+        }
+        boolean exists = userService.isEmailExist(email);
+        return ResponseEntity.ok(exists);
+    }
     // Update reservation status
     @PostMapping("/update")
     public ApiMessageDto<Object> updateReservationStatus(@Valid @RequestBody BookingUpdateDto reservationUpdateDto) {
@@ -316,14 +317,7 @@ public class BookingController {
 
     @GetMapping("/listOrderDetails/{bookingId}")
     public ListOrderDTO listOrderDetails(@PathVariable Integer bookingId) {
-        try {
-            if(bookingId!=null){
-                return bookingService.getOrderDetailList(bookingId);
-            }
-        } catch (Exception e) {
-            return null;
-        }
-        return null;
+        return bookingService.getOrderDetailList(bookingId);
     }
 
 

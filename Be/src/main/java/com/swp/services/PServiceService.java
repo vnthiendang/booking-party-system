@@ -2,7 +2,6 @@ package com.swp.services;
 
 import com.swp.cms.dto.ServiceDto;
 import com.swp.entity.PService;
-import com.swp.entity.Package;
 import com.swp.entity.PackageServiceEntity;
 import com.swp.repositories.PServiceRepository;
 import com.swp.repositories.PackageRepository;
@@ -73,15 +72,5 @@ public class PServiceService {
         return services.stream()
                 .map(this::mapServiceToServiceDto)
                 .collect(Collectors.toList());
-    }
-    public void addPackageService(Integer packageId, Integer serviceId){
-        PackageServiceEntity ps = new PackageServiceEntity();
-        Package p = packageRepository.getById(packageId);
-        PService s = serviceRepository.getById(serviceId);
-
-        ps.setPackages(p);
-        ps.setService(s);
-
-        packageServiceRepository.save(ps);
     }
 }

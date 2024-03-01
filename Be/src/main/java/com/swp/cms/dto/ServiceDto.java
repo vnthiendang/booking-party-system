@@ -27,4 +27,5 @@ public class ServiceDto {
     private String serviceName;
 
     private String serviceType;
+    private boolean isSet;
 }

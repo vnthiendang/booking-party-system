@@ -1,20 +1,24 @@
 package com.swp.services;
 
-import com.swp.cms.dto.*;
-import com.swp.entity.*;
+import com.swp.cms.dto.CheckSlotDto;
+import com.swp.cms.dto.ListOrderDTO;
+import com.swp.cms.dto.PackageDto;
+import com.swp.cms.dto.ServiceDto;
+import com.swp.entity.Booking;
+import com.swp.entity.PService;
 import com.swp.entity.Package;
 import com.swp.entity.enums.EBookingStatus;
-import com.swp.entity.enums.ESlotStatus;
 import com.swp.entity.enums.Location;
-import com.swp.entity.enums.ServiceType;
-import com.swp.repositories.*;
+import com.swp.repositories.BookingRepository;
+import com.swp.repositories.PServiceRepository;
+import com.swp.repositories.PackageRepository;
+import com.swp.repositories.ServiceRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -29,10 +33,7 @@ public class BookingService {
     private final PServiceRepository pServiceRepository;
     private final ServiceRepository serviceRepository;
     private final PServiceService pServiceService;
-    private final BookingPServiceService bookingPServiceService;
     private final ServiceRepository serviceRepository2;
-
-
 
     @Transactional
     public List<PackageDto> viewListPackage(){
@@ -53,23 +54,41 @@ public class BookingService {
 //    }
 
     public List<ServiceDto> getServicesPackage(Integer id) {
+        List<PService> services = serviceRepository.findAll();
+        List<ServiceDto> serviceDtos = mapServicesToServiceDtos(services);
         List<Object[]> resultList = pServiceRepository.getListServicePackageId(id);
-        List<ServiceDto> dtoList = new ArrayList<>();
-        for (Object[] result : resultList) {
-            Integer serviceId = (Integer) result[0];
-            String desc = (String) result[1];
-            Double price = (Double) result[2];
-            Integer amount = (Integer) result[3];
-            String img = (String) result[4];
-            String serviceName = (String) result[5];
-            String type = (String) result[6];
 
-            ServiceDto dto = new ServiceDto(serviceId, desc, price, amount, img, serviceName, type);
-            dtoList.add(dto);
+        if(resultList != null){
+            for (Object[] result : resultList) {
+                Integer serviceId = (Integer) result[0];
+
+                for (ServiceDto serviceDto : serviceDtos) {
+                    if (serviceDto.getId().equals(serviceId)) {
+                        serviceDto.setSet(true);
+                        break;
+                    }
+                }
+            }
         }
-        return dtoList;
+        return serviceDtos;
     }
+    List<ServiceDto> mapServicesToServiceDtos(List<PService> services){
+        return services.stream()
+                .map(this::mapServiceToServiceDto)
+                .collect(Collectors.toList());
+    }
+    public ServiceDto mapServiceToServiceDto(PService service) {
+        return ServiceDto.builder()
+                .id(service.getServiceId())
+                .serviceType(String.valueOf(service.getServiceType()))
+                .serviceAmount(service.getServiceAmount())
+                .serviceImage(service.getServiceImage())
+                .price(service.getPrice())
+                .description(service.getDescription())
+                .serviceName(service.getServiceName())
 
+                .build();
+    }
 
     public PackageDto mapPackageToPackageDto(Package packages){
 
