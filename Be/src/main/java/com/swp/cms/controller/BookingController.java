@@ -241,9 +241,9 @@ public class BookingController {
             if (booking == null) {
                 throw new BadRequestException("Package not exit");
             }
-            if (booking.getStatus() == EBookingStatus.APPROVED) {
+           /* if (booking.getStatus() == EBookingStatus.APPROVED) {
                 throw new BadRequestException("Cannot update status of a APPROVED booking");
-            }
+            }*/
 
             booking.setStatus(EBookingStatus.valueOf(dto.getStatus()));
             Booking updatedBooking = bookingService.addReservation(booking);
