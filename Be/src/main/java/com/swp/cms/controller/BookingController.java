@@ -134,40 +134,23 @@ public class BookingController {
             // Check if party size is greater than package capacity
             if (bookReservationDto.getPartySize() > aPackage.getCapacity()) {
                 throw new BadRequestException("Party size is greater than package capacity");
+            }else {
+                int empty = aPackage.getCapacity() - bookReservationDto.getPartySize();
+                aPackage.setCapacity(empty);
             }
             Booking reservation = modelMapper.map(bookReservationDto, Booking.class);
-            String username = SecurityContextHolder.getContext().getAuthentication().getName();
-            User user = userService.findUserByUsername(username);
+//            String username = SecurityContextHolder.getContext().getAuthentication().getName();
+//            User user = userService.findUserByUsername(username);
 
-            List<PService> chosenServices = new ArrayList<>();
-            for (Integer serviceId : bookReservationDto.getServiceIds()) { // Get service IDs from request
-                PService service = pserviceService.getServiceById(serviceId);
-                chosenServices.add(service);
-            }
-            // Set package to booked
             reservation.setPackages(aPackage);
-            reservation.setCustomer(user);
-            reservation.setStatus(EBookingStatus.PENDING);
+//            reservation.setCustomer(user);
+            reservation.setBookingStatus(EBookingStatus.PENDING);
             reservation.setPaymentStatus(EPaymentStatus.NOT_PAID);
             reservation.setBookingDate(new Date());
             reservation.setPartySize(bookReservationDto.getPartySize());
+            reservation.setTotalCost(aPackage.getPrice());
+
             aPackage.setStatus(EPackageStatus.BOOKED);
-
-            List<BookingPackageService> bookingPS = new ArrayList<>();
-            for (PService chosenService : chosenServices) {
-                BookingPackageService bookingPService = new BookingPackageService();
-                bookingPService.setBooking(reservation);
-                bookingPService.setService(chosenService);
-
-                // Access quantity directly from BookingDto using serviceId
-
-                Integer quantity = bookReservationDto.getQuantity();
-                bookingPService.setQuantity(quantity != null ? quantity : 1);
-
-                bookingPS.add(bookingPService);
-            }
-
-            reservation.setBookingPackageService(bookingPS);
 
             Booking savedReservation = bookingService.addReservation(reservation);
             return makeResponse(true, mapper.fromEntityToBookingDto(savedReservation), "Booking added successfully");
@@ -176,40 +159,93 @@ public class BookingController {
         }
     }
 
+    //api custom services for booking
     @PostMapping("/addServices")
     public ApiMessageDto<Object> addServices(@Valid @RequestBody BookedServiceDto dto) {
         try {
             Booking booking = bookingService.findBookingById(dto.getBookingId());
 
-            if (!booking.getStatus().equals(EBookingStatus.PENDING)) {
-                throw new BadRequestException("Cannot add services to a booking with status " + booking.getStatus());
+            if (!booking.getBookingStatus().equals(EBookingStatus.PENDING)) {
+                throw new BadRequestException("Cannot add services to a booking with status " + booking.getBookingStatus());
             }
 
-            Package packageEntity = booking.getPackages();
+            Double customServicePrice = (double) 0;
+            List<BookingPackageService> bookingPS = new ArrayList<>();
+            Map<Integer, BookingPackageService> existingServices = new HashMap<>();
+            BookingPackageService newService = new BookingPackageService();
 
-            List<Integer> serviceIds = dto.getService();
+            for (CustomServiceDto customServiceDto : dto.getCustomServices()) {
+                Integer serviceId = customServiceDto.getServiceId();
+                Integer quantity = customServiceDto.getQuantity();
 
-            if (serviceIds != null && !serviceIds.isEmpty()) {
-                List<PService> savedServices = serviceService.getServicesByIds(serviceIds);
+                // Check for existing service
+                BookingPackageService existingService = bookingPServiceService.findDuplicateServices(dto.getBookingId(), serviceId);
 
-                // Create PackageServiceEntity instances & associate them with the package
-                List<PackageServiceEntity> packageServiceEntities = new ArrayList<>();
-                for (PService service : savedServices) {
-                    PackageServiceEntity packageServiceEntity = new PackageServiceEntity();
-                    packageServiceEntity.setPackages(packageEntity);
-                    packageServiceEntity.setService(service);
-                    packageServiceEntities.add(packageServiceEntity);
+                if (existingService != null) {
+                    // Update existing service qty
+                    existingService.setQuantity(quantity);
+                    existingService.setPrice(quantity * existingService.getService().getPrice());
+//                    customServicePrice += existingService.getPrice();
+                } else {
+                    // add service
+                    PService chosenService = serviceService.getServiceById(serviceId);
+
+                    newService.setBooking(booking);
+                    newService.setService(chosenService);
+                    newService.setQuantity(quantity);
+                    double servicePrice = chosenService.getPrice();
+                    newService.setPrice(servicePrice * quantity);
+
+                    bookingPS.add(newService);
+                    existingServices.put(serviceId, newService);
                 }
-                pserviceService.saveAll(packageServiceEntities);
-
+//                customServicePrice += existingService.getPrice();
             }
 
-            return makeResponse(true, serviceIds, "Services added to packages successfully");
+            String username = SecurityContextHolder.getContext().getAuthentication().getName();
+            User user = userService.findUserByUsername(username);
+
+            if(user != null){
+                booking.setCustomer(user);
+            }
+
+//            Double deposit = dto.getDeposit();
+//            if(deposit.equals(booking.getTotalCost())){
+//                booking.setPaymentStatus(EPaymentStatus.PAID);
+//            } else if (deposit < booking.getTotalCost()) {
+//                booking.setPaymentStatus(EPaymentStatus.DEPOSITED);
+//            }
+//
+//            booking.setTotalCost(booking.getPackages().getPrice());
+//            booking.setBookingPackageService(bookingPS);
+//            bookingService.addReservation(booking);
+
+
+            // Update booking total cost
+            booking.setTotalCost(booking.getPackages().getPrice());
+
+            // Check deposit and update payment status
+            Double deposit = dto.getDeposit();
+            if(deposit != null){
+                if (deposit.equals(booking.getTotalCost())) {
+                    booking.setPaymentStatus(EPaymentStatus.PAID);
+                } else if (deposit < booking.getTotalCost()) {
+                    booking.setPaymentStatus(EPaymentStatus.DEPOSITED);
+                } else {
+                    // Handle potential case where deposit is greater than total cost
+                    throw new BadRequestException("Deposit is greater than total cost!");
+                }
+            }
+
+            booking.setBookingPackageService(bookingPS);
+            bookingService.addReservation(booking);
+            return makeResponse(true, "", "Update booking successfully");
         } catch (Exception e) {
-            return makeResponse(false, "An error occurred during adding services", e.getMessage());
+            return makeResponse(false, "An error occurred during updating", e.getMessage());
         }
     }
 
+    //api check email exists
     @GetMapping("/checkEmail")
     public ResponseEntity<Boolean> isEmailExist(@RequestParam(value = "email") String email) {
         if (email == null || email.isBlank()) {
@@ -229,7 +265,7 @@ public class BookingController {
             if (Boolean.TRUE.equals(bookingService.isValidStatus(reservationUpdateDto.getStatus()))) {
                 throw new BadRequestException("Invalid status");
             }
-            reservation.setStatus(EBookingStatus.valueOf(reservationUpdateDto.getStatus()));
+            reservation.setBookingStatus(EBookingStatus.valueOf(reservationUpdateDto.getStatus()));
             Booking updatedReservation = bookingService.addReservation(reservation);
             return makeResponse(true, mapper.fromEntityToBookingDto(updatedReservation), "Booking updated successfully");
         }catch (Exception e){
@@ -237,6 +273,7 @@ public class BookingController {
         }
     }
 
+    //api filter booking by date
     @GetMapping("/getByDate")
     public ApiMessageDto<Object> getBookingByDate(@RequestParam String dateStr) {
 
@@ -254,6 +291,8 @@ public class BookingController {
         }
 
     }
+
+    //api check package's time slots
     @PostMapping("/checkPackageAvailableInDateRange")
     public ResponseEntity<Boolean> checkPackageAvailableInDateRange(@Valid @RequestBody CheckSlotDto bookingDto){
         try {
@@ -261,9 +300,12 @@ public class BookingController {
         }catch (IllegalArgumentException exception){}
         return ResponseEntity.badRequest().body(null);
     }
-    @GetMapping("/history/{userId}")
-    public ResponseEntity<List<Object[]>> getBookingHistoryForCustomer(@PathVariable Integer userId) {
-        List<Object[]> bookingHistory = bookingService.getBookingHistoryForCustomer(userId);
+
+    //api view order
+    @GetMapping("/history")
+    public ResponseEntity<List<BookingDto>> getBookingHistoryForCustomer() {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        List<BookingDto> bookingHistory = bookingService.getBookingHistoryForCustomer(userService.findUserByUsername(username).getUsId());
         return ResponseEntity.ok(bookingHistory);
     }
     @PostMapping("/cancelBooking")
@@ -277,7 +319,7 @@ public class BookingController {
                 throw new BadRequestException("Cannot update status of a APPROVED booking");
             }*/
 
-            booking.setStatus(EBookingStatus.valueOf(dto.getStatus()));
+            booking.setBookingStatus(EBookingStatus.valueOf(dto.getStatus()));
             Booking updatedBooking = bookingService.addReservation(booking);
             return makeResponse(true, mapper.fromEntityToBookingDto(updatedBooking), "Booking updated successfully");
         }catch (Exception e){
@@ -319,7 +361,6 @@ public class BookingController {
     public ListOrderDTO listOrderDetails(@PathVariable Integer bookingId) {
         return bookingService.getOrderDetailList(bookingId);
     }
-
 
     @PostMapping("/updateAfterBooking")
     public ApiMessageDto<Object> updateAfterBooking(@Valid @RequestBody UpdateAfterBookingDTO updateAfterBookingDTO) {

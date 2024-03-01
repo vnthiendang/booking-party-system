@@ -49,7 +49,7 @@ public class Booking {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status")
-    private EBookingStatus status;
+    private EBookingStatus bookingStatus;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "payment_status")

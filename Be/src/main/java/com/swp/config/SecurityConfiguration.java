@@ -54,7 +54,7 @@ public class SecurityConfiguration {
                                 .permitAll()
                                 .requestMatchers("/host/**").hasRole("HOST")
                                 .requestMatchers("/admin/**").hasRole("ADMIN")
-                                .requestMatchers("/booking/bookPackage", "/booking/addServices", "/booking/cancelBooking/**", "/booking/history/**", "/booking/getByDate").hasRole("CUSTOMER")
+                                .requestMatchers("/booking/cancelBooking/**", "/booking/history/**", "/booking/getByDate").hasRole("CUSTOMER")
                                 .anyRequest()
                                 .authenticated()
                 )
