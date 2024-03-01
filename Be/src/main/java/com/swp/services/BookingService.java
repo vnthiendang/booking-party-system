@@ -1,9 +1,6 @@
 package com.swp.services;
 
-import com.swp.cms.dto.BookingDto;
-import com.swp.cms.dto.CheckSlotDto;
-import com.swp.cms.dto.PackageDto;
-import com.swp.cms.dto.ServiceDto;
+import com.swp.cms.dto.*;
 import com.swp.entity.*;
 import com.swp.entity.Package;
 import com.swp.entity.enums.EBookingStatus;
@@ -33,6 +30,8 @@ public class BookingService {
     private final ServiceRepository serviceRepository;
     private final PServiceService pServiceService;
     private final BookingPServiceService bookingPServiceService;
+    private final ServiceRepository serviceRepository2;
+
 
 
     @Transactional
@@ -133,6 +132,32 @@ public class BookingService {
 
     public List<Object[]> getBookingHistoryForCustomer(Integer userId) {
         return bookingRepository.findBookingHistoryForCustomer(userId);
+    }
+    public ListOrderDTO getOrderDetailList(Integer bookingId){
+        ListOrderDTO listOrderDTO = new ListOrderDTO();
+
+        listOrderDTO.setAPackage(bookingRepository.findPackageByBookingId(bookingId));
+        int packageId = listOrderDTO.aPackage.getId();
+        listOrderDTO.setPServicesList(pServiceService.getServiceInPackage(packageId));
+        return listOrderDTO;
+    }
+    public void updateAfterBooking(Integer bookingId) {
+        //update status
+        Booking booking = bookingRepository.getById(bookingId);
+        booking.setStatus(EBookingStatus.APPROVED);
+        bookingRepository.save(booking);
+
+        //update amount service
+        //int amount =
+        int packageId = bookingRepository.findPackageByBookingId(bookingId).getId();
+        List<PService> pServiceList = pServiceService.getServiceInPackage(packageId);
+        for (int i = 0; i < pServiceList.size(); i++) {
+            PService pService = pServiceList.get(i);
+
+            //int n = packageRepository.countService(pService.getServiceId(), packageId);
+            //pService.setServiceAmount(pService.getServiceAmount() - n);
+            serviceRepository2.save(pService);
+        }
     }
 
 }

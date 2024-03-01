@@ -2,8 +2,11 @@ package com.swp.services;
 
 import com.swp.cms.dto.ServiceDto;
 import com.swp.entity.PService;
+import com.swp.entity.Package;
 import com.swp.entity.PackageServiceEntity;
 import com.swp.repositories.PServiceRepository;
+import com.swp.repositories.PackageRepository;
+import com.swp.repositories.PackageServiceRepository;
 import com.swp.repositories.ServiceRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
@@ -21,11 +24,21 @@ import java.util.stream.Collectors;
 public class PServiceService {
     private final ServiceRepository serviceRepository;
     private final PServiceRepository pServiceRepository;
+    private final PackageRepository packageRepository;
+    private final PackageServiceRepository packageServiceRepository;
 
     public List<ServiceDto> getAllServices() {
         List<PService> services = serviceRepository.findAll();
         return mapServicesToServiceDtos(services);
     }
+
+    public List<PService> getServiceNotInPackage(int packageId){
+        return serviceRepository.getServiceNotInPackage(packageId);
+    }
+    public List<PService> getServiceInPackage(int packageId){
+        return serviceRepository.getServiceInPackage(packageId);
+    }
+
 
     @Transactional
     public List<PackageServiceEntity> saveAll(List<PackageServiceEntity> services) {
@@ -60,5 +73,15 @@ public class PServiceService {
         return services.stream()
                 .map(this::mapServiceToServiceDto)
                 .collect(Collectors.toList());
+    }
+    public void addPackageService(Integer packageId, Integer serviceId){
+        PackageServiceEntity ps = new PackageServiceEntity();
+        Package p = packageRepository.getById(packageId);
+        PService s = serviceRepository.getById(serviceId);
+
+        ps.setPackages(p);
+        ps.setService(s);
+
+        packageServiceRepository.save(ps);
     }
 }

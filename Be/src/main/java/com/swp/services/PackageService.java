@@ -12,6 +12,7 @@ import com.swp.entity.enums.Location;
 import com.swp.exception.PackageAlreadyExistException;
 import com.swp.repositories.PServiceRepository;
 import com.swp.repositories.PackageRepository;
+import com.swp.repositories.PackageServiceRepository;
 import com.swp.repositories.ServiceRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
@@ -35,9 +36,21 @@ public class PackageService {
     private final PServiceRepository pServiceRepository;
     private final ServiceRepository serviceRepository;
     private final UserService userService;
+    private final PackageServiceRepository packageServiceRepository;
 
     @Autowired
     private PackageMapper modelMapper;
+
+    public void addPackageService(Integer packageId, Integer serviceId){
+        PackageServiceEntity ps = new PackageServiceEntity();
+        Package p = packageRepository.getById(packageId);
+        PService s = serviceRepository.getById(serviceId);
+
+        ps.setPackages(p);
+        ps.setService(s);
+
+        packageServiceRepository.save(ps);
+    }
 
     @Transactional
     public void createPackage(PackageCreateDto createDto) {
@@ -234,5 +247,8 @@ public class PackageService {
     private String formatText(String text) {
         return StringUtils.capitalize(text.trim());
     }
+
+
+
 }
 

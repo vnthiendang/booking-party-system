@@ -280,6 +280,55 @@ public class BookingController {
             return makeResponse(false, " Error, occurred during updating status", e.getMessage());
         }
     }
+    @PostMapping("/addMoreServices/{serviceId}/{amount}/{packageId}")
+    public ApiMessageDto<Object> ApiAddMoreServices(@PathVariable Integer serviceId, @PathVariable Integer amount, @PathVariable Integer packageId) {
+        try {
+            if(serviceId!=null && amount!=null && packageId!=null){
+                for(int i=0; i<amount; i++){
+                    packageService.addPackageService(packageId, serviceId);
+                }
+            }
+
+            return makeResponse(true, serviceId, "Services added successfully");
+        } catch (Exception e) {
+            return makeResponse(false, "An error occurred during adding services", e.getMessage());
+        }
+    }
+
+    @GetMapping("/listServiceNotInPackage/{packageId}")
+    public List<PService> ListServicesNotInPackage(@PathVariable Integer packageId) {
+        try {
+            if(packageId!=null){
+                return pserviceService.getServiceNotInPackage(packageId);
+            }
+        } catch (Exception e) {
+            return null;
+        }
+        return null;
+    }
+
+    @GetMapping("/listOrderDetails/{bookingId}")
+    public ListOrderDTO listOrderDetails(@PathVariable Integer bookingId) {
+        try {
+            if(bookingId!=null){
+                return bookingService.getOrderDetailList(bookingId);
+            }
+        } catch (Exception e) {
+            return null;
+        }
+        return null;
+    }
+
+
+    @PostMapping("/updateAfterBooking")
+    public ApiMessageDto<Object> updateAfterBooking(@Valid @RequestBody UpdateAfterBookingDTO updateAfterBookingDTO) {
+        try {
+            bookingService.updateAfterBooking(updateAfterBookingDTO.getBookingId());
+            return makeResponse(true,updateAfterBookingDTO.getBookingId(), "Update successfully");
+        }catch (Exception e){
+            return makeResponse(false, "An error occurred during updating status", e.getMessage());
+        }
+    }
 
 
 }

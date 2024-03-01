@@ -26,5 +26,7 @@ public interface BookingRepository extends JpaRepository<Booking, Integer>, JpaS
             "WHERE b.customer_id = :userId",
             nativeQuery = true)
     List<Object[]> findBookingHistoryForCustomer(@Param("userId") Integer userId);
+    @Query("Select p from Package p where p.id = (select b.packages.id from Booking b where b.bookingId =:bookingId)")
+    Package findPackageByBookingId(@Param("bookingId")Integer bookingId);
 }
 
