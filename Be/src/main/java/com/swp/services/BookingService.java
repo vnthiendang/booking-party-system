@@ -16,10 +16,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -148,23 +145,46 @@ public class BookingService {
     }
 
     public List<BookingDto> getBookingHistoryForCustomer(Integer userId) {
-        List<Object[]> resultList = bookingRepository.findBookingHistoryForCustomer(userId);
-        List<BookingDto> dtoList = new ArrayList<>();
-        for (Object[] result : resultList) {
-            Integer id = (Integer) result[0];
-            Date bookingDate = (Date) result[1];
-            Date end = (Date) result[2];
-            Integer size = (Integer) result[3];
-            Date start = (Date) result[4];
-            String bookingStatus = (String) result[5];
-            Integer packageId = (Integer) result[7];
-            Double total = (Double) result[8];
-            String paymentStatus = (String) result[9];
-
-            BookingDto dto = new BookingDto(id, bookingDate, end, size, start, bookingStatus, packageId, total, paymentStatus);
-            dtoList.add(dto);
+        List<Booking> resultList = bookingRepository.findBookingHistoryForCustomer(userId);
+        if (resultList != null) {
+            return resultList.stream()
+                    .map(this::mapBookingToBookingDto)
+                    .collect(Collectors.toList());
         }
-        return dtoList;
+//        for (Object[] result : resultList) {
+//            Integer id = (Integer) result[0];
+//            Date bookingDate = (Date) result[1];
+//            Date end = (Date) result[2];
+//            Integer size = (Integer) result[3];
+//            Date start = (Date) result[4];
+//            String bookingStatus = (String) result[5];
+//            Integer packageId = (Integer) result[7];
+//            Double total = (Double) result[8];
+//            String paymentStatus = (String) result[9];
+//
+//            BookingDto dto = new BookingDto(id, bookingDate, end, size, start, bookingStatus, packageId, total, paymentStatus);
+//            dtoList.add(dto);
+//        }
+        return Collections.emptyList();
+    }
+    public BookingDto mapBookingToBookingDto(Booking booking) {
+        List<Integer> serviceIds = booking.getBookingPackageService().stream()
+                .map(bookingPackageService -> pServiceService.mapServiceToServiceDto(bookingPackageService.getService()))
+                .map(ServiceDto::getId)
+                .collect(Collectors.toList());
+
+        return BookingDto.builder()
+                .bookingId(booking.getBookingId())
+                .bookingDate(booking.getBookingDate())
+                .endTime(booking.getEndTime())
+                .partySize(booking.getPartySize())
+                .startTime(booking.getStartTime())
+                .bookingStatus(String.valueOf(booking.getBookingStatus()))
+                .packagesId(booking.getPackages().getId())
+                .totalCost(booking.getTotalCost())
+                .paymentStatus(String.valueOf(booking.getPaymentStatus()))
+                .customServices(serviceIds)
+                .build();
     }
     public ListOrderDTO getOrderDetailList(Integer bookingId){
         ListOrderDTO listOrderDTO = new ListOrderDTO();

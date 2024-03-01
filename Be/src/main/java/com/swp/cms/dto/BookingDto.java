@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 
 import java.util.Date;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -31,4 +32,6 @@ public class BookingDto {
 
     private Double totalCost;
     private String paymentStatus;
+
+    private List<Integer> customServices;
 }

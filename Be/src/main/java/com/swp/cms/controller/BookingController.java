@@ -134,6 +134,9 @@ public class BookingController {
             // Check if party size is greater than package capacity
             if (bookReservationDto.getPartySize() > aPackage.getCapacity()) {
                 throw new BadRequestException("Party size is greater than package capacity");
+            }else {
+                int empty = aPackage.getCapacity() - bookReservationDto.getPartySize();
+                aPackage.setCapacity(empty);
             }
             Booking reservation = modelMapper.map(bookReservationDto, Booking.class);
 //            String username = SecurityContextHolder.getContext().getAuthentication().getName();
@@ -205,18 +208,37 @@ public class BookingController {
             if(user != null){
                 booking.setCustomer(user);
             }
-            //update total
+
+//            Double deposit = dto.getDeposit();
+//            if(deposit.equals(booking.getTotalCost())){
+//                booking.setPaymentStatus(EPaymentStatus.PAID);
+//            } else if (deposit < booking.getTotalCost()) {
+//                booking.setPaymentStatus(EPaymentStatus.DEPOSITED);
+//            }
+//
+//            booking.setTotalCost(booking.getPackages().getPrice());
+//            booking.setBookingPackageService(bookingPS);
+//            bookingService.addReservation(booking);
+
+
+            // Update booking total cost
+            booking.setTotalCost(booking.getPackages().getPrice());
+
+            // Check deposit and update payment status
             Double deposit = dto.getDeposit();
-            if(deposit.equals(booking.getTotalCost())){
-                booking.setPaymentStatus(EPaymentStatus.PAID);
-            } else if (deposit < booking.getTotalCost()) {
-                booking.setPaymentStatus(EPaymentStatus.DEPOSITED);
+            if(deposit != null){
+                if (deposit.equals(booking.getTotalCost())) {
+                    booking.setPaymentStatus(EPaymentStatus.PAID);
+                } else if (deposit < booking.getTotalCost()) {
+                    booking.setPaymentStatus(EPaymentStatus.DEPOSITED);
+                } else {
+                    // Handle potential case where deposit is greater than total cost
+                    throw new BadRequestException("Deposit is greater than total cost!");
+                }
             }
 
-            booking.setTotalCost(booking.getPackages().getPrice());
             booking.setBookingPackageService(bookingPS);
             bookingService.addReservation(booking);
-
             return makeResponse(true, "", "Update booking successfully");
         } catch (Exception e) {
             return makeResponse(false, "An error occurred during updating", e.getMessage());
