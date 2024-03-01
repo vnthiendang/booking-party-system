@@ -22,4 +22,8 @@ export default class servicdeApi extends Api {
     const url = `${this.HOSTNAME}${this.table}/checkPackageAvailableInDateRange`;
     return axiosClient.post(url, body);
   }
+  checkMail(mail) {
+    const url = `${this.HOSTNAME}${this.table}/checkEmail?email=${mail}`;
+    return axiosClient.get(url);
+  }
 }

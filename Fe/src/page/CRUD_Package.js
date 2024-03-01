@@ -79,40 +79,16 @@ venue :"ThuDuc"
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (
-      !locationValue ||
-      ServiceId?.length < 0 ||
-      !namePackage ||
-      !descPackage ||
-      !capacityPackage
-    ) {
-      toast.error("some field is missing!", {
-        position: "top-right",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "light",
-        transition: Bounce,
-      });
-      return;
-    } else {
-      const body = {
-        description: descPackage,
-        capacity: capacityPackage,
-        venue: locationValue,
-        services: [...ServiceId.map((item) => item.id)],
-      };
-      !params.id ? (body.name = namePackage) : (body.packageName = namePackage);
-      console.log("🚀 ~ handleSubmit ~ body:", body);
-      const res = !params?.id
-        ? await HostApi.createPackage(body)
-        : await HostApi.editPackage(params?.id, body);
-      res &&
-        toast.success("🦄 create success!", {
-          position: "top-center",
+    try {
+      if (
+        !locationValue ||
+        ServiceId?.length < 0 ||
+        !namePackage ||
+        !descPackage ||
+        !capacityPackage
+      ) {
+        toast.error("some field is missing!", {
+          position: "top-right",
           autoClose: 5000,
           hideProgressBar: false,
           closeOnClick: true,
@@ -122,12 +98,38 @@ venue :"ThuDuc"
           theme: "light",
           transition: Bounce,
         });
-      navigate(ROUTER.PACKAGE_HOST);
-    }
-
-    try {
+        return;
+      } else {
+        const body = {
+          description: descPackage,
+          capacity: capacityPackage,
+          venue: locationValue,
+          services: [...ServiceId.map((item) => item.id)],
+        };
+        !params.id
+          ? (body.name = namePackage)
+          : (body.packageName = namePackage);
+        console.log("🚀 ~ handleSubmit ~ body:", body);
+        const res = !params?.id
+          ? await HostApi.createPackage(body)
+          : await HostApi.editPackage(params?.id, body);
+        res &&
+          toast.success("🦄 create success!", {
+            position: "top-center",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "light",
+            transition: Bounce,
+          });
+        navigate(ROUTER.PACKAGE_HOST);
+      }
     } catch (error) {
-      toast.error("🦄 Something went wrong!", {
+      console.log("🚀 ~ handleSubmit ~ error:", error);
+      toast.error(error.response?.data?.message, {
         position: "top-right",
         autoClose: 5000,
         hideProgressBar: false,

@@ -23,6 +23,7 @@ const InfomationForm = () => {
   const handleMouseDownPassword = (event) => {
     event.preventDefault();
   };
+
   return (
     <div>
       <h3>

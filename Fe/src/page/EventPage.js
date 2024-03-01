@@ -14,6 +14,8 @@ import {
   SelectDate,
   SelectPackage,
 } from "../components";
+import { ServiceApi } from "../api";
+import { useParams } from "react-router-dom";
 
 const steps = [
   // "Select package",
@@ -26,6 +28,9 @@ const steps = [
 export default function EventPage() {
   const [activeStep, setActiveStep] = React.useState(0);
   const [skipped, setSkipped] = React.useState(new Set());
+  const [packageDetail, setPackageDetail] = React.useState(null);
+  const [serviceCustom, setServiceCustom] = React.useState([]);
+  const params = useParams();
 
   const isStepOptional = (step) => {
     return step === 1;
@@ -74,17 +79,41 @@ export default function EventPage() {
       // case 0:
       // return <SelectPackage handleNextStep={handleNext} />;
       case 0:
-        return <SelectDate handleNext={handleNext} />;
+        return (
+          <SelectDate handleNext={handleNext} packageDetail={packageDetail} />
+        );
       case 1:
-        return <CustomPackage />;
+        return (
+          <CustomPackage
+            packageDetail={packageDetail}
+            serviceCustom={serviceCustom}
+            setServiceCustom={setServiceCustom}
+          />
+        );
       case 2:
-        return <InfomationForm />;
+        return <InfomationForm packageDetail={packageDetail} />;
       case 3:
-        return <Order />;
+        return <Order packageDetail={packageDetail} />;
       default:
         return <p> Step {step + 1}</p>;
     }
   };
+
+  const getPackagedetail = async (id) => {
+    try {
+      const res = await ServiceApi.getPackageDetailByCustomer(id);
+      console.log("🚀 ~ getPackagedetail ~ res:", res);
+      setPackageDetail(res);
+    } catch (error) {
+      alert(error);
+    }
+  };
+  React.useEffect(() => {
+    const { id } = params;
+    if (id) {
+      getPackagedetail(id);
+    }
+  }, [params.id]);
 
   return (
     <LayoutEvent>

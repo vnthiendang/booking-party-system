@@ -8,29 +8,12 @@ import { useParams } from "react-router-dom";
 import { ServiceApi } from "../../api";
 
 const timeZoneList = ["7:00am-11:00am", "1:00pm-6:00pm", "6:00pm-11:pm"];
-const SelectDate = ({ handleNext }) => {
-  const params = useParams();
-  const [packageDetail, setPackageDetail] = useState(null);
+const SelectDate = ({ handleNext, packageDetail }) => {
   const [dateValue, setDateValue] = useState("");
-  const getPackagedetail = async (id) => {
-    try {
-      const res = await ServiceApi.getPackageDetailByCustomer(id);
-      console.log("🚀 ~ getPackagedetail ~ res:", res);
-      setPackageDetail(res);
-    } catch (error) {
-      alert(error);
-    }
-  };
-  useEffect(() => {
-    const { id } = params;
-    if (id) {
-      getPackagedetail(id);
-    }
-  }, [params.id]);
 
   const checkTime = async (index) => {
-    let startTime = new Date();
-    let ednTime = new Date();
+    let startTime = new Date("2024-02-29");
+    let ednTime = new Date("2024-02-29");
     if (index === 0) {
       // startTime = '2024-02-29 07:00:00';
       // ednTime = '2024-02-29 07:00:00';

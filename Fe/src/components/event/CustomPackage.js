@@ -2,29 +2,98 @@ import { Box, Button, Grid, Stack } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { giftImg } from "../../asset";
 import AddIcon from "@mui/icons-material/Add";
+import RemoveIcon from "@mui/icons-material/Remove";
 import ModalBuyService from "../ModalBuyService";
 import SignatureCanvas from "react-signature-canvas";
 import "./style.css";
 import { ServiceApi } from "../../api";
 import { useParams } from "react-router-dom";
+import { Bounce, toast } from "react-toastify";
 
-const CustomPackage = () => {
-  const [openPopupBuy, setOpenPopupBuy] = useState(false);
-  const [listService,setListService] = useState([]);
+const CustomPackage = ({ packageDetail, serviceCustom, setServiceCustom }) => {
+  const [openPopupBuy, setOpenPopupBuy] = useState({
+    isOpen: false,
+    item: null,
+  });
+  const [listService, setListService] = useState([]);
+  const [totalAmount, setTotalAmount] = useState(packageDetail?.price || 0);
   const params = useParams();
   let sigPad = {};
-  const getListService = async (id)=>{
+  const getListService = async (id) => {
     try {
       const res = await ServiceApi.getListservicePk(id);
-      console.log(res);
+      setListService(
+        res
+          .filter((item) => !item.set)
+          .map((item) => ({ ...item, choose: false, qty: 1 }))
+      );
+      const priceServiceDefault = res?.reduce((acc, curr) => {
+        return acc + curr.price;
+      }, 0);
+      setTotalAmount((prev) => prev + priceServiceDefault);
     } catch (error) {
-      alert(error)
+      alert(error);
     }
-  }
+  };
 
-  useEffect(()=>{
-    getListService(params?.id)
-  },[params?.id])
+  const handleAddService = (id, qty) => {
+    const newValue = listService?.map((item) =>
+      item?.id === id ? { ...item, choose: true, qty } : item
+    );
+    setListService(newValue);
+    setServiceCustom(newValue);
+    setOpenPopupBuy({
+      isOpen: false,
+      item: null,
+    });
+    toast.success("🦄 add success!", {
+      position: "top-right",
+      autoClose: 2000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: "light",
+      transition: Bounce,
+    });
+  };
+  const handelRemoveService = (id) => {
+    const newValue = listService?.map((item) =>
+      item?.id === id ? { ...item, choose: false, qty: 0 } : item
+    );
+    setListService(newValue);
+    setServiceCustom(serviceCustom.filter((item) => item.id !== id));
+
+    toast.success("🦄 remove success!", {
+      position: "top-right",
+      autoClose: 2000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: "light",
+      transition: Bounce,
+    });
+  };
+
+  const mapptotalAmountOfServiceNew = (list) => {
+    let total = 0;
+
+    list.forEach((element) => {
+      console.log(element);
+      if (element.choose) {
+        total += element.price * element.qty;
+      }
+    });
+
+    return total;
+  };
+
+  useEffect(() => {
+    getListService(params?.id);
+  }, [params?.id]);
   return (
     <Box
       sx={{
@@ -35,23 +104,111 @@ const CustomPackage = () => {
       still need that you don't see here, tell us in the notes section on the
       next step.
       <h3>Add Product</h3>
-      <Grid
-        container
-        spacing={{ xs: 2, md: 3 }}
-        columns={{ xs: 4, sm: 8, md: 12 }}
-        sx={{
-          color: "#2e2e2e",
-          padding: "10px 19px",
-          background: "#f5f5f5",
-          marginTop: "30px  !important",
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
         }}
       >
-        {Array.from(Array(8)).map((_, index) => (
-          <Grid item xs={2} sm={4} md={3} key={index}>
-            <CardProduct handleOpen={() => setOpenPopupBuy(true)} />
-          </Grid>
-        ))}
-      </Grid>
+        <Grid
+          container
+          spacing={{ xs: 2, md: 3 }}
+          columns={{ xs: 4, sm: 8, md: 12 }}
+          sx={{
+            color: "#2e2e2e",
+            padding: "10px 19px",
+            background: "#f5f5f5",
+            marginTop: "30px  !important",
+          }}
+        >
+          {listService.map((item, index) => (
+            <Grid item xs={2} sm={4} md={3} key={index}>
+              <CardProduct
+                handleOpen={() => setOpenPopupBuy({ isOpen: true, item })}
+                item={item}
+                handelRemoveService={handelRemoveService}
+              />
+            </Grid>
+          ))}
+        </Grid>
+        <Box
+          sx={{
+            width: "261px",
+            // height: "200px",
+            border: "1px solid",
+            marginLeft: "20px",
+          }}
+        >
+          {/* title */}
+          <Box
+            sx={{
+              textAlign: "center",
+
+              background: "#3333",
+              height: "46px",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <p
+              style={{
+                fontSize: "24px",
+                margin: 0,
+              }}
+            >
+              {" "}
+              Summary
+            </p>
+          </Box>
+          <Box
+            sx={{
+              padding: "6px",
+            }}
+          >
+            Package:{" "}
+            <span style={{ fontWeight: "bold" }}>
+              {" "}
+              {packageDetail?.packageName}
+            </span>
+            <br />
+            Description:{" "}
+            <span style={{ fontWeight: "bold" }}>
+              {" "}
+              {packageDetail?.description}
+            </span>
+            <br />
+            Capacity:{" "}
+            <span style={{ fontWeight: "bold" }}>
+              {" "}
+              {packageDetail?.capacity}
+            </span>
+            <br />
+            venue:
+            <span style={{ fontWeight: "bold" }}> {packageDetail?.venue}</span>
+            <br />
+            <p
+              style={{
+                fontSize: "18px",
+              }}
+            >
+              Grand Total:
+            </p>
+            <p
+              style={{
+                fontWeight: "bold",
+                fontSize: "26px",
+                margin: 0,
+              }}
+            >
+              $
+              {(
+                totalAmount + mapptotalAmountOfServiceNew(listService)
+              )?.toLocaleString()}
+            </p>
+          </Box>
+        </Box>
+      </div>
       <h3>Sign Waiver: Birthday Waiver</h3>
       <Stack
         direction={"column"}
@@ -72,17 +229,25 @@ const CustomPackage = () => {
           />
         </div>
       </Stack>
-      <ModalBuyService
-        open={openPopupBuy}
-        handleClose={() => setOpenPopupBuy(false)}
-      />
+      {openPopupBuy?.isOpen && (
+        <ModalBuyService
+          open={openPopupBuy}
+          handleAddService={handleAddService}
+          handleClose={() =>
+            setOpenPopupBuy({
+              isOpen: false,
+              item: null,
+            })
+          }
+        />
+      )}
     </Box>
   );
 };
 
 export default CustomPackage;
 
-const CardProduct = ({ item, handleOpen }) => {
+const CardProduct = ({ item, handleOpen, handelRemoveService }) => {
   return (
     <Stack direction={"column"}>
       <Stack direction={"row"} justifyContent={"center"}>
@@ -96,7 +261,7 @@ const CardProduct = ({ item, handleOpen }) => {
           textAlign: "center",
         }}
       >
-        Goodie Bag (each)
+        {item?.serviceName}
       </p>
       <Stack
         direction={"row"}
@@ -108,13 +273,24 @@ const CardProduct = ({ item, handleOpen }) => {
         <Button
           variant="contained"
           sx={{
-            background: "#f8c853",
+            background: `${item?.choose ? "red" : "#f8c853"}`,
             width: "150px",
           }}
-          onClick={handleOpen}
+          onClick={() =>
+            item.choose ? handelRemoveService(item.id) : handleOpen()
+          }
         >
-          <AddIcon />
-          Add
+          {item.choose ? (
+            <>
+              <RemoveIcon /> Remove
+            </>
+          ) : (
+            <>
+              {" "}
+              <AddIcon />
+              Add
+            </>
+          )}
         </Button>
       </Stack>
     </Stack>

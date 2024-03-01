@@ -17,13 +17,13 @@ export const routers = [
   {
     path: ROUTER.PACKAGE,
     element: <PackagePage />,
-    auth: true,
+    // auth: true,
   },
 
   {
     path: ROUTER.EVENT,
     element: <EventPage />,
-    auth: true,
+    // auth: true,
   },
   {
     path: ROUTER.USER,

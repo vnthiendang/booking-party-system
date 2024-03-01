@@ -17,11 +17,17 @@ const style = {
   //   p: 4,
 };
 
-export default function ModalBuyService({ open, handleClose }) {
+export default function ModalBuyService({
+  open,
+  handleClose,
+  handleAddService,
+}) {
+  const { item } = open;
+  const [qty, setqty] = React.useState(item?.qty || 1);
   return (
     <div>
       <Modal
-        open={open}
+        open={open.isOpen}
         onClose={handleClose}
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
@@ -55,24 +61,31 @@ export default function ModalBuyService({ open, handleClose }) {
                     lineHeight: "28px",
                   }}
                 >
-                  Upgrade from Classic to Infinite Pass (per kid)
+                  {item?.description}
+                  <br />${item?.price}
                   <br />
-                  $49.99
-                  <br />
-                  Classic Infinite Upgrade
+                  {item?.serviceName}
                 </p>
 
                 <p>Quantity</p>
                 <input
                   type="number"
-                  defaultValue={1}
                   style={{
                     width: 100,
                   }}
+                  value={qty}
+                  onChange={(e) => setqty(e.target.value)}
                 />
-                <Button sx={{
-                  marginTop : '10px'
-                }} variant="contained">Add service</Button>
+
+                <Button
+                  sx={{
+                    marginTop: "10px",
+                  }}
+                  variant="contained"
+                  onClick={() => handleAddService(item.id, qty)}
+                >
+                  Add service
+                </Button>
               </Stack>
             </Stack>
           </Stack>
