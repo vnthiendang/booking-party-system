@@ -41,6 +41,9 @@ public class BookingController {
     private final PackageService packageService;
     private final PServiceService pserviceService;
     private final TimeSlotService timeSlotService;
+    private final BookingPServiceService bookingPServiceService;
+
+
 
 
     @Autowired
@@ -280,13 +283,17 @@ public class BookingController {
             return makeResponse(false, " Error, occurred during updating status", e.getMessage());
         }
     }
-    @PostMapping("/addMoreServices/{serviceId}/{amount}/{packageId}")
-    public ApiMessageDto<Object> ApiAddMoreServices(@PathVariable Integer serviceId, @PathVariable Integer amount, @PathVariable Integer packageId) {
+    @PostMapping("/addMoreServices/{serviceId}/{amount}/{packageId}/{bookingId}")
+    public ApiMessageDto<Object> ApiAddMoreServices(@PathVariable Integer serviceId, @PathVariable Integer amount, @PathVariable Integer packageId,@PathVariable Integer bookingId) {
         try {
             if(serviceId!=null && amount!=null && packageId!=null){
+                bookingPServiceService.addBookingPService(serviceId, amount, bookingId);
+
                 for(int i=0; i<amount; i++){
                     packageService.addPackageService(packageId, serviceId);
                 }
+
+
             }
 
             return makeResponse(true, serviceId, "Services added successfully");
