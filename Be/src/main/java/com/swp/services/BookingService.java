@@ -145,11 +145,26 @@ public class BookingService {
         //update status
         Booking booking = bookingRepository.getById(bookingId);
         booking.setStatus(EBookingStatus.APPROVED);
+
+
+
+        //
+        ListOrderDTO listOrderDTO = new ListOrderDTO();
+
+        listOrderDTO.setAPackage(bookingRepository.findPackageByBookingId(bookingId));
+        int packageId = listOrderDTO.aPackage.getId();
+        listOrderDTO.setPServicesList(pServiceService.getServiceInPackage(packageId));
+        double totalPrice = listOrderDTO.getAPackage().getPrice();
+
+        for(int i=0; i<listOrderDTO.getPServicesList().size();i++){
+            totalPrice += listOrderDTO.getPServicesList().get(i).getPrice();
+        }
+        booking.setTotalCost(totalPrice);
         bookingRepository.save(booking);
 
         //update amount service
         //int amount =
-        int packageId = bookingRepository.findPackageByBookingId(bookingId).getId();
+        //int packageIds = bookingRepository.findPackageByBookingId(bookingId).getId();
         List<PService> pServiceList = pServiceService.getServiceInPackage(packageId);
         for (int i = 0; i < pServiceList.size(); i++) {
             PService pService = pServiceList.get(i);
