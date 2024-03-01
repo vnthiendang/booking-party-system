@@ -169,8 +169,8 @@ public class BookingService {
         for (int i = 0; i < pServiceList.size(); i++) {
             PService pService = pServiceList.get(i);
 
-            //int n = packageRepository.countService(pService.getServiceId(), packageId);
-            //pService.setServiceAmount(pService.getServiceAmount() - n);
+            int n = packageRepository.countService(pService.getServiceId(), packageId);
+            pService.setServiceAmount(pService.getServiceAmount() - n);
             serviceRepository2.save(pService);
         }
     }

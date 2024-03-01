@@ -19,7 +19,7 @@ public interface PackageRepository extends JpaRepository<Package, Integer> {
 
     @Query("SELECT DISTINCT p FROM Package p LEFT JOIN FETCH p.pServices ps LEFT JOIN FETCH ps.service where p.status = 'ON'")
     List<Package> findAllPackagesWithServices();
-//    @Query("select count(*)  from PackageServiceEntity p where p.service.serviceId=:serviceId and p.packages.id=:packageId")
-//    Integer countService(@Param("userId")Integer serviceId, @Param("userId")Integer packageId);
+    @Query("select count(*)  from PackageServiceEntity p where p.service.serviceId=:serviceId and p.packages.id=:packageId")
+    Integer countService(@Param("serviceId")Integer serviceId, @Param("packageId")Integer packageId);
 
 }
