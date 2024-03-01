@@ -7,8 +7,8 @@ import { ToastContainer } from "react-toastify";
 
 function App() {
   function PrivateRoute({ children }) {
-    const token = localStorage.getItem("token")
-      ? localStorage.getItem("token")
+    const token = sessionStorage.getItem("token")
+      ? sessionStorage.getItem("token")
       : "";
 
     return token ? <>{children}</> : <Navigate to="/auth" />;

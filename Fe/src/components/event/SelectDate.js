@@ -7,7 +7,7 @@ import { PartyImg } from "../../asset";
 import { useParams } from "react-router-dom";
 import { ServiceApi } from "../../api";
 
-const timeZoneList = ["7:00am", "1:00pm", "6:00pm"];
+const timeZoneList = ["7:00am-11:00am", "1:00pm-6:00pm", "6:00pm-11:pm"];
 const SelectDate = ({ handleNext }) => {
   const params = useParams();
   const [packageDetail, setPackageDetail] = useState(null);
