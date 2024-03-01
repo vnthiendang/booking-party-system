@@ -37,4 +37,5 @@ public class PService {
     private String serviceImage;
     @OneToMany(mappedBy = "service", cascade = CascadeType.ALL)
     private List<BookingPackageService> bookingPackageService = new ArrayList<>();
+
 }
