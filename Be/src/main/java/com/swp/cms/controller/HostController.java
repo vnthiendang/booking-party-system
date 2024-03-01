@@ -129,7 +129,7 @@ public class HostController {
             if (Boolean.TRUE.equals(bookingService.isValidStatus(reservationUpdateDto.getStatus()))) {
                 throw new BadRequestException("Invalid status");
             }
-            reservation.setStatus(EBookingStatus.valueOf(reservationUpdateDto.getStatus()));
+            reservation.setBookingStatus(EBookingStatus.valueOf(reservationUpdateDto.getStatus()));
             Booking updatedReservation = bookingService.addReservation(reservation);
             return makeResponse(true, bookingMapper.fromEntityToBookingDto(updatedReservation), "Booking updated successfully");
         }catch (Exception e){

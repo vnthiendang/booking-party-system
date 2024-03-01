@@ -19,4 +19,8 @@ public interface ServiceRepository extends JpaRepository<PService, Integer> {
     @Query("SELECT s FROM PService s WHERE s.serviceId in " +
             "(select y.service.serviceId from PackageServiceEntity y where y.packages.id=:packageId)")
     List<PService> getServiceInPackage(@Param("packageId") Integer packageId);
+
+    @Query("SELECT s FROM PService s WHERE s.serviceId in " +
+            "(select y.service.serviceId from BookingPackageService y where y.id=:bookingId)")
+    List<PService> getServiceInBooking(@Param("bookingId") Integer bookingId);
 }

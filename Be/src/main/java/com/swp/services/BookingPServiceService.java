@@ -9,6 +9,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -27,5 +29,9 @@ public class BookingPServiceService {
         b.setQuantity(amount);
 
         bookingPServiceRepository.save(b);
+    }
+
+    public BookingPackageService findDuplicateServices(Integer bookingId, Integer serviceId) {
+        return bookingPServiceRepository.findByBooking_BookingIdAndService_ServiceId(bookingId, serviceId);
     }
 }

@@ -38,10 +38,8 @@ public class PServiceService {
         return serviceRepository.getServiceInPackage(packageId);
     }
 
-
-    @Transactional
-    public List<PackageServiceEntity> saveAll(List<PackageServiceEntity> services) {
-        return pServiceRepository.saveAll(services);
+    public List<PService> getServiceInBooking(int bookingId){
+        return serviceRepository.getServiceInBooking(bookingId);
     }
 
     public List<PService> getServicesByIds(List<Integer> serviceIds) {
