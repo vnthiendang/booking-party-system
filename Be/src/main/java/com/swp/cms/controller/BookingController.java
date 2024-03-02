@@ -139,11 +139,11 @@ public class BookingController {
                 aPackage.setCapacity(empty);
             }
             Booking reservation = modelMapper.map(bookReservationDto, Booking.class);
-//            String username = SecurityContextHolder.getContext().getAuthentication().getName();
-//            User user = userService.findUserByUsername(username);
+           String username = SecurityContextHolder.getContext().getAuthentication().getName();
+         User user = userService.findUserByUsername(username);
 
             reservation.setPackages(aPackage);
-//            reservation.setCustomer(user);
+           reservation.setCustomer(user);
             reservation.setBookingStatus(EBookingStatus.PENDING);
             reservation.setPaymentStatus(EPaymentStatus.NOT_PAID);
             reservation.setBookingDate(new Date());
