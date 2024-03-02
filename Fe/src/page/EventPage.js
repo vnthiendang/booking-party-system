@@ -66,8 +66,12 @@ export default function EventPage() {
     setActiveStep(0);
   };
 
-  const handleBooking = async () => {
+  const handleBooking = async (handleClose) => {
     try {
+      const customServices = serviceCustom
+        ?.filter((item) => item.choose)
+        ?.map((item) => ({ serviceId: item?.id, quantity: item?.qty }));
+
       const info = sessionStorage.getItem("info")
         ? JSON.parse(sessionStorage.getItem("info"))
         : "";
@@ -79,6 +83,24 @@ export default function EventPage() {
         customerId: info?.userId,
       });
       console.log("🚀 ~ handleBooking ~ booking:", booking);
+      setBooking(booking?.data);
+      await ServiceApi.addService({
+        bookingId: 2,
+        customServices,
+      });
+      toast.success("🦄 booking success!", {
+        position: "top-right",
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+        transition: Bounce,
+      });
+      handleClose();
+      handleNext();
     } catch (error) {
       toast.error("🦄 Something went wrong!", {
         position: "top-right",
