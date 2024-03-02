@@ -134,6 +134,7 @@ export default function UserTableRow({
         <TableCell>{role}</TableCell>
         <TableCell>
           <Switch
+            disabled={status === "BOOKED"}
             value={status}
             checked={status === "ON" ? true : status === "OFF" ? false : true}
             onChange={(e) => handleChangeStatus(id, e.target.value)}
@@ -155,29 +156,31 @@ export default function UserTableRow({
         </TableCell>
       </TableRow>
 
-      <Popover
-        open={!!open}
-        anchorEl={open}
-        onClose={handleCloseMenu}
-        anchorOrigin={{ vertical: "top", horizontal: "left" }}
-        transformOrigin={{ vertical: "top", horizontal: "right" }}
-        PaperProps={{
-          sx: { width: 140 },
-        }}
-      >
-        <MenuItem onClick={() => handleEditPackage(id)}>
-          <Iconify icon="eva:edit-fill" sx={{ mr: 2 }} />
-          Edit
-        </MenuItem>
-
-        <MenuItem
-          onClick={() => handleDeletePackage(id)}
-          sx={{ color: "error.main" }}
+      {status !== "BOOKED" && (
+        <Popover
+          open={!!open}
+          anchorEl={open}
+          onClose={handleCloseMenu}
+          anchorOrigin={{ vertical: "top", horizontal: "left" }}
+          transformOrigin={{ vertical: "top", horizontal: "right" }}
+          PaperProps={{
+            sx: { width: 140 },
+          }}
         >
-          <Iconify icon="eva:trash-2-outline" sx={{ mr: 2 }} />
-          Delete
-        </MenuItem>
-      </Popover>
+          <MenuItem onClick={() => handleEditPackage(id)}>
+            <Iconify icon="eva:edit-fill" sx={{ mr: 2 }} />
+            Edit
+          </MenuItem>
+
+          <MenuItem
+            onClick={() => handleDeletePackage(id)}
+            sx={{ color: "error.main" }}
+          >
+            <Iconify icon="eva:trash-2-outline" sx={{ mr: 2 }} />
+            Delete
+          </MenuItem>
+        </Popover>
+      )}
     </>
   );
 }
