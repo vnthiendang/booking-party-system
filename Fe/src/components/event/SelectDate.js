@@ -8,7 +8,7 @@ import { useParams } from "react-router-dom";
 import { ServiceApi } from "../../api";
 
 const timeZoneList = ["7:00am-11:00am", "1:00pm-6:00pm", "6:00pm-11:pm"];
-const SelectDate = ({ handleNext, packageDetail }) => {
+const SelectDate = ({ handleNext, packageDetail, setTime }) => {
   const [dateValue, setDateValue] = useState("");
 
   const checkTime = async (index) => {
@@ -53,6 +53,18 @@ const SelectDate = ({ handleNext, packageDetail }) => {
         .replace(/\.\d{3}Z$/, ""),
     });
     if (res.data === false) {
+      setTime({
+        startTime: new Date(
+          startTime.toLocaleString("en-US", { timeZone: "Asia/Ho_Chi_Minh" })
+        )
+          .toISOString()
+          .replace(/\.\d{3}Z$/, ""),
+        endTime: new Date(
+          ednTime.toLocaleString("en-US", { timeZone: "Asia/Ho_Chi_Minh" })
+        )
+          .toISOString()
+          .replace(/\.\d{3}Z$/, ""),
+      });
       handleNext();
     }
   };

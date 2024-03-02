@@ -26,4 +26,28 @@ export default class servicdeApi extends Api {
     const url = `${this.HOSTNAME}${this.table}/checkEmail?email=${mail}`;
     return axiosClient.get(url);
   }
+  bookPackage(body) {
+    const url = `${this.HOSTNAME}${this.table}/bookPackage`;
+    return axiosClient.post(url, body);
+  }
+  cancelBooking(body) {
+    const url = `${this.HOSTNAME}${this.table}/cancelBooking`;
+    return axiosClient.post(url, body);
+  }
+  getBookingHistory() {
+    const url = `${this.HOSTNAME}${this.table}/history`;
+    return axiosClient.get(url);
+  }
+  getOrderDetail(id) {
+    const url = `${this.HOSTNAME}${this.table}/listOrderDetails/${id}`;
+    return axiosClient.get(url);
+  }
+  getProfile() {
+    const url = `${this.HOSTNAME}/profile`;
+    return axiosClient.get(url);
+  }
+  addService(body) {
+    const url = `${this.HOSTNAME}${this.table}/listOrderDetails/addServices`;
+    return axiosClient.post(url, body);
+  }
 }

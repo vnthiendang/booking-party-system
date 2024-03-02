@@ -18,4 +18,5 @@ public class AuthenticationResponse {
     private String refreshToken;
     private String email;
     private String pwd;
+    private Integer userId;
 }

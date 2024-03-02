@@ -10,31 +10,20 @@ import { ServiceApi } from "../../api";
 import { useParams } from "react-router-dom";
 import { Bounce, toast } from "react-toastify";
 
-const CustomPackage = ({ packageDetail, serviceCustom, setServiceCustom }) => {
+const CustomPackage = ({
+  packageDetail,
+  serviceCustom,
+  setServiceCustom,
+  listService,
+  setListService,
+  totalAmount,
+}) => {
   const [openPopupBuy, setOpenPopupBuy] = useState({
     isOpen: false,
     item: null,
   });
-  const [listService, setListService] = useState([]);
-  const [totalAmount, setTotalAmount] = useState(packageDetail?.price || 0);
   const params = useParams();
   let sigPad = {};
-  const getListService = async (id) => {
-    try {
-      const res = await ServiceApi.getListservicePk(id);
-      setListService(
-        res
-          .filter((item) => !item.set)
-          .map((item) => ({ ...item, choose: false, qty: 1 }))
-      );
-      const priceServiceDefault = res?.reduce((acc, curr) => {
-        return acc + curr.price;
-      }, 0);
-      setTotalAmount((prev) => prev + priceServiceDefault);
-    } catch (error) {
-      alert(error);
-    }
-  };
 
   const handleAddService = (id, qty) => {
     const newValue = listService?.map((item) =>
@@ -81,7 +70,7 @@ const CustomPackage = ({ packageDetail, serviceCustom, setServiceCustom }) => {
   const mapptotalAmountOfServiceNew = (list) => {
     let total = 0;
 
-    list.forEach((element) => {
+    list?.forEach((element) => {
       console.log(element);
       if (element.choose) {
         total += element.price * element.qty;
@@ -91,9 +80,6 @@ const CustomPackage = ({ packageDetail, serviceCustom, setServiceCustom }) => {
     return total;
   };
 
-  useEffect(() => {
-    getListService(params?.id);
-  }, [params?.id]);
   return (
     <Box
       sx={{
@@ -121,15 +107,16 @@ const CustomPackage = ({ packageDetail, serviceCustom, setServiceCustom }) => {
             marginTop: "30px  !important",
           }}
         >
-          {listService.map((item, index) => (
-            <Grid item xs={2} sm={4} md={3} key={index}>
-              <CardProduct
-                handleOpen={() => setOpenPopupBuy({ isOpen: true, item })}
-                item={item}
-                handelRemoveService={handelRemoveService}
-              />
-            </Grid>
-          ))}
+          {listService &&
+            listService?.map((item, index) => (
+              <Grid item xs={2} sm={4} md={3} key={index}>
+                <CardProduct
+                  handleOpen={() => setOpenPopupBuy({ isOpen: true, item })}
+                  item={item}
+                  handelRemoveService={handelRemoveService}
+                />
+              </Grid>
+            ))}
         </Grid>
         <Box
           sx={{

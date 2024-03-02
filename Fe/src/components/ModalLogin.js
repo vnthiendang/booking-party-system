@@ -26,7 +26,12 @@ const style = {
   //   p: 4,
 };
 
-export default function ModalLogin({ open, handleClose, handleAddService }) {
+export default function ModalLogin({
+  open,
+  handleClose,
+
+  handleOpenConfirmModal,
+}) {
   const {
     handleSubmit,
     control,
@@ -71,6 +76,7 @@ export default function ModalLogin({ open, handleClose, handleAddService }) {
         transition: Bounce,
       });
       handleClose();
+      handleOpenConfirmModal();
     } catch (error) {
       toast.error("🦄 Something went wrong!", {
         position: "top-right",

@@ -80,6 +80,7 @@ public class AuthService {
                 .refreshToken(refreshToken)
                 .email(user.getEmail())
                 .pwd(user.getPassword())
+                .userId(user.getUsId())
                 .build();
     }
 

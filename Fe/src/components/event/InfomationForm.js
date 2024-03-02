@@ -5,8 +5,9 @@ import { Bounce, toast } from "react-toastify";
 import { ServiceApi } from "../../api";
 import ModalRegister from "../ModalRegister";
 import ModalLogin from "../ModalLogin";
+import ModalConfirm from "../ModalConfirm";
 
-const InfomationForm = () => {
+const InfomationForm = ({ handleBooking }) => {
   const {
     handleSubmit,
     control,
@@ -19,6 +20,7 @@ const InfomationForm = () => {
   });
   const [openRegisterModal, setopenRegisterModal] = useState(false);
   const [openLoginModal, setopenLoginModal] = useState(false);
+  const [openConfirmModal, setopenConfirmModal] = useState(false);
 
   async function onSubmit(data) {
     if (!data.email) {
@@ -34,11 +36,18 @@ const InfomationForm = () => {
         transition: Bounce,
       });
     } else {
-      const res = await ServiceApi.checkMail(data.email);
-      if (typeof res === "boolean") {
-        setopenLoginModal(true);
-      } else if (typeof res === "object") {
-        setopenRegisterModal(true);
+      const token = sessionStorage.getItem("token")
+        ? sessionStorage.getItem("token")
+        : "";
+      if (token) {
+        setopenConfirmModal(true);
+      } else {
+        const res = await ServiceApi.checkMail(data.email);
+        if (typeof res === "boolean") {
+          setopenLoginModal(true);
+        } else if (typeof res === "object") {
+          setopenRegisterModal(true);
+        }
       }
     }
   }
@@ -104,6 +113,14 @@ const InfomationForm = () => {
         <ModalLogin
           open={openLoginModal}
           handleClose={() => setopenLoginModal(false)}
+          handleOpenConfirmModal={() => setopenConfirmModal(true)}
+        />
+      )}
+      {openConfirmModal && (
+        <ModalConfirm
+          open={openConfirmModal}
+          handleClose={() => setopenConfirmModal(false)}
+          handleConfirm={handleBooking}
         />
       )}
     </div>

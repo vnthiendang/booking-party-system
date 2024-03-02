@@ -7,6 +7,8 @@ import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import { Container } from "@mui/material";
 import { LayoutEvent } from "../layout";
+import { Bounce, toast } from "react-toastify";
+
 import {
   CustomPackage,
   InfomationForm,
@@ -30,6 +32,11 @@ export default function EventPage() {
   const [skipped, setSkipped] = React.useState(new Set());
   const [packageDetail, setPackageDetail] = React.useState(null);
   const [serviceCustom, setServiceCustom] = React.useState([]);
+  const [listService, setListService] = React.useState([]);
+  const [totalAmount, setTotalAmount] = React.useState(0);
+  const [time, setTime] = React.useState({});
+  const [booking, setBooking] = React.useState(null);
+
   const params = useParams();
 
   const isStepOptional = (step) => {
@@ -55,23 +62,36 @@ export default function EventPage() {
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
   };
 
-  const handleSkip = () => {
-    if (!isStepOptional(activeStep)) {
-      // You probably want to guard against something like this,
-      // it should never occur unless someone's actively trying to break something.
-      throw new Error("You can't skip a step that isn't optional.");
-    }
-
-    setActiveStep((prevActiveStep) => prevActiveStep + 1);
-    setSkipped((prevSkipped) => {
-      const newSkipped = new Set(prevSkipped.values());
-      newSkipped.add(activeStep);
-      return newSkipped;
-    });
-  };
-
   const handleReset = () => {
     setActiveStep(0);
+  };
+
+  const handleBooking = async () => {
+    try {
+      const info = sessionStorage.getItem("info")
+        ? JSON.parse(sessionStorage.getItem("info"))
+        : "";
+      const booking = await ServiceApi.bookPackage({
+        packagesId: packageDetail?.id,
+        startTime: time?.startTime,
+        endTime: time?.endTime,
+        partySize: 10,
+        customerId: info?.userId,
+      });
+      console.log("🚀 ~ handleBooking ~ booking:", booking);
+    } catch (error) {
+      toast.error("🦄 Something went wrong!", {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+        transition: Bounce,
+      });
+    }
   };
 
   const checkRenderStep = (step) => {
@@ -80,7 +100,11 @@ export default function EventPage() {
       // return <SelectPackage handleNextStep={handleNext} />;
       case 0:
         return (
-          <SelectDate handleNext={handleNext} packageDetail={packageDetail} />
+          <SelectDate
+            handleNext={handleNext}
+            packageDetail={packageDetail}
+            setTime={setTime}
+          />
         );
       case 1:
         return (
@@ -88,10 +112,18 @@ export default function EventPage() {
             packageDetail={packageDetail}
             serviceCustom={serviceCustom}
             setServiceCustom={setServiceCustom}
+            listService={listService}
+            setListService={setListService}
+            totalAmount={totalAmount}
           />
         );
       case 2:
-        return <InfomationForm packageDetail={packageDetail} />;
+        return (
+          <InfomationForm
+            packageDetail={packageDetail}
+            handleBooking={handleBooking}
+          />
+        );
       case 3:
         return <Order packageDetail={packageDetail} />;
       default:
@@ -99,11 +131,28 @@ export default function EventPage() {
     }
   };
 
+  const getListService = async (id) => {
+    try {
+      const res = await ServiceApi.getListservicePk(id);
+      setListService(
+        res
+          .filter((item) => !item.set)
+          .map((item) => ({ ...item, choose: false, qty: 1 }))
+      );
+      const priceServiceDefault = res?.reduce((acc, curr) => {
+        return acc + curr.price;
+      }, 0);
+
+      setTotalAmount((prev) => prev + priceServiceDefault);
+    } catch (error) {
+      alert(error);
+    }
+  };
   const getPackagedetail = async (id) => {
     try {
       const res = await ServiceApi.getPackageDetailByCustomer(id);
-      console.log("🚀 ~ getPackagedetail ~ res:", res);
       setPackageDetail(res);
+      setTotalAmount(res?.price);
     } catch (error) {
       alert(error);
     }
@@ -114,6 +163,9 @@ export default function EventPage() {
       getPackagedetail(id);
     }
   }, [params.id]);
+  React.useEffect(() => {
+    getListService(params.id);
+  }, [packageDetail]);
 
   return (
     <LayoutEvent>
@@ -161,11 +213,6 @@ export default function EventPage() {
                   Back
                 </Button>
                 <Box sx={{ flex: "1 1 auto" }} />
-                {isStepOptional(activeStep) && (
-                  <Button color="inherit" onClick={handleSkip} sx={{ mr: 1 }}>
-                    Skip
-                  </Button>
-                )}
 
                 {activeStep !== 2 && (
                   <Button onClick={handleNext}>
