@@ -1,5 +1,6 @@
 package com.swp.cms.controller;
 
+import com.swp.cms.dto.BookingDto;
 import com.swp.cms.dto.LocationDto;
 import com.swp.cms.dto.PackageCreateDto;
 import com.swp.cms.dto.PackageDto;
@@ -11,6 +12,7 @@ import com.swp.cms.resDto.ApiMessageDto;
 import com.swp.cms.resDto.ApiResponse;
 import com.swp.entity.Booking;
 import com.swp.entity.Package;
+import com.swp.entity.User;
 import com.swp.entity.enums.EBookingStatus;
 import com.swp.entity.enums.EPackageStatus;
 import com.swp.entity.enums.Location;
@@ -117,6 +119,30 @@ public class HostController {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(new ApiResponse(e.getMessage()));
         }
     }
+    //api filter booking by date
+    @GetMapping("/getByDate")
+    public ApiMessageDto<Object> getBookingByDate(@RequestParam String dateStr) {
+
+        try {
+            String dateFormat = "dd-MM-yyyy";
+            DateFormat formatter = new SimpleDateFormat(dateFormat);
+            try {
+                Date date = formatter.parse(dateStr);
+                return makeResponse(true, bookingMapper.fromEntityToReservationDtoList(bookingService.getAllByDate(date)), "Booking retrieved successfully");
+            } catch (Exception e) {
+                throw new BadRequestException("Invalid date format");
+            }
+        }catch (Exception e){
+            return makeResponse(false, "An error occurred during fetching booking", e.getMessage());
+        }
+    }
+    @GetMapping("/getAllBookings")
+    public ResponseEntity<List<BookingDto>> getAllBookings() {
+            String username = SecurityContextHolder.getContext().getAuthentication().getName();
+            User user = userService.findUserByUsername(username);
+            List<BookingDto> bookingDtos = bookingService.getAllBookings(user.getUsId());
+            return ResponseEntity.ok(bookingDtos);
+    }
 
     // Update booking status
     @PostMapping("/updateBookingStatus")
@@ -154,24 +180,6 @@ public class HostController {
         }catch (Exception e){
             return makeResponse(false, " Error, occurred during updating status", e.getMessage());
         }
-    }
-
-    @GetMapping("/getByDate")
-    public ApiMessageDto<Object> getBookingByDate(@RequestParam String dateStr) {
-
-        try {
-            String dateFormat = "dd-MM-yyyy";
-            DateFormat formatter = new SimpleDateFormat(dateFormat);
-            try {
-                Date date = formatter.parse(dateStr);
-                return makeResponse(true, bookingMapper.fromEntityToReservationDtoList(bookingService.getAllByDate(date)), "Booking retrieved successfully");
-            } catch (Exception e) {
-                throw new BadRequestException("Invalid date format");
-            }
-        }catch (Exception e){
-            return makeResponse(false, "An error occurred during fetching booking", e.getMessage());
-        }
-
     }
 
     public ApiMessageDto<Object> makeResponse(Boolean result, Object data, String message){

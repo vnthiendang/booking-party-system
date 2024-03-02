@@ -117,6 +117,16 @@ public class BookingService {
     public List<Booking> getAllByDate(Date date) {
         return bookingRepository.findAllByDate(date);
     }
+    public List<BookingDto> getAllBookings(Integer hostId) {
+        List<Booking> resultList = bookingRepository.getAllByHostId(hostId);
+        if (resultList != null) {
+            return resultList.stream()
+                    .map(this::mapBookingToBookingDto)
+                    .collect(Collectors.toList());
+        }
+
+        return Collections.emptyList();
+    }
 
     public Optional<PackageDto> findPackageById(Integer packageId) {
         Optional<Package> packageOptional = packageRepository.findById(packageId);
