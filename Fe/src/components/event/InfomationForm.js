@@ -1,28 +1,50 @@
-import { Visibility, VisibilityOff } from "@mui/icons-material";
-import {
-  Box,
-  Button,
-  FilledInput,
-  FormControl,
-  FormHelperText,
-  IconButton,
-  Input,
-  InputAdornment,
-  InputLabel,
-  OutlinedInput,
-  Stack,
-  TextField,
-} from "@mui/material";
-import React from "react";
+import { Box, Button, TextField } from "@mui/material";
+import React, { useState } from "react";
+import { useForm, Controller } from "react-hook-form";
+import { Bounce, toast } from "react-toastify";
+import { ServiceApi } from "../../api";
+import ModalRegister from "../ModalRegister";
+import ModalLogin from "../ModalLogin";
 
 const InfomationForm = () => {
-  const [showPassword, setShowPassword] = React.useState(false);
+  const {
+    handleSubmit,
+    control,
+    formState: { errors },
+  } = useForm({
+    mode: "onSubmit",
+    defaultValues: {
+      email: "",
+    },
+  });
+  const [openRegisterModal, setopenRegisterModal] = useState(false);
+  const [openLoginModal, setopenLoginModal] = useState(false);
 
-  const handleClickShowPassword = () => setShowPassword((show) => !show);
-
-  const handleMouseDownPassword = (event) => {
-    event.preventDefault();
-  };
+  async function onSubmit(data) {
+    if (!data.email) {
+      toast.error("Email is valid", {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+        transition: Bounce,
+      });
+    } else {
+      const res = await ServiceApi.checkMail(data.email);
+      if (typeof res === "boolean") {
+        setopenLoginModal(true);
+      } else if (typeof res === "object") {
+        setopenRegisterModal(true);
+      }
+    }
+  }
+  async function onError(error) {
+    console.log("🚀 ~ onError ~ errors:", errors);
+  }
 
   return (
     <div>
@@ -31,41 +53,59 @@ const InfomationForm = () => {
         haven't already logged in, create a new account by entering a password
         below. Then click Next Step to review the cart.
       </h3>
-      <Box sx={{ display: "flex", flexWrap: "wrap" }}>
-        <div>
-          <TextField
-            label="Email address"
-            id="outlined-start-adornment"
-            sx={{ m: 1, width: "25ch" }}
-          />
-          <TextField
-            label="Phone"
-            id="outlined-start-adornment"
-            sx={{ m: 1, width: "25ch" }}
-          />
-          <TextField
-            label="Name"
-            id="outlined-start-adornment"
-            sx={{ m: 1, width: "25ch" }}
-          />
-        </div>
+      <form onSubmit={handleSubmit(onSubmit, onError)}>
+        <Box sx={{ display: "flex", flexWrap: "wrap" }}>
+          <div>
+            <Controller
+              name="email"
+              control={control}
+              render={({ field }) => (
+                <TextField
+                  type="email"
+                  label="Email address"
+                  id="outlined-start-adornment"
+                  sx={{ m: 1, width: "25ch" }}
+                  {...field}
+                />
+              )}
+            />
+            <TextField
+              label="Phone"
+              id="outlined-start-adornment"
+              sx={{ m: 1, width: "25ch" }}
+            />
+            <TextField
+              label="Name"
+              id="outlined-start-adornment"
+              sx={{ m: 1, width: "25ch" }}
+            />
+          </div>
+          <Button
+            type="submit"
+            variant="contained"
+            sx={{
+              m: 1,
+            }}
+          >
+            {" "}
+            Submit
+          </Button>
+        </Box>
+      </form>
 
-        <TextField
-          label="Address"
-          fullWidth
-          id="outlined-start-adornment"
-          sx={{ m: 1, width: "100%" }}
+      {openRegisterModal && (
+        <ModalRegister
+          open={openRegisterModal}
+          handleClose={() => setopenRegisterModal(false)}
+          handleOpenLogiModal={() => setopenLoginModal(true)}
         />
-      </Box>
-      <Button
-        variant="contained"
-        sx={{
-          m: 1,
-        }}
-      >
-        {" "}
-        Submit
-      </Button>
+      )}
+      {openLoginModal && (
+        <ModalLogin
+          open={openLoginModal}
+          handleClose={() => setopenLoginModal(false)}
+        />
+      )}
     </div>
   );
 };

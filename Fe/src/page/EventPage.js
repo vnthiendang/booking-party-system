@@ -167,9 +167,11 @@ export default function EventPage() {
                   </Button>
                 )}
 
-                <Button onClick={handleNext}>
-                  {activeStep === steps.length - 1 ? "Finish" : "Next"}
-                </Button>
+                {activeStep !== 2 && (
+                  <Button onClick={handleNext}>
+                    {activeStep === steps.length - 1 ? "Finish" : "Next"}
+                  </Button>
+                )}
               </Box>
             </React.Fragment>
           )}

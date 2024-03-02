@@ -7,4 +7,9 @@ export default class authApi extends Api {
     console.log("url", body, url);
     return axiosClient.post(url, body);
   }
+  register(body) {
+    const url = `${this.HOSTNAME}${this.table}/register`;
+    console.log("url", body, url);
+    return axiosClient.post(url, body);
+  }
 }
