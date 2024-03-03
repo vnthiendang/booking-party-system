@@ -47,7 +47,7 @@ export default class servicdeApi extends Api {
     return axiosClient.get(url);
   }
   addService(body) {
-    const url = `${this.HOSTNAME}${this.table}/listOrderDetails/addServices`;
+    const url = `${this.HOSTNAME}${this.table}/addServices`;
     return axiosClient.post(url, body);
   }
 }
