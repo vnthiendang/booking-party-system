@@ -76,7 +76,7 @@ export default function EventPage() {
         ? JSON.parse(sessionStorage.getItem("info"))
         : "";
       const booking = await ServiceApi.bookPackage({
-        packagesId: packageDetail?.id,
+        packageId: packageDetail?.id,
         startTime: time?.startTime,
         endTime: time?.endTime,
         partySize: 10,
