@@ -25,6 +25,10 @@ public interface BookingRepository extends JpaRepository<Booking, Integer>, JpaS
             "FROM Booking b " +
             "WHERE b.customer.usId = :userId")
     List<Booking> findBookingHistoryForCustomer(@Param("userId") Integer userId);
+    @Query(value = "SELECT b " +
+            "FROM Booking b " +
+            "WHERE b.bookingId = :bookingId")
+    Booking findOrderDetail(@Param("bookingId") Integer bookingId);
 
     @Query("SELECT b FROM Booking b WHERE b.packages.userId.usId = :hostId")
     List<Booking> getAllByHostId(@Param("hostId") Integer hostId);

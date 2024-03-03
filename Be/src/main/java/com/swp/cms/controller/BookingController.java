@@ -13,6 +13,7 @@ import com.swp.entity.enums.EPackageStatus;
 import com.swp.entity.enums.EPaymentStatus;
 import com.swp.exception.BadRequestException;
 import com.swp.services.*;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,6 +27,8 @@ import org.springframework.web.bind.annotation.*;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.*;
 
 @RestController
@@ -179,6 +182,9 @@ public class BookingController {
     public ApiMessageDto<Object> addServices(@Valid @RequestBody BookedServiceDto dto) {
         try {
             Booking booking = bookingService.findBookingById(dto.getBookingId());
+            if (booking == null) {
+                throw new EntityNotFoundException("Booking not exit");
+            }
 
             if (!booking.getBookingStatus().equals(EBookingStatus.PENDING)) {
                 throw new BadRequestException("Cannot add services to a booking with status " + booking.getBookingStatus());
@@ -217,12 +223,12 @@ public class BookingController {
 //                customServicePrice += existingService.getPrice();
             }
 
-            String username = SecurityContextHolder.getContext().getAuthentication().getName();
-            User user = userService.findUserByUsername(username);
-
-            if(user != null){
-                booking.setCustomer(user);
-            }
+//            String username = SecurityContextHolder.getContext().getAuthentication().getName();
+//            User user = userService.findUserByUsername(username);
+//
+//            if(user != null){
+//                booking.setCustomer(user);
+//            }
 
 //            Double deposit = dto.getDeposit();
 //            if(deposit.equals(booking.getTotalCost())){
@@ -321,6 +327,11 @@ public class BookingController {
     public ResponseEntity<List<BookingDto>> getBookingHistoryForCustomer() {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         List<BookingDto> bookingHistory = bookingService.getBookingHistoryForCustomer(userService.findUserByUsername(username).getUsId());
+        return ResponseEntity.ok(bookingHistory);
+    }
+    @GetMapping("/history/{bookingId}")
+    public ResponseEntity<BookingDto> getOrderDetail(@PathVariable Integer bookingId) {
+        BookingDto bookingHistory = bookingService.getOrderDetail(bookingId);
         return ResponseEntity.ok(bookingHistory);
     }
     @PostMapping("/cancelBooking")
