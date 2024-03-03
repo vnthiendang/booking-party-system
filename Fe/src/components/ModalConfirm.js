@@ -50,7 +50,10 @@ export default function ModalConfirm({ open, handleClose, handleConfirm }) {
             >
               Cancel
             </Button>
-            <Button variant="contained" onClick={handleConfirm}>
+            <Button
+              variant="contained"
+              onClick={() => handleConfirm(handleClose)}
+            >
               Confim
             </Button>
           </div>
