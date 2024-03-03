@@ -117,10 +117,10 @@ public class BookingController {
     public ApiMessageDto<Object> bookPackage(@Valid @RequestBody BookingDto bookReservationDto) {
         try {
             // Check if package exists
-            packageService.findPackageById(bookReservationDto.getPackagesId());
+            packageService.findPackageById(bookReservationDto.getPackageId());
 
             // Check if package is booked
-            if (Boolean.TRUE.equals(packageService.isBooked(bookReservationDto.getPackagesId()))) {
+            if (Boolean.TRUE.equals(packageService.isBooked(bookReservationDto.getPackageId()))) {
                 throw new BadRequestException("Package is already booked");
             }
 
@@ -129,7 +129,7 @@ public class BookingController {
                 throw new BadRequestException("Start time is after end time");
             }
 
-            Package aPackage = packageService.getById(bookReservationDto.getPackagesId());
+            Package aPackage = packageService.getById(bookReservationDto.getPackageId());
 
             // Check if party size is greater than package capacity
             if (bookReservationDto.getPartySize() > aPackage.getCapacity()) {
@@ -153,10 +153,25 @@ public class BookingController {
             aPackage.setStatus(EPackageStatus.BOOKED);
 
             Booking savedReservation = bookingService.addReservation(reservation);
-            return makeResponse(true, mapper.fromEntityToBookingDto(savedReservation), "Booking added successfully");
+            return makeResponse(true, mapBookingToBookingDto(savedReservation), "Booking added successfully");
         }catch (Exception e){
             return makeResponse(false, "An error occurred during booking", e.getMessage());
         }
+    }
+    public BookingDto mapBookingToBookingDto(Booking booking) {
+
+        return BookingDto.builder()
+                .bookingId(booking.getBookingId())
+                .bookingDate(booking.getBookingDate())
+                .endTime(booking.getEndTime())
+                .partySize(booking.getPartySize())
+                .startTime(booking.getStartTime())
+                .bookingStatus(String.valueOf(booking.getBookingStatus()))
+                .packageId(booking.getPackages().getId())
+                .totalCost(booking.getTotalCost())
+                .paymentStatus(String.valueOf(booking.getPaymentStatus()))
+                .customerUsId(booking.getCustomer().getUsId())
+                .build();
     }
 
     //api custom services for booking

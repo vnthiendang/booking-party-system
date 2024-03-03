@@ -28,10 +28,11 @@ public class BookingDto {
     private String bookingStatus;
 
     @NotNull
-    private Integer packagesId;
+    private Integer packageId;
 
     private Double totalCost;
     private String paymentStatus;
 
     private List<Integer> customServices;
+    private Integer customerUsId;
 }

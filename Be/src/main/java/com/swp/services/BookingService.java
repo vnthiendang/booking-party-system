@@ -190,7 +190,7 @@ public class BookingService {
                 .partySize(booking.getPartySize())
                 .startTime(booking.getStartTime())
                 .bookingStatus(String.valueOf(booking.getBookingStatus()))
-                .packagesId(booking.getPackages().getId())
+                .packageId(booking.getPackages().getId())
                 .totalCost(booking.getTotalCost())
                 .paymentStatus(String.valueOf(booking.getPaymentStatus()))
                 .customServices(serviceIds)
