@@ -14,6 +14,6 @@ import java.util.List;
 public class BookedServiceDto {
     private Integer bookingId;
     private List<CustomServiceDto> customServices;
-    private Integer customerId;
+//    private Integer customerId;
     private Double deposit;
 }

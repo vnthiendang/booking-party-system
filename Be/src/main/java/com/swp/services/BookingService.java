@@ -177,6 +177,13 @@ public class BookingService {
 //        }
         return Collections.emptyList();
     }
+    public BookingDto getOrderDetail(Integer bookingId) {
+        Booking result = bookingRepository.findOrderDetail(bookingId);
+        if (result != null) {
+            return mapBookingToBookingDto(result);
+        }
+        return null;
+    }
     public BookingDto mapBookingToBookingDto(Booking booking) {
         List<Integer> serviceIds = booking.getBookingPackageService().stream()
                 .map(bookingPackageService -> pServiceService.mapServiceToServiceDto(bookingPackageService.getService()))
@@ -194,6 +201,7 @@ public class BookingService {
                 .totalCost(booking.getTotalCost())
                 .paymentStatus(String.valueOf(booking.getPaymentStatus()))
                 .customServices(serviceIds)
+                .customerUsId(booking.getCustomer().getUsId())
                 .build();
     }
     public ListOrderDTO getOrderDetailList(Integer bookingId){
