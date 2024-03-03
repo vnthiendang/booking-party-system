@@ -19,15 +19,15 @@ const axiosClient = axios.create({
 
 axiosClient.defaults.baseURL = env.REACT_APP_API;
 
-// axiosClient.interceptors.request.use(async (config) => {
-//   const accessToken = localStorage.getItem("token")
-//     ? localStorage.getItem("token")
-//     : "";
-//   if (accessToken) {
-//     config.headers.common.Authorization = `Bearer ${JSON.parse(accessToken)}`;
-//   }
-//   return config;
-// });
+axiosClient.interceptors.request.use(async (config) => {
+  const accessToken = localStorage.getItem("token")
+    ? localStorage.getItem("token")
+    : "";
+  if (accessToken) {
+    config.headers.common.Authorization = `Bearer ${JSON.parse(accessToken)}`;
+  }
+  return config;
+});
 
 axiosClient.interceptors.response.use(
   (response) => {

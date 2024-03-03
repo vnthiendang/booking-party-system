@@ -80,12 +80,12 @@ export default function EventPage() {
         startTime: time?.startTime,
         endTime: time?.endTime,
         partySize: 10,
-        customerId: info?.userId,
+        customerUsId: info?.userId,
       });
       console.log("🚀 ~ handleBooking ~ booking:", booking);
       setBooking(booking?.data);
       await ServiceApi.addService({
-        bookingId: 2,
+        bookingId: booking?.data?.bookingId,
         customServices,
       });
       toast.success("🦄 booking success!", {
