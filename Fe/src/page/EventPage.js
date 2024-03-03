@@ -147,7 +147,7 @@ export default function EventPage() {
           />
         );
       case 3:
-        return <Order packageDetail={packageDetail} />;
+        return <Order packageDetail={packageDetail} booking={booking} />;
       default:
         return <p> Step {step + 1}</p>;
     }

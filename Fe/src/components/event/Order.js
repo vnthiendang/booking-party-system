@@ -1,7 +1,34 @@
 import { Stack } from "@mui/material";
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { Bounce, toast } from "react-toastify";
+import { ServiceApi } from "../../api";
 
-const Order = () => {
+const Order = ({ booking }) => {
+  console.log("🚀 ~ Order ~ booking:", booking);
+  const [order, setorder] = useState(null);
+
+  const getOrrderDetail = async (id) => {
+    try {
+      const res = await ServiceApi.getOrderDetail(id);
+      console.log("🚀 ~ getOrrderDetail ~ res:", res);
+    } catch (error) {
+      toast.error("🦄 Something went wrong!", {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+        transition: Bounce,
+      });
+    }
+  };
+  useEffect(() => {
+    getOrrderDetail(booking.bookingId);
+  }, [booking]);
+
   return (
     <div>
       <div
