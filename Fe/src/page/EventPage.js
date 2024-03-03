@@ -17,7 +17,9 @@ import {
   SelectPackage,
 } from "../components";
 import { ServiceApi } from "../api";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
+import ModalCancel from "../components/ModalCancel";
+import ModalConfirmDeposit from "../components/ModalConfirmDepoist";
 
 const steps = [
   // "Select package",
@@ -36,6 +38,9 @@ export default function EventPage() {
   const [totalAmount, setTotalAmount] = React.useState(0);
   const [time, setTime] = React.useState({});
   const [booking, setBooking] = React.useState(null);
+  const [openModalCancel, setopenModalCancel] = React.useState(false);
+  const [openModalDeposit, setopenModalDeposit] = React.useState(false);
+  const navigate = useNavigate();
 
   const params = useParams();
 
@@ -54,12 +59,21 @@ export default function EventPage() {
       newSkipped.delete(activeStep);
     }
 
-    setActiveStep((prevActiveStep) => prevActiveStep + 1);
-    setSkipped(newSkipped);
+    if (activeStep === 3) {
+      console.log("confirm deposit");
+      setopenModalDeposit(true);
+    } else {
+      setActiveStep((prevActiveStep) => prevActiveStep + 1);
+      setSkipped(newSkipped);
+    }
   };
 
   const handleBack = () => {
-    setActiveStep((prevActiveStep) => prevActiveStep - 1);
+    if (activeStep === 3) {
+      setopenModalCancel(true);
+    } else {
+      setActiveStep((prevActiveStep) => prevActiveStep - 1);
+    }
   };
 
   const handleReset = () => {
@@ -75,19 +89,28 @@ export default function EventPage() {
       const info = sessionStorage.getItem("info")
         ? JSON.parse(sessionStorage.getItem("info"))
         : "";
-      const booking = await ServiceApi.bookPackage({
-        packageId: packageDetail?.id,
-        startTime: time?.startTime,
-        endTime: time?.endTime,
-        partySize: 10,
-        customerUsId: info?.userId,
-      });
+      const token = sessionStorage.getItem("token")
+        ? JSON.parse(sessionStorage.getItem("token"))
+        : "";
+      const booking = await ServiceApi.bookPackage(
+        {
+          packageId: packageDetail?.id,
+          startTime: time?.startTime,
+          endTime: time?.endTime,
+          partySize: 1,
+          customerUsId: info?.userId,
+        },
+        token
+      );
       console.log("🚀 ~ handleBooking ~ booking:", booking);
       setBooking(booking?.data);
-      await ServiceApi.addService({
-        bookingId: booking?.data?.bookingId,
-        customServices,
-      });
+      await ServiceApi.addService(
+        {
+          bookingId: booking?.data?.bookingId,
+          customServices,
+        },
+        token
+      );
       toast.success("🦄 booking success!", {
         position: "top-right",
         autoClose: 2000,
@@ -116,6 +139,84 @@ export default function EventPage() {
     }
   };
 
+  const handleCancelBooking = async (id) => {
+    try {
+      const token = sessionStorage.getItem("token")
+        ? JSON.parse(sessionStorage.getItem("token"))
+        : "";
+      await ServiceApi.cancelBooking(
+        {
+          bookingId: id,
+
+          status: "CANCELLED",
+        },
+        token
+      );
+      toast.success("🦄 cancel success!", {
+        position: "top-right",
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+        transition: Bounce,
+      });
+      navigate("/");
+    } catch (error) {
+      toast.error("🦄 Something went wrong!", {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+        transition: Bounce,
+      });
+    }
+  };
+
+  const handleConfirmDeposit = async (deposit) => {
+    try {
+      const token = sessionStorage.getItem("token")
+        ? JSON.parse(sessionStorage.getItem("token"))
+        : "";
+      await ServiceApi.addService(
+        {
+          bookingId: booking?.bookingId,
+          deposit: +deposit,
+        },
+        token
+      );
+      toast.success("🦄 booking success!", {
+        position: "top-right",
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+        transition: Bounce,
+      });
+      navigate("/");
+    } catch (error) {
+      toast.error("🦄 Something went wrong!", {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+        transition: Bounce,
+      });
+    }
+  };
   const checkRenderStep = (step) => {
     switch (step) {
       // case 0:
@@ -232,7 +333,7 @@ export default function EventPage() {
                   onClick={handleBack}
                   sx={{ mr: 1 }}
                 >
-                  Back
+                  {activeStep === steps.length - 1 ? "Cancel" : "Back"}
                 </Button>
                 <Box sx={{ flex: "1 1 auto" }} />
 
@@ -242,9 +343,23 @@ export default function EventPage() {
                   </Button>
                 )}
               </Box>
+              {openModalCancel && (
+                <ModalCancel
+                  open={openModalCancel}
+                  handleClose={() => setopenModalCancel(false)}
+                  handleConfirm={() => handleCancelBooking(booking?.bookingId)}
+                />
+              )}
             </React.Fragment>
           )}
         </Box>
+        {openModalDeposit && (
+          <ModalConfirmDeposit
+            open={openModalDeposit}
+            handleClose={() => setopenModalDeposit(false)}
+            handleConfirm={handleConfirmDeposit}
+          />
+        )}
       </Container>
     </LayoutEvent>
   );

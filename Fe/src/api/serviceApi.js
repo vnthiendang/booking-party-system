@@ -26,28 +26,53 @@ export default class servicdeApi extends Api {
     const url = `${this.HOSTNAME}${this.table}/checkEmail?email=${mail}`;
     return axiosClient.get(url);
   }
-  bookPackage(body) {
+  bookPackage(body, token) {
     const url = `${this.HOSTNAME}${this.table}/bookPackage`;
-    return axiosClient.post(url, body);
+    const headers = {
+      Authorization: `Bearer ${token}`,
+    };
+    return axiosClient.post(url, body, {
+      headers,
+    });
   }
-  cancelBooking(body) {
+  cancelBooking(body, token) {
     const url = `${this.HOSTNAME}${this.table}/cancelBooking`;
-    return axiosClient.post(url, body);
+    const headers = {
+      Authorization: `Bearer ${token}`,
+    };
+    return axiosClient.post(url, body, {
+      headers,
+    });
   }
-  getBookingHistory() {
+  getBookingHistory(token) {
     const url = `${this.HOSTNAME}${this.table}/history`;
-    return axiosClient.get(url);
+    const headers = {
+      Authorization: `Bearer ${token}`,
+    };
+    return axiosClient.get(url, {
+      headers,
+    });
   }
-  getOrderDetail(id) {
-    const url = `${this.HOSTNAME}${this.table}/listOrderDetails/${id}`;
-    return axiosClient.get(url);
+  getOrderDetail(token) {
+    const url = `${this.HOSTNAME}${this.table}/history`;
+    const headers = {
+      Authorization: `Bearer ${token}`,
+    };
+    return axiosClient.get(url, {
+      headers,
+    });
   }
   getProfile() {
     const url = `${this.HOSTNAME}/profile`;
     return axiosClient.get(url);
   }
-  addService(body) {
+  addService(body, token) {
     const url = `${this.HOSTNAME}${this.table}/addServices`;
-    return axiosClient.post(url, body);
+    const headers = {
+      Authorization: `Bearer ${token}`,
+    };
+    return axiosClient.post(url, body, {
+      headers,
+    });
   }
 }

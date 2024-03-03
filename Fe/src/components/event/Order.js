@@ -3,14 +3,16 @@ import React, { useEffect, useState } from "react";
 import { Bounce, toast } from "react-toastify";
 import { ServiceApi } from "../../api";
 
-const Order = ({ booking }) => {
+const Order = ({ booking, packageDetail }) => {
   console.log("🚀 ~ Order ~ booking:", booking);
   const [order, setorder] = useState(null);
 
-  const getOrrderDetail = async (id) => {
+  const getOrrderDetail = async (token) => {
     try {
-      const res = await ServiceApi.getOrderDetail(id);
-      console.log("🚀 ~ getOrrderDetail ~ res:", res);
+      const res = await ServiceApi.getOrderDetail(token);
+      setorder(
+        res?.filter((item) => item?.bookingId === booking?.bookingId)?.[0]
+      );
     } catch (error) {
       toast.error("🦄 Something went wrong!", {
         position: "top-right",
@@ -26,8 +28,22 @@ const Order = ({ booking }) => {
     }
   };
   useEffect(() => {
-    getOrrderDetail(booking.bookingId);
+    const token = sessionStorage.getItem("token")
+      ? JSON.parse(sessionStorage.getItem("token"))
+      : "";
+    getOrrderDetail(token);
   }, [booking]);
+
+  console.log("🚀 ~ Order ~ order:", order);
+  //startTime
+  //endTime
+  //totalCost
+  function formatTime(timeString) {
+    const dateTime = new Date(timeString);
+    const hours = dateTime.getHours().toString().padStart(2, "0");
+    const minutes = dateTime.getMinutes().toString().padStart(2, "0");
+    return `${hours}:${minutes}`;
+  }
 
   return (
     <div>
@@ -82,36 +98,23 @@ const Order = ({ booking }) => {
                   <div className="col-lg-10 col-xs-9 col-550-12">
                     <p className="bottommargin-0 lineheight18">
                       <span className="family-avi-medium darkblue">
-                        <b>Party Room 1</b>
+                        Package: <b>{packageDetail?.packageName}</b>
                         <br />
-                        Category:{" "}
-                        <b>
-                          Book a Party (If less than 48hrs, please email us)
-                        </b>
-                        <br />
-                        Package: <b>Party Classic</b>
-                        <br />
-                        Location: <b>The Big Box - Family Entertainment Hub</b>
+                        Location: <b>{packageDetail?.venue}</b>
                         <br />
                         <b>
-                          Thu Jan 25, 2024
-                          <br /> 10:00am - 11:30am (MST)
+                          <br /> {formatTime(order?.startTime)}-{" "}
+                          {formatTime(order?.endTime)} (MST)
                         </b>
-                        <br />
-                        <b>1</b> - # of kids (Max. Room Seating = 16) <br />
-                        <b>1</b> - # of adults (Max. Room Seating = 16) <br />
-                        <br />
-                      </span>
-                    </p>
-                    <p className="bottommargin-0 lineheight16">
-                      <span className="font12 darkblue">
-                        10:00am - 11:30am (MST)
                       </span>
                     </p>
                     <p className="bottommargin-0 lineheight16">
                       <span className="font12 darkblue">
                         1 # of kids (Max. Room Seating = 16) , 1 # of adults
                         (Max. Room Seating = 16)
+                      </span>
+                      <span className="font12 darkblue">
+                        Total Capacity: {packageDetail?.capacity}
                       </span>
                     </p>
                   </div>
@@ -120,7 +123,7 @@ const Order = ({ booking }) => {
                 {/* /.row */}
               </td>
               <td>1</td>
-              <td>$299.99</td>
+              <td>${packageDetail?.price?.toLocaleString()}</td>
             </tr>
           </tbody>
         </table>
@@ -130,17 +133,6 @@ const Order = ({ booking }) => {
           padding: "10px 0",
           borderBottom: "2px solid #e7e7e7",
           textAlign: "end",
-          width: 1059,
-        }}
-      >
-        Subtotal : $299.00
-      </p>
-      <p
-        style={{
-          padding: "10px 0",
-          borderBottom: "2px solid #e7e7e7",
-          textAlign: "end",
-          width: 1059,
         }}
       >
         Total discount : $00.00
@@ -150,22 +142,11 @@ const Order = ({ booking }) => {
           padding: "10px 0",
           borderBottom: "2px solid #e7e7e7",
           textAlign: "end",
-          width: 1059,
-        }}
-      >
-        Tax : $15.00
-      </p>
-      <p
-        style={{
-          padding: "10px 0",
-          borderBottom: "2px solid #e7e7e7",
-          textAlign: "end",
           background: "#e7e7e7",
-          width: 1059,
           paddingRight: "10px",
         }}
       >
-        Grand Total: $314.99
+        Grand Total: ${order?.totalCost?.toLocaleString()}
       </p>
     </div>
   );

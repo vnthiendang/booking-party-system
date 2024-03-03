@@ -6,6 +6,7 @@ import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { PartyImg } from "../../asset";
 import { useParams } from "react-router-dom";
 import { ServiceApi } from "../../api";
+import { Bounce, toast } from "react-toastify";
 
 const timeZoneList = ["7:00am-11:00am", "1:00pm-6:00pm", "6:00pm-11:pm"];
 const SelectDate = ({ handleNext, packageDetail, setTime }) => {
@@ -66,6 +67,18 @@ const SelectDate = ({ handleNext, packageDetail, setTime }) => {
           .replace(/\.\d{3}Z$/, ""),
       });
       handleNext();
+    } else {
+      toast.error("🦄 this time has been booked!", {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+        transition: Bounce,
+      });
     }
   };
 
