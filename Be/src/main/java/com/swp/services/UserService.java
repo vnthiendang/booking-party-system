@@ -35,11 +35,7 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
 
     public User findUserByUsername(String username) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        User userDetails = (User) authentication.getPrincipal();
-
-        User us = userRepository.findByEmail(userDetails.getUsername());
-        return us;
+        return userRepository.checkEmailExist(username);
     }
     public boolean isEmailExist(String email) {
         return userRepository.checkEmailExist(email) != null;

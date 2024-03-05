@@ -30,6 +30,7 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/booking")
@@ -191,59 +192,34 @@ public class BookingController {
             }
 
             Double customServicePrice = (double) 0;
-            List<BookingPackageService> bookingPS = new ArrayList<>();
-            Map<Integer, BookingPackageService> existingServices = new HashMap<>();
-            BookingPackageService newService = new BookingPackageService();
 
-            for (CustomServiceDto customServiceDto : dto.getCustomServices()) {
-                Integer serviceId = customServiceDto.getServiceId();
-                Integer quantity = customServiceDto.getQuantity();
+            if(dto.getCustomServices() != null){
+                List<BookingPackageService> bookingPS = new ArrayList<>();
 
-                // Check for existing service
-                BookingPackageService existingService = bookingPServiceService.findDuplicateServices(dto.getBookingId(), serviceId);
+                // Iterate through custom services in the DTO
+                for (CustomServiceDto customServiceDto : dto.getCustomServices()) {
+                    PService chosenService = serviceService.getServiceById(customServiceDto.getServiceId()); // Assuming a service retrieval method
 
-                if (existingService != null) {
-                    // Update existing service qty
-                    existingService.setQuantity(quantity);
-                    existingService.setPrice(quantity * existingService.getService().getPrice());
-//                    customServicePrice += existingService.getPrice();
-                } else {
-                    // add service
-                    PService chosenService = serviceService.getServiceById(serviceId);
+                    BookingPackageService bookingPService = new BookingPackageService();
+                    bookingPService.setBooking(booking);
+                    bookingPService.setService(chosenService);
+                    bookingPService.setQuantity(customServiceDto.getQuantity());
 
-                    newService.setBooking(booking);
-                    newService.setService(chosenService);
-                    newService.setQuantity(quantity);
+                    // Calculate price based on service price and quantity
                     double servicePrice = chosenService.getPrice();
-                    newService.setPrice(servicePrice * quantity);
+                    double totalServicePrice = servicePrice * customServiceDto.getQuantity();
+                    customServicePrice += totalServicePrice;
+                    bookingPService.setPrice(totalServicePrice);
 
-                    bookingPS.add(newService);
-                    existingServices.put(serviceId, newService);
+                    bookingPS.add(bookingPService);
                 }
-//                customServicePrice += existingService.getPrice();
+
+                booking.setBookingPackageService(bookingPS);
             }
 
-//            String username = SecurityContextHolder.getContext().getAuthentication().getName();
-//            User user = userService.findUserByUsername(username);
-//
-//            if(user != null){
-//                booking.setCustomer(user);
-//            }
+            // Set booking cost
+            booking.setTotalCost(booking.getTotalCost() + customServicePrice);
 
-//            Double deposit = dto.getDeposit();
-//            if(deposit.equals(booking.getTotalCost())){
-//                booking.setPaymentStatus(EPaymentStatus.PAID);
-//            } else if (deposit < booking.getTotalCost()) {
-//                booking.setPaymentStatus(EPaymentStatus.DEPOSITED);
-//            }
-//
-//            booking.setTotalCost(booking.getPackages().getPrice());
-//            booking.setBookingPackageService(bookingPS);
-//            bookingService.addReservation(booking);
-
-
-            // Update booking total cost
-            booking.setTotalCost(booking.getPackages().getPrice());
 
             // Check deposit and update payment status
             Double deposit = dto.getDeposit();
@@ -258,7 +234,78 @@ public class BookingController {
                 }
             }
 
-            booking.setBookingPackageService(bookingPS);
+            bookingService.addReservation(booking); // Assuming a method to save Booking
+            return makeResponse(true, "", "Update booking successfully");
+        } catch (Exception e) {
+            return makeResponse(false, "An error occurred during updating", e.getMessage());
+        }
+    }
+    @PutMapping("/editBooking")
+    public ApiMessageDto<Object> editBooking(@Valid @RequestBody BookedServiceDto dto) {
+        try {
+            Booking booking = bookingService.findBookingById(dto.getBookingId());
+            if (booking == null) {
+                throw new EntityNotFoundException("Booking not exit");
+            }
+
+            if (!booking.getBookingStatus().equals(EBookingStatus.PENDING)) {
+                throw new BadRequestException("Cannot add services to a booking with status " + booking.getBookingStatus());
+            }
+
+            //update services
+            if(dto.getCustomServices() != null){
+                Double totalServicePrice  = (double) 0;
+                Map<Integer, BookingPackageService> serviceMap = new HashMap<>(); // Track services in current request
+
+                List<BookingPackageService> existingServices = bookingPServiceService.findAllByBookingId(booking.getBookingId());
+                for (BookingPackageService existingService : existingServices) {
+                    serviceMap.put(existingService.getService().getServiceId(), existingService); // Map existing service IDs to entities
+                    totalServicePrice += existingService.getPrice();
+                }
+
+                List<BookingPackageService> updatedServices = new ArrayList<>();
+                for (CustomServiceDto customServiceDto : dto.getCustomServices()) {
+                    Integer serviceId = customServiceDto.getServiceId();
+                    Integer quantity = customServiceDto.getQuantity();
+
+                    // Find existing service or create a new one
+                    BookingPackageService service = serviceMap.get(serviceId);
+                    if (service == null) {
+                        PService chosenService = serviceService.getServiceById(serviceId);
+                        service = new BookingPackageService();
+                        service.setBooking(booking);
+                        service.setService(chosenService);
+                        service.setQuantity(0); // Initialize quantity to 0 for new services
+                    }
+
+                    // Update quantity and price based on current selection
+                    service.setQuantity(quantity);
+                    double servicePrice = service.getService().getPrice();
+                    service.setPrice(servicePrice * quantity);
+
+                    totalServicePrice += service.getPrice();
+
+//                serviceMap.put(serviceId, service);
+                    updatedServices.add(service);
+                }
+
+                // Update booking total cost and associated services
+                booking.setTotalCost(booking.getPackages().getPrice() + totalServicePrice);
+                booking.setBookingPackageService(updatedServices);
+            }
+
+            Double deposit = dto.getDeposit();
+            if(deposit != null){
+                if (deposit.equals(booking.getTotalCost())) {
+                    booking.setPaymentStatus(EPaymentStatus.PAID);
+                } else if (deposit < booking.getTotalCost()) {
+                    booking.setPaymentStatus(EPaymentStatus.DEPOSITED);
+                } else {
+                    // Handle potential case where deposit is greater than total cost
+                    throw new BadRequestException("Deposit is greater than total cost!");
+                }
+            }
+
             bookingService.addReservation(booking);
             return makeResponse(true, "", "Update booking successfully");
         } catch (Exception e) {
@@ -341,11 +388,12 @@ public class BookingController {
             if (booking == null) {
                 throw new BadRequestException("Package not exit");
             }
-           /* if (booking.getStatus() == EBookingStatus.APPROVED) {
-                throw new BadRequestException("Cannot update status of a APPROVED booking");
-            }*/
+            if (booking.getBookingStatus() == EBookingStatus.APPROVED) {
+                throw new BadRequestException("Cannot cancel APPROVED booking");
+            }
 
             booking.setBookingStatus(EBookingStatus.valueOf(dto.getStatus()));
+            booking.getPackages().setStatus(EPackageStatus.ON);
             Booking updatedBooking = bookingService.addReservation(booking);
             return makeResponse(true, mapper.fromEntityToBookingDto(updatedBooking), "Booking updated successfully");
         }catch (Exception e){
