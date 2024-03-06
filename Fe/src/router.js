@@ -11,6 +11,7 @@ import {
   CRUDPackage,
   RevenueAdminPage,
   RegisterPage,
+  OrderBookingPage,
 } from "./page";
 
 export const routers = [
@@ -66,5 +67,9 @@ export const routers = [
   {
     path: ROUTER.REGISTER,
     element: <RegisterPage />,
+  },
+  {
+    path: ROUTER.ORDER_BOOKING,
+    element: <OrderBookingPage />,
   },
 ];

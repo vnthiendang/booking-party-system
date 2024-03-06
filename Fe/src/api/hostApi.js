@@ -31,4 +31,8 @@ export default class hostApi extends Api {
     const url = `${this.HOSTNAME}${this.table}/changeStatus`;
     return axiosClient.post(url, body);
   }
+  getBooking() {
+    const url = `${this.HOSTNAME}${this.table}/getAllBookings`;
+    return axiosClient.get(url);
+  }
 }

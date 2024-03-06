@@ -11,6 +11,7 @@ const PackagePageHost = lazy(() => import("./package-host"));
 const CRUDPackage = lazy(() => import("./CRUD_Package"));
 const RevenueAdminPage = lazy(() => import("./revenueAdmin"));
 const RegisterPage = lazy(() => import("./register"));
+const OrderBookingPage = lazy(() => import("./OrderBookingPage"));
 export {
   PackagePage,
   EventPage,
@@ -23,4 +24,5 @@ export {
   CRUDPackage,
   RevenueAdminPage,
   RegisterPage,
+  OrderBookingPage,
 };

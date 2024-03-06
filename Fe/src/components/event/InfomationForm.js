@@ -78,16 +78,6 @@ const InfomationForm = ({ handleBooking }) => {
                 />
               )}
             />
-            <TextField
-              label="Phone"
-              id="outlined-start-adornment"
-              sx={{ m: 1, width: "25ch" }}
-            />
-            <TextField
-              label="Name"
-              id="outlined-start-adornment"
-              sx={{ m: 1, width: "25ch" }}
-            />
           </div>
           <Button
             type="submit"

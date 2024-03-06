@@ -205,7 +205,7 @@ const CustomPackage = ({
         }}
       >
         {/* text */}
-        <Policy />
+        {/* <Policy /> */}
         <div className="sigContainer">
           <SignatureCanvas
             penColor="black"
@@ -279,6 +279,19 @@ const CardProduct = ({ item, handleOpen, handelRemoveService }) => {
             </>
           )}
         </Button>
+        {item.choose && (
+          <Button
+            variant="contained"
+            sx={{
+              width: "150px",
+              marginLeft: "5px",
+            }}
+            onClick={handleOpen}
+          >
+            <AddIcon />
+            ADD
+          </Button>
+        )}
       </Stack>
     </Stack>
   );

@@ -18,6 +18,7 @@ export const ROUTER = {
   EDIT_PACKAGE_BY_HOST: "/edit_package/:id",
   REVENUE: "/revenue",
   REGISTER: "/register",
+  ORDER_BOOKING: "/order",
 };
 
 export const ROLE = {

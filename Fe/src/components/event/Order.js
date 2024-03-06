@@ -2,10 +2,14 @@ import { Stack } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { Bounce, toast } from "react-toastify";
 import { ServiceApi } from "../../api";
+import { useParams } from "react-router-dom";
 
 const Order = ({ booking, packageDetail }) => {
   console.log("🚀 ~ Order ~ booking:", booking);
   const [order, setorder] = useState(null);
+  const params = useParams();
+
+  const [listService, setListService] = React.useState([]);
 
   const getOrrderDetail = async (token) => {
     try {
@@ -45,6 +49,19 @@ const Order = ({ booking, packageDetail }) => {
     return `${hours}:${minutes}`;
   }
 
+  const getListService = async (id) => {
+    try {
+      const res = await ServiceApi.getListservicePk(id);
+      setListService(res.filter((item) => item.set));
+    } catch (error) {
+      alert(error);
+    }
+  };
+  useEffect(() => {
+    getListService(params?.id);
+  }, [params?.id]);
+
+  console.log(listService);
   return (
     <div>
       <div
@@ -65,10 +82,16 @@ const Order = ({ booking, packageDetail }) => {
             }}
           >
             <tr>
-              <th>Item</th>
               <th
                 style={{
-                  width: "20%",
+                  width: "60%",
+                }}
+              >
+                Item
+              </th>
+              <th
+                style={{
+                  width: "50%",
                 }}
               >
                 Quantity
@@ -78,7 +101,7 @@ const Order = ({ booking, packageDetail }) => {
                   width: "20%",
                 }}
               >
-                Price
+                total Cost
               </th>
             </tr>
           </thead>
@@ -106,13 +129,19 @@ const Order = ({ booking, packageDetail }) => {
                           <br /> {formatTime(order?.startTime)}-{" "}
                           {formatTime(order?.endTime)} (MST)
                         </b>
+                        <br />
+                        Services : <br />
+                        {listService?.map((item) => (
+                          <>
+                            <span>
+                              -{item?.serviceName} - ${item?.price}
+                            </span>
+                            <br />
+                          </>
+                        ))}
                       </span>
                     </p>
                     <p className="bottommargin-0 lineheight16">
-                      <span className="font12 darkblue">
-                        1 # of kids (Max. Room Seating = 16) , 1 # of adults
-                        (Max. Room Seating = 16)
-                      </span>
                       <span className="font12 darkblue">
                         Total Capacity: {packageDetail?.capacity}
                       </span>
@@ -128,15 +157,7 @@ const Order = ({ booking, packageDetail }) => {
           </tbody>
         </table>
       </div>
-      <p
-        style={{
-          padding: "10px 0",
-          borderBottom: "2px solid #e7e7e7",
-          textAlign: "end",
-        }}
-      >
-        Total discount : $00.00
-      </p>
+
       <p
         style={{
           padding: "10px 0",

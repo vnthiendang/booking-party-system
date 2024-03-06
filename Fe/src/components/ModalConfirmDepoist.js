@@ -41,6 +41,9 @@ export default function ModalConfirmDeposit({
             <input
               type="number"
               value={value}
+              style={{
+                fontSize: "30px",
+              }}
               onChange={(e) => setValue(e.target.value)}
             />
           </Typography>

@@ -20,6 +20,7 @@ import { ServiceApi } from "../api";
 import { useNavigate, useParams } from "react-router-dom";
 import ModalCancel from "../components/ModalCancel";
 import ModalConfirmDeposit from "../components/ModalConfirmDepoist";
+import { ROUTER } from "../util";
 
 const steps = [
   // "Select package",
@@ -202,7 +203,7 @@ export default function EventPage() {
         theme: "light",
         transition: Bounce,
       });
-      navigate("/");
+      navigate(ROUTER.ORDER_BOOKING);
     } catch (error) {
       toast.error("🦄 Something went wrong!", {
         position: "top-right",

@@ -118,14 +118,14 @@ export default function UserTableRow({
           <Checkbox disableRipple checked={selected} onChange={handleClick} />
         </TableCell> */}
 
-        <TableCell component="th" scope="row" padding="1">
+        {/* <TableCell component="th" scope="row" padding="1">
           <Stack direction="row" alignItems="center" spacing={2}>
             <Avatar alt={name} src={avatarUrl} />
             <Typography variant="subtitle2" noWrap>
               {name}
             </Typography>
           </Stack>
-        </TableCell>
+        </TableCell> */}
 
         <TableCell>{company}</TableCell>
         <TableCell>{description}</TableCell>

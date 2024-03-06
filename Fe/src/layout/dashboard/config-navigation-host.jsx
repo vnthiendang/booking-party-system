@@ -15,11 +15,7 @@ const navConfigHost = [
     path: "/package",
     icon: icon("ic_cart"),
   },
-  {
-    title: "Revenue",
-    path: "/revenue",
-    icon: icon("ic_blog"),
-  },
+
   {
     title: "Booking",
     path: "/booking",

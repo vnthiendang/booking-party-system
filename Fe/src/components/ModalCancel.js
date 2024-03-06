@@ -33,7 +33,7 @@ export default function ModalCancel({ open, handleClose, handleConfirm }) {
             {" "}
             Are you sure to Cancel this booking?
             <br />
-            if you create Cancel booking, it will be delete.
+            if you Cancel booking, it will be Cancel.
           </Typography>
 
           <div
