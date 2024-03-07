@@ -161,20 +161,6 @@ public class BookingService {
                     .map(this::mapBookingToBookingDto)
                     .collect(Collectors.toList());
         }
-//        for (Object[] result : resultList) {
-//            Integer id = (Integer) result[0];
-//            Date bookingDate = (Date) result[1];
-//            Date end = (Date) result[2];
-//            Integer size = (Integer) result[3];
-//            Date start = (Date) result[4];
-//            String bookingStatus = (String) result[5];
-//            Integer packageId = (Integer) result[7];
-//            Double total = (Double) result[8];
-//            String paymentStatus = (String) result[9];
-//
-//            BookingDto dto = new BookingDto(id, bookingDate, end, size, start, bookingStatus, packageId, total, paymentStatus);
-//            dtoList.add(dto);
-//        }
         return Collections.emptyList();
     }
     public BookingDto getOrderDetail(Integer bookingId) {
