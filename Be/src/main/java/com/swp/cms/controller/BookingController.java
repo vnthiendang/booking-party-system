@@ -114,25 +114,25 @@ public class BookingController {
 
             Package aPackage = packageService.getById(bookReservationDto.getPackageId());
 
-            // Check if party size is greater than package capacity
-            if (bookReservationDto.getPartySize() > aPackage.getCapacity()) {
-                throw new BadRequestException("Party size is greater than package capacity");
-            }else {
-                int empty = aPackage.getCapacity() - bookReservationDto.getPartySize();
-                aPackage.setCapacity(empty);
-            }
             Booking reservation = modelMapper.map(bookReservationDto, Booking.class);
-           String username = SecurityContextHolder.getContext().getAuthentication().getName();
-         User user = userService.findUserByUsername(username);
+            String username = SecurityContextHolder.getContext().getAuthentication().getName();
+            User user = userService.findUserByUsername(username);
 
             reservation.setPackages(aPackage);
-           reservation.setCustomer(user);
+            reservation.setCustomer(user);
             reservation.setBookingStatus(EBookingStatus.PENDING);
             reservation.setPaymentStatus(EPaymentStatus.NOT_PAID);
             reservation.setBookingDate(new Date());
-            reservation.setPartySize(bookReservationDto.getPartySize());
-            reservation.setTotalCost(aPackage.getPrice());
 
+            if(bookReservationDto.getPartySize() != null && bookReservationDto.getAddedSizePrice() != null){
+                reservation.setPartySize(aPackage.getCapacity() + bookReservationDto.getPartySize());
+
+                //add party size cost to total
+                reservation.setTotalCost(aPackage.getPrice() + bookReservationDto.getAddedSizePrice());
+            }else{
+                reservation.setPartySize(aPackage.getCapacity());
+                reservation.setTotalCost(aPackage.getPrice());
+            }
             aPackage.setStatus(EPackageStatus.BOOKED);
 
             Booking savedReservation = bookingService.addReservation(reservation);
