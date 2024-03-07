@@ -8,7 +8,7 @@ import lombok.Getter;
 public enum EBookingStatus {
     PENDING,
     APPROVED,
-    REJECTED,
     CANCELLED,
-    COMPLETED
+    COMPLETED,
+    REFUNDED
 }

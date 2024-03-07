@@ -60,27 +60,6 @@ public class BookingController {
         return bookingService.viewListPackage();
     }
 
-    @PostMapping("/available")
-    public ApiMessageDto<Object> getAvailablePackages(@RequestBody AvailablePackageAtTimeDto availablePackageAtTimeDto) {
-        Date startTime = availablePackageAtTimeDto.getTime();
-        // End time is 4 hours after start time
-        Date endTime = Date.from(Instant.ofEpochMilli(startTime.getTime()).plusSeconds(2*7200));
-        List<Package> packages = packageService.getAll();
-        List<Booking> reservations = bookingService.getAllAcceptedReservationsInTime(startTime, endTime);
-
-        List<GetAvailablePackageResDto> availablePackageResponseDtoList = List.of(modelMapper.map(packages, GetAvailablePackageResDto[].class));
-
-        for (Booking reservation : reservations) {
-            for (GetAvailablePackageResDto availablePackageResponseDto : availablePackageResponseDtoList) {
-                if (Objects.equals(reservation.getPackages().getId(), availablePackageResponseDto.getId())) {
-                    availablePackageResponseDto.setIsBooked(true);
-                }
-            }
-        }
-        return makeResponse(true, availablePackageResponseDtoList, "Get all available packages successful!");
-//        return new ResponseEntity.ok(new ApiResponse("Successfully get available package!"));
-    }
-
     public ApiMessageDto<Object> makeResponse(Boolean result, Object data, String message){
         ApiMessageDto<Object> apiMessageDto = new ApiMessageDto<>();
         apiMessageDto.setResult(result);
@@ -232,6 +211,7 @@ public class BookingController {
                     // Handle potential case where deposit is greater than total cost
                     throw new BadRequestException("Deposit is greater than total cost!");
                 }
+                booking.setDeposited(dto.getDeposit());
             }
 
             bookingService.addReservation(booking); // Assuming a method to save Booking
@@ -381,19 +361,19 @@ public class BookingController {
         BookingDto bookingHistory = bookingService.getOrderDetail(bookingId);
         return ResponseEntity.ok(bookingHistory);
     }
-    @PostMapping("/cancelBooking")
-    public ApiMessageDto<Object> cancelBooking(@Valid @RequestBody BookingUpdateDto dto) {
+    @PostMapping("/cancelBooking/{bookingId}")
+    public ApiMessageDto<Object> cancelBooking(@PathVariable Integer bookingId) {
         try {
-            Booking booking = bookingService.findBookingById(dto.getBookingId());
+            Booking booking = bookingService.findBookingById(bookingId);
             if (booking == null) {
-                throw new BadRequestException("Package not exit");
+                throw new BadRequestException("Booking not exit");
             }
             if (booking.getBookingStatus() == EBookingStatus.APPROVED) {
                 throw new BadRequestException("Cannot cancel APPROVED booking");
             }
 
-            booking.setBookingStatus(EBookingStatus.valueOf(dto.getStatus()));
-            booking.getPackages().setStatus(EPackageStatus.ON);
+            booking.setBookingStatus(EBookingStatus.CANCELLED);
+            booking.getPackages().setStatus(EPackageStatus.OFF);
             Booking updatedBooking = bookingService.addReservation(booking);
             return makeResponse(true, mapper.fromEntityToBookingDto(updatedBooking), "Booking updated successfully");
         }catch (Exception e){

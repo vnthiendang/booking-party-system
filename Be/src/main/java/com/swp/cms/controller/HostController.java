@@ -162,6 +162,27 @@ public class HostController {
             return makeResponse(false, " Error, occurred during updating status", e.getMessage());
         }
     }
+    @PostMapping("/confirmCancel/{bookingId}")
+    public ApiMessageDto<Object> confirmCancel(@PathVariable Integer bookingId) {
+        try {
+            Booking booking = bookingService.findBookingById(bookingId);
+            if (booking == null) {
+                throw new BadRequestException("Booking not exit");
+            }
+
+            if(booking.getDeposited() > 0){
+//                String truncatedStatus = EBookingStatus.REFUNDED.name().substring(0, 10); // Truncate to first 10 characters
+
+                booking.setDeposited(0.0);
+                booking.setBookingStatus(EBookingStatus.REFUNDED);
+            }
+            //save changes
+            Booking updatedBooking = bookingService.addReservation(booking);
+            return makeResponse(true, bookingMapper.fromEntityToBookingDto(updatedBooking), "Done! deposit refunded to customer.");
+        }catch (Exception e){
+            return makeResponse(false, " Error, occurred during confirm cancel booking", e.getMessage());
+        }
+    }
 
     @PostMapping("/changeStatus")
     public ApiMessageDto<Object> changeStatus(@Valid @RequestBody PackageUpdateDto dto) {

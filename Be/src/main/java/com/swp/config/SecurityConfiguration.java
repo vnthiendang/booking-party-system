@@ -53,9 +53,20 @@ public class SecurityConfiguration {
                 .authorizeHttpRequests(req ->
                         req.requestMatchers(WHITE_LIST_URL)
                                 .permitAll()
-                                .requestMatchers("/host/**").hasRole("HOST")
+                                .requestMatchers(
+                                        "/host/confirmCancel/**",
+                                        "/host/getAllBookings/**",
+                                        "/host/createPackage/**",
+                                        "/host/createPackage/**",
+                                        "/host/packages/**",
+                                        "/host/changeStatus/**").hasRole("HOST")
                                 .requestMatchers("/admin/**").hasRole("ADMIN")
-                                .requestMatchers("/booking/cancelBooking/**", "/booking/history/**", "/booking/getByDate").hasRole("CUSTOMER")
+                                .requestMatchers(
+                                        "/booking/cancelBooking/**",
+                                        "/booking/bookPackage/**",
+                                        "/booking/history/**",
+                                        "/booking/getByDate/**",
+                                        "/booking/addServices/**").hasRole("CUSTOMER")
                                 .anyRequest()
                                 .authenticated()
                 )
