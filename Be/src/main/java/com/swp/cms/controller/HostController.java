@@ -1,9 +1,6 @@
 package com.swp.cms.controller;
 
-import com.swp.cms.dto.BookingDto;
-import com.swp.cms.dto.LocationDto;
-import com.swp.cms.dto.PackageCreateDto;
-import com.swp.cms.dto.PackageDto;
+import com.swp.cms.dto.*;
 import com.swp.cms.mapper.BookingMapper;
 import com.swp.cms.mapper.PackageMapper;
 import com.swp.cms.reqDto.BookingUpdateDto;
@@ -28,7 +25,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.text.DateFormat;
@@ -137,22 +133,22 @@ public class HostController {
         }
     }
     @GetMapping("/getAllBookings")
-    public ResponseEntity<List<BookingDto>> getAllBookings() {
+    public ResponseEntity<List<BookingHostDto>> getAllBookings() {
             String username = SecurityContextHolder.getContext().getAuthentication().getName();
             User user = userService.findUserByUsername(username);
-            List<BookingDto> bookingDtos = bookingService.getAllBookings(user.getUsId());
+            List<BookingHostDto> bookingDtos = bookingService.getAllBookings(user.getUsId());
             return ResponseEntity.ok(bookingDtos);
     }
 
     // Update booking status
-    @PostMapping("/updateBookingStatus")
-    public ApiMessageDto<Object> updateReservationStatus(@Valid @RequestBody BookingUpdateDto reservationUpdateDto) {
+    @PostMapping("/updateBookingStatus/{bookingId}")
+    public ApiMessageDto<Object> updateReservationStatus(@PathVariable Integer bookingId,@Valid @RequestBody BookingUpdateDto reservationUpdateDto) {
         try {
-            Booking reservation = bookingService.getByUserIdAndPackageId(reservationUpdateDto.getUserId(), reservationUpdateDto.getPackageId());
+            Booking reservation = bookingService.findBookingById(bookingId);
             if (reservation == null) {
                 throw new BadRequestException("Booking not exit");
             }
-            if (Boolean.TRUE.equals(bookingService.isValidStatus(reservationUpdateDto.getStatus()))) {
+            if (!bookingService.isValidStatus(reservationUpdateDto.getStatus())) {
                 throw new BadRequestException("Invalid status");
             }
             reservation.setBookingStatus(EBookingStatus.valueOf(reservationUpdateDto.getStatus()));
@@ -170,12 +166,19 @@ public class HostController {
                 throw new BadRequestException("Booking not exit");
             }
 
+
+
             if(booking.getDeposited() > 0){
 //                String truncatedStatus = EBookingStatus.REFUNDED.name().substring(0, 10); // Truncate to first 10 characters
-
+                booking.setRefundMoney(booking.getDeposited());
                 booking.setDeposited(0.0);
                 booking.setBookingStatus(EBookingStatus.REFUNDED);
+
+            }else {
+                booking.setDeposited(0.0);
+                booking.setBookingStatus(EBookingStatus.CANCELLED);
             }
+
             //save changes
             Booking updatedBooking = bookingService.addReservation(booking);
             return makeResponse(true, bookingMapper.fromEntityToBookingDto(updatedBooking), "Done! deposit refunded to customer.");

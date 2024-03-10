@@ -49,6 +49,9 @@ public class Booking {
     @Column(nullable = true)
     private Double deposited;
 
+    @Column(nullable = true)
+    private Double refundMoney;
+
 //    @Enumerated(EnumType.STRING)
 //    @Column(name = "status")
 //    private EBookingStatus bookingStatus;

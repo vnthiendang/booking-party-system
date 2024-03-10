@@ -4,6 +4,7 @@ import com.swp.cms.dto.*;
 import com.swp.entity.Booking;
 import com.swp.entity.PService;
 import com.swp.entity.Package;
+import com.swp.entity.PackageServiceEntity;
 import com.swp.entity.enums.EBookingStatus;
 import com.swp.entity.enums.Location;
 import com.swp.repositories.BookingRepository;
@@ -105,8 +106,9 @@ public class BookingService {
     }
 
     public Boolean isValidStatus(String status) {
+        String formattedStatus = status.trim().toUpperCase(); // Loại bỏ khoảng trắng và chuyển đổi thành chữ hoa
         for (EBookingStatus e : EBookingStatus.values()) {
-            if (e.name().equals(status)) {
+            if (e.name().equals(formattedStatus)) {
                 return true;
             }
         }
@@ -117,11 +119,11 @@ public class BookingService {
     public List<Booking> getAllByDate(Date date) {
         return bookingRepository.findAllByDate(date);
     }
-    public List<BookingDto> getAllBookings(Integer hostId) {
+    public List<BookingHostDto> getAllBookings(Integer hostId) {
         List<Booking> resultList = bookingRepository.getAllByHostId(hostId);
         if (resultList != null) {
             return resultList.stream()
-                    .map(this::mapBookingToBookingDto)
+                    .map(this::mapBookingToBookingHostDto)
                     .collect(Collectors.toList());
         }
 
@@ -188,6 +190,33 @@ public class BookingService {
                 .paymentStatus(String.valueOf(booking.getPaymentStatus()))
                 .customServices(serviceIds)
                 .customerUsId(booking.getCustomer().getUsId())
+
+                .build();
+    }
+    public BookingHostDto mapBookingToBookingHostDto(Booking booking) {
+        List<Integer> serviceIds = booking.getBookingPackageService().stream()
+                .map(bookingPackageService -> pServiceService.mapServiceToServiceDto(bookingPackageService.getService()))
+                .map(ServiceDto::getId)
+                .collect(Collectors.toList());
+        List<ServiceDto> pService = (List<ServiceDto>) booking.getPackages().getPServices().stream().map(packageServiceEntity -> pServiceService.mapServiceToServiceDto(packageServiceEntity.getService())).collect(Collectors.toList());;
+
+        return BookingHostDto.builder()
+                .bookingId(booking.getBookingId())
+                .bookingDate(booking.getBookingDate())
+                .endTime(booking.getEndTime())
+                .partySize(booking.getPartySize())
+                .startTime(booking.getStartTime())
+                .bookingStatus(String.valueOf(booking.getBookingStatus()))
+                .packageId(booking.getPackages().getId())
+                .packageName(booking.getPackages().getPackageName())
+                .totalCost(booking.getTotalCost())
+                .paymentStatus(String.valueOf(booking.getPaymentStatus()))
+                .customServices(serviceIds)
+                .customerUsId(booking.getCustomer().getUsId())
+                .customerName(booking.getCustomer().getEmail())
+                .pService(pService)
+                .deposited(booking.getDeposited())
+                .refundMoney(booking.getRefundMoney())
                 .build();
     }
     public ListOrderDTO getOrderDetailList(Integer bookingId){
