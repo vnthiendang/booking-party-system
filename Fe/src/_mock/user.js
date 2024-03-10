@@ -37,3 +37,18 @@ export const convertpackagagesList = (array) => {
     capacity: item?.capacity,
   }));
 };
+
+export const convertBookingList = (array) => {
+  return array?.map((item, index) => ({
+    id: item?.id,
+    avatarUrl: `/assets/images/avatars/avatar_${index + 1}.jpg`,
+    name: item?.customerName,
+    company: item?.packageName,
+    isVerified: item?.bookingStatus !== "null" ? item?.bookingStatus : "-",
+    status: item?.paymentStatus,
+    totalCost: item?.totalCost,
+    pService: item?.pservice,
+    deposited: item?.deposited,
+    item,
+  }));
+};

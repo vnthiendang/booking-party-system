@@ -10,7 +10,7 @@ import Typography from "@mui/material/Typography";
 import TableContainer from "@mui/material/TableContainer";
 import TablePagination from "@mui/material/TablePagination";
 
-import { users } from "../../../_mock/user";
+import { convertBookingList, users } from "../../../_mock/user";
 
 import Iconify from "../../../components/iconify";
 import Scrollbar from "../../../components/scrollbar";
@@ -89,7 +89,7 @@ export default function UserPage() {
   };
 
   const dataFiltered = applyFilter({
-    inputData: users,
+    inputData: convertBookingList(packagaeList),
     comparator: getComparator(order, orderBy),
     filterName,
   });
@@ -127,52 +127,63 @@ export default function UserPage() {
           onFilterName={handleFilterByName}
         /> */}
 
-        <Scrollbar>
-          <TableContainer sx={{ overflow: "unset" }}>
-            <Table sx={{ minWidth: 800 }}>
-              <UserTableHead
-                order={order}
-                orderBy={orderBy}
-                rowCount={users.length}
-                numSelected={selected.length}
-                onRequestSort={handleSort}
-                onSelectAllClick={handleSelectAllClick}
-                headLabel={[
-                  { id: "name", label: "Name" },
-                  { id: "company", label: "Company" },
-                  // { id: "role", label: "Role" },
-                  { id: "isVerified", label: "Verified", align: "center" },
-                  { id: "status", label: "Status" },
-                  { id: "" },
-                ]}
+        {/* <Scrollbar>
+      
+        </Scrollbar> */}
+        <TableContainer sx={{ overflow: "unset" }}>
+          <Table sx={{ minWidth: 800 }}>
+            <UserTableHead
+              order={order}
+              orderBy={orderBy}
+              rowCount={users.length}
+              numSelected={selected.length}
+              onRequestSort={handleSort}
+              onSelectAllClick={handleSelectAllClick}
+              headLabel={[
+                { id: "name", label: "Email Customer" },
+                { id: "company", label: "Package Name" },
+                { id: "pService", label: "Services" },
+                { id: "isVerified", label: "Booking Status", align: "center" },
+                { id: "status", label: " payment Status" },
+                { id: "totalCost", label: " Total Cost" },
+
+                { id: "depoisted", label: "Depoisted" },
+                { id: "revenue", label: "Revenue" },
+                { id: "refund", label: "Refund Money" },
+                { id: "" },
+              ]}
+            />
+            <TableBody>
+              {dataFiltered
+                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                .map((row) => (
+                  <UserTableRow
+                    key={row.id}
+                    name={row.name}
+                    role={row.role}
+                    status={row.status}
+                    company={row.company}
+                    avatarUrl={row.avatarUrl}
+                    isVerified={row.isVerified}
+                    totalCost={row.totalCost}
+                    pService={row?.pService}
+                    deposited={row?.deposited}
+                    item={row?.item}
+                    gelistPackage={gelistPackage}
+                    selected={selected.indexOf(row.name) !== -1}
+                    handleClick={(event) => handleClick(event, row.name)}
+                  />
+                ))}
+
+              <TableEmptyRows
+                height={77}
+                emptyRows={emptyRows(page, rowsPerPage, users.length)}
               />
-              <TableBody>
-                {dataFiltered
-                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                  .map((row) => (
-                    <UserTableRow
-                      key={row.id}
-                      name={row.name}
-                      role={row.role}
-                      status={row.status}
-                      company={row.company}
-                      avatarUrl={row.avatarUrl}
-                      isVerified={row.isVerified}
-                      selected={selected.indexOf(row.name) !== -1}
-                      handleClick={(event) => handleClick(event, row.name)}
-                    />
-                  ))}
 
-                <TableEmptyRows
-                  height={77}
-                  emptyRows={emptyRows(page, rowsPerPage, users.length)}
-                />
-
-                {notFound && <TableNoData query={filterName} />}
-              </TableBody>
-            </Table>
-          </TableContainer>
-        </Scrollbar>
+              {notFound && <TableNoData query={filterName} />}
+            </TableBody>
+          </Table>
+        </TableContainer>
 
         <TablePagination
           page={page}

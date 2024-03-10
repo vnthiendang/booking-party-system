@@ -140,58 +140,56 @@ export default function UserPage() {
           onFilterName={handleFilterByName}
         />
 
-        <Scrollbar>
-          <TableContainer sx={{ overflow: "unset" }}>
-            <Table sx={{ minWidth: 800 }}>
-              <UserTableHead
-                order={order}
-                orderBy={orderBy}
-                rowCount={users.length}
-                // numSelected={selected.length}
-                onRequestSort={handleSort}
-                // onSelectAllClick={handleSelectAllClick}
-                headLabel={[
-                  // { id: "name", label: "Host" },
-                  { id: "company", label: "Package Name" },
-                  { id: "description", label: "Description" },
-                  { id: "capacity", label: "Capacity" },
-                  { id: "venue", label: "Venue" },
-                  // { id: "isVerified", label: "Verified", align: "center" },
-                  { id: "status", label: "Status" },
-                  { id: "" },
-                ]}
+        <TableContainer sx={{ overflow: "unset" }}>
+          <Table sx={{ minWidth: 800 }}>
+            <UserTableHead
+              order={order}
+              orderBy={orderBy}
+              rowCount={users.length}
+              // numSelected={selected.length}
+              onRequestSort={handleSort}
+              // onSelectAllClick={handleSelectAllClick}
+              headLabel={[
+                // { id: "name", label: "Host" },
+                { id: "company", label: "Package Name" },
+                { id: "description", label: "Description" },
+                { id: "capacity", label: "Capacity" },
+                { id: "venue", label: "Venue" },
+                // { id: "isVerified", label: "Verified", align: "center" },
+                { id: "status", label: "Status" },
+                { id: "" },
+              ]}
+            />
+            <TableBody>
+              {dataFiltered
+                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                .map((row) => (
+                  <UserTableRow
+                    key={row.id}
+                    id={row.id}
+                    name={row.name}
+                    role={row.venue}
+                    status={row.status}
+                    description={row.description}
+                    capacity={row.capacity}
+                    company={row.company}
+                    avatarUrl={row.avatarUrl}
+                    isVerified={row.isVerified}
+                    selected={selected.indexOf(row.name) !== -1}
+                    handleClick={(event) => handleClick(event, row.name)}
+                    gelistPackage={gelistPackage}
+                  />
+                ))}
+
+              <TableEmptyRows
+                height={77}
+                emptyRows={emptyRows(page, rowsPerPage, users.length)}
               />
-              <TableBody>
-                {dataFiltered
-                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                  .map((row) => (
-                    <UserTableRow
-                      key={row.id}
-                      id={row.id}
-                      name={row.name}
-                      role={row.venue}
-                      status={row.status}
-                      description={row.description}
-                      capacity={row.capacity}
-                      company={row.company}
-                      avatarUrl={row.avatarUrl}
-                      isVerified={row.isVerified}
-                      selected={selected.indexOf(row.name) !== -1}
-                      handleClick={(event) => handleClick(event, row.name)}
-                      gelistPackage={gelistPackage}
-                    />
-                  ))}
 
-                <TableEmptyRows
-                  height={77}
-                  emptyRows={emptyRows(page, rowsPerPage, users.length)}
-                />
-
-                {notFound && <TableNoData query={filterName} />}
-              </TableBody>
-            </Table>
-          </TableContainer>
-        </Scrollbar>
+              {notFound && <TableNoData query={filterName} />}
+            </TableBody>
+          </Table>
+        </TableContainer>
 
         <TablePagination
           page={page}
