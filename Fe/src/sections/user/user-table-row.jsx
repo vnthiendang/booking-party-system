@@ -216,7 +216,7 @@ export default function UserTableRow({
           {isVerified === "APPROVED" ? "DONE" : "Approve"}
         </MenuItem>
 
-        {!["COMPLETED", "CANCELLED"].includes(isVerified) && (
+        {!["COMPLETED", "CANCELLED", "REFUNDED"].includes(isVerified) && (
           <MenuItem
             onClick={() => setOpenCancel(true)}
             sx={{ color: "error.main" }}
