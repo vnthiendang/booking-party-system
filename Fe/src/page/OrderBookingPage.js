@@ -51,14 +51,7 @@ const Order = ({ booking, packageDetail }) => {
       const token = sessionStorage.getItem("token")
         ? JSON.parse(sessionStorage.getItem("token"))
         : "";
-      await ServiceApi.cancelBooking(
-        {
-          bookingId: id,
-
-          status: "CANCELLED",
-        },
-        token
-      );
+      await ServiceApi.cancelBooking(id, token);
       toast.success("🦄 cancel success!", {
         position: "top-right",
         autoClose: 2000,

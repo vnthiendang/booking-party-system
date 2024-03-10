@@ -35,12 +35,12 @@ export default class servicdeApi extends Api {
       headers,
     });
   }
-  cancelBooking(body, token) {
-    const url = `${this.HOSTNAME}${this.table}/cancelBooking`;
+  cancelBooking(id, token) {
+    const url = `${this.HOSTNAME}${this.table}/cancelBooking/${id}`;
     const headers = {
       Authorization: `Bearer ${token}`,
     };
-    return axiosClient.post(url, body, {
+    return axiosClient.post(url, {
       headers,
     });
   }
