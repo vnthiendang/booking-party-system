@@ -12,6 +12,7 @@ import com.swp.entity.Package;
 import com.swp.entity.User;
 import com.swp.entity.enums.EBookingStatus;
 import com.swp.entity.enums.EPackageStatus;
+import com.swp.entity.enums.EPaymentStatus;
 import com.swp.entity.enums.Location;
 import com.swp.exception.BadRequestException;
 import com.swp.exception.PackageAlreadyExistException;
@@ -151,7 +152,11 @@ public class HostController {
             if (!bookingService.isValidStatus(reservationUpdateDto.getStatus())) {
                 throw new BadRequestException("Invalid status");
             }
+            if (reservation.getBookingStatus() == EBookingStatus.CANCELLED) {
+                throw new BadRequestException("Cannot approve CANCELLED booking");
+            }
             reservation.setBookingStatus(EBookingStatus.valueOf(reservationUpdateDto.getStatus()));
+            reservation.setPaymentStatus(EPaymentStatus.PAID);
             Booking updatedReservation = bookingService.addReservation(reservation);
             return makeResponse(true, bookingMapper.fromEntityToBookingDto(updatedReservation), "Booking updated successfully");
         }catch (Exception e){
