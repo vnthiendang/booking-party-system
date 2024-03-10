@@ -7,7 +7,7 @@ import { giftImg } from "../asset";
 
 const style = {
   position: "absolute",
-  top: "20%",
+  top: "50%",
   left: "50%",
   transform: "translate(-50%, -50%)",
   width: 600,
@@ -39,9 +39,22 @@ export default function ModalBuyService({
                 background: "#f5f5f5",
                 height: "46px",
                 textAlign: "center",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                position: "relative",
               }}
             >
               <h4>Product Infomation</h4>
+              <Button
+                sx={{
+                  position: "absolute",
+                  right: 0,
+                }}
+                onClick={handleClose}
+              >
+                Close
+              </Button>
             </Box>
             <Stack
               direction={"row"}
@@ -49,7 +62,7 @@ export default function ModalBuyService({
                 p: 3,
               }}
             >
-              <img src={giftImg} alt="gift" width={200} height={200} />
+              <img src={item?.media} alt="gift" width={200} height={200} />
               <Stack
                 direction={"column"}
                 sx={{
@@ -71,7 +84,7 @@ export default function ModalBuyService({
                 <input
                   type="number"
                   style={{
-                    width: 100,
+                    fontSize: "24px",
                   }}
                   value={qty}
                   onChange={(e) => setqty(e.target.value)}

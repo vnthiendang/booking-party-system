@@ -165,7 +165,14 @@ export default function ModalLogin({
                   border: "10px solid #fefefe",
                 }}
               >
-                <Typography variant="h4">Sign in to Minimal</Typography>
+                <Typography
+                  variant="h4"
+                  sx={{
+                    marginBottom: "10px",
+                  }}
+                >
+                  Sign in to Minimal
+                </Typography>
                 <form onSubmit={handleSubmit(onSubmit, onError)}>
                   {renderForm}
                 </form>

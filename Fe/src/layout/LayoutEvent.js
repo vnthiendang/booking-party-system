@@ -4,7 +4,7 @@ import { HeaderEvent } from "../components";
 const LayoutEvent = ({ children }) => {
   return (
     <div>
-      <HeaderEvent />
+      <HeaderEvent showBtn={true} />
       {children}
     </div>
   );

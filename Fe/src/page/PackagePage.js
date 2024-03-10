@@ -24,6 +24,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import { ROUTER } from "../util";
 import { ServiceApi } from "../api";
+import { listPkImg } from "../asset/listpkImg";
 
 const PackagePage = () => {
   // init state
@@ -85,6 +86,7 @@ const PackagePage = () => {
             {PackageList?.map((item, index) => (
               <CardPackage
                 key={index}
+                index={index}
                 handleClickBook={handleClickBook}
                 item={item}
               />
@@ -92,30 +94,7 @@ const PackagePage = () => {
           </Grid>
         </Container>
       </Box>
-      {/* PRIVATE FACILITY RENTAL PACKAGES */}
-      <Box
-        sx={{
-          background: "#292929",
-          paddingBottom: "20px",
-          marginTop: "40px",
-        }}
-      >
-        <HeaderTextPackage text={"PRIVATE FACILITY RENTAL PACKAGES"} />
-        <Container maxWidth="lg">
-          <Grid container spacing={2} columns={16}>
-            {Array.from({ length: 2 }, (value, index) => index + 1)?.map(
-              (item, index) => (
-                <CardPackage
-                  key={index}
-                  column={8}
-                  item={item}
-                  PackageCardDefault={false}
-                />
-              )
-            )}
-          </Grid>
-        </Container>
-      </Box>
+
       {/* Service Package */}
       <Box
         sx={{
@@ -227,6 +206,7 @@ const HeaderTextPackage = ({ text }) => {
 const CardPackage = ({
   item,
   column = 4,
+  index,
   PackageCardDefault = true,
   handleClickBook,
 }) => {
@@ -245,7 +225,7 @@ venue :"ThuDuc"
       <Card sx={{ maxWidth: "100%", background: "black", color: "white" }}>
         <CardMedia
           sx={{ height: 189, background: "black" }}
-          image="https://picsum.photos/id/237/200/300"
+          image={listPkImg[index]}
           title="green iguana"
         />
         <CardContent>

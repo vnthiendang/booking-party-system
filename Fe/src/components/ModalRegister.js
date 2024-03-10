@@ -98,6 +98,11 @@ export default function ModalRegister({
   async function onError(error) {
     console.log("🚀 ~ onError ~ errors:", errors);
   }
+  const preventMinus = (e) => {
+    if (e.code === "Minus") {
+      e.preventDefault();
+    }
+  };
   return (
     <div>
       <Modal
@@ -129,7 +134,12 @@ export default function ModalRegister({
                 <Container component="main" maxWidth="xs">
                   <CssBaseline />
                   <div>
-                    <Stack spacing={2}>
+                    <Stack
+                      spacing={2}
+                      sx={{
+                        marginBottom: "16px",
+                      }}
+                    >
                       <Avatar
                         display
                         alignItems="center"
@@ -167,6 +177,9 @@ export default function ModalRegister({
                                 variant="outlined"
                                 {...field}
                                 fullWidth
+                                type="number"
+                                min="0"
+                                onKeyPress={preventMinus}
                                 label="Phone"
                                 name="phone"
                               />

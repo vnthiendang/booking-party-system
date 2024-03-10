@@ -8,6 +8,7 @@ import Typography from "@mui/material/Typography";
 import { Container } from "@mui/material";
 import { LayoutEvent } from "../layout";
 import { Bounce, toast } from "react-toastify";
+import { listSvImg } from "../asset/listpkImg";
 
 import {
   CustomPackage,
@@ -253,6 +254,7 @@ export default function EventPage() {
       const res = await ServiceApi.getListservicePk(id);
       setListService(
         res
+          .map((item, index) => ({ ...item, media: listSvImg[index] }))
           .filter((item) => !item.set)
           .map((item) => ({ ...item, choose: false, qty: 1 }))
       );

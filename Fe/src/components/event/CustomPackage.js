@@ -239,7 +239,7 @@ const CardProduct = ({ item, handleOpen, handelRemoveService }) => {
     <Stack direction={"column"}>
       <Stack direction={"row"} justifyContent={"center"}>
         {" "}
-        <img src={giftImg} alt="gift" width={150} height={150} />
+        <img src={item?.media} alt="gift" width={150} height={150} />
       </Stack>
       <p
         style={{

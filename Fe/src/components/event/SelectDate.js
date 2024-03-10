@@ -13,8 +13,8 @@ const SelectDate = ({ handleNext, packageDetail, setTime }) => {
   const [dateValue, setDateValue] = useState("");
 
   const checkTime = async (index) => {
-    let startTime = new Date("2024-02-29");
-    let ednTime = new Date("2024-02-29");
+    let startTime = new Date();
+    let ednTime = new Date();
     if (index === 0) {
       // startTime = '2024-02-29 07:00:00';
       // ednTime = '2024-02-29 07:00:00';

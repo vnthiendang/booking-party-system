@@ -22,6 +22,11 @@ export default function ModalConfirmDeposit({
   handleConfirm,
 }) {
   const [value, setValue] = React.useState(0);
+  const preventMinus = (e) => {
+    if (e.code === "Minus") {
+      e.preventDefault();
+    }
+  };
   return (
     <div>
       <Modal
@@ -44,6 +49,8 @@ export default function ModalConfirmDeposit({
               style={{
                 fontSize: "30px",
               }}
+              min="0"
+              onKeyPress={preventMinus}
               onChange={(e) => setValue(e.target.value)}
             />
           </Typography>
