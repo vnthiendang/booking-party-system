@@ -3,22 +3,19 @@ package com.swp.services;
 import com.swp.cms.dto.PackageCreateDto;
 import com.swp.cms.dto.PackageDto;
 import com.swp.cms.dto.ServiceDto;
-import com.swp.cms.mapper.PackageMapper;
-import com.swp.entity.*;
+import com.swp.entity.PService;
 import com.swp.entity.Package;
-import com.swp.entity.enums.EBookingStatus;
+import com.swp.entity.PackageServiceEntity;
+import com.swp.entity.User;
 import com.swp.entity.enums.EPackageStatus;
 import com.swp.entity.enums.Location;
 import com.swp.exception.PackageAlreadyExistException;
 import com.swp.repositories.PServiceRepository;
 import com.swp.repositories.PackageRepository;
-import com.swp.repositories.PackageServiceRepository;
-import com.swp.repositories.ServiceRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -34,20 +31,7 @@ public class PackageService {
 
     private final PServiceService serviceServiceService;
     private final PServiceRepository pServiceRepository;
-    private final ServiceRepository serviceRepository;
     private final UserService userService;
-    private final PackageServiceRepository packageServiceRepository;
-
-    public void addPackageService(Integer packageId, Integer serviceId){
-        PackageServiceEntity ps = new PackageServiceEntity();
-        Package p = packageRepository.getById(packageId);
-        PService s = serviceRepository.getById(serviceId);
-
-        ps.setPackages(p);
-        ps.setService(s);
-
-        packageServiceRepository.save(ps);
-    }
 
     @Transactional
     public void createPackage(PackageCreateDto createDto) {

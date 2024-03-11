@@ -2,13 +2,8 @@ package com.swp.services;
 
 import com.swp.cms.dto.ServiceDto;
 import com.swp.entity.PService;
-import com.swp.entity.PackageServiceEntity;
-import com.swp.repositories.PServiceRepository;
-import com.swp.repositories.PackageRepository;
-import com.swp.repositories.PackageServiceRepository;
 import com.swp.repositories.ServiceRepository;
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -22,9 +17,6 @@ import java.util.stream.Collectors;
 @Slf4j
 public class PServiceService {
     private final ServiceRepository serviceRepository;
-    private final PServiceRepository pServiceRepository;
-    private final PackageRepository packageRepository;
-    private final PackageServiceRepository packageServiceRepository;
 
     public List<ServiceDto> getAllServices() {
         List<PService> services = serviceRepository.findAll();

@@ -4,7 +4,6 @@ import com.swp.cms.dto.*;
 import com.swp.entity.Booking;
 import com.swp.entity.PService;
 import com.swp.entity.Package;
-import com.swp.entity.PackageServiceEntity;
 import com.swp.entity.enums.EBookingStatus;
 import com.swp.entity.enums.Location;
 import com.swp.repositories.BookingRepository;
@@ -17,7 +16,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service

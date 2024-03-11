@@ -2,10 +2,8 @@ package com.swp.cms.controller;
 
 import com.swp.cms.dto.*;
 import com.swp.cms.mapper.BookingMapper;
-import com.swp.cms.reqDto.AvailablePackageAtTimeDto;
 import com.swp.cms.reqDto.BookingUpdateDto;
 import com.swp.cms.resDto.ApiMessageDto;
-import com.swp.cms.resDto.GetAvailablePackageResDto;
 import com.swp.entity.Package;
 import com.swp.entity.*;
 import com.swp.entity.enums.EBookingStatus;
@@ -26,11 +24,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/booking")
@@ -379,36 +373,6 @@ public class BookingController {
         }catch (Exception e){
             return makeResponse(false, " Error, occurred during updating status", e.getMessage());
         }
-    }
-    @PostMapping("/addMoreServices/{serviceId}/{amount}/{packageId}/{bookingId}")
-    public ApiMessageDto<Object> ApiAddMoreServices(@PathVariable Integer serviceId, @PathVariable Integer amount, @PathVariable Integer packageId,@PathVariable Integer bookingId) {
-        try {
-            if(serviceId!=null && amount!=null && packageId!=null){
-                bookingPServiceService.addBookingPService(serviceId, amount, bookingId);
-
-                for(int i=0; i<amount; i++){
-                    packageService.addPackageService(packageId, serviceId);
-                }
-
-
-            }
-
-            return makeResponse(true, serviceId, "Services added successfully");
-        } catch (Exception e) {
-            return makeResponse(false, "An error occurred during adding services", e.getMessage());
-        }
-    }
-
-    @GetMapping("/listServiceNotInPackage/{packageId}")
-    public List<PService> ListServicesNotInPackage(@PathVariable Integer packageId) {
-        try {
-            if(packageId!=null){
-                return pserviceService.getServiceNotInPackage(packageId);
-            }
-        } catch (Exception e) {
-            return null;
-        }
-        return null;
     }
 
     @GetMapping("/listOrderDetails/{bookingId}")
