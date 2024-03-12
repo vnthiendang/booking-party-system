@@ -289,7 +289,7 @@ export default function EventPage() {
           return acc + curr.price;
         }, 0);
 
-      setTotalAmount((prev) => prev + priceServiceDefault);
+      // setTotalAmount((prev) => prev + priceServiceDefault);
     } catch (error) {
       alert(error);
     }
