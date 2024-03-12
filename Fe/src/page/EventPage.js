@@ -38,6 +38,7 @@ export default function EventPage() {
   const [serviceCustom, setServiceCustom] = React.useState([]);
   const [listService, setListService] = React.useState([]);
   const [totalAmount, setTotalAmount] = React.useState(0);
+  const [slot, setslot] = React.useState(0);
   const [time, setTime] = React.useState({});
   const [booking, setBooking] = React.useState(null);
   const [openModalCancel, setopenModalCancel] = React.useState(false);
@@ -99,7 +100,8 @@ export default function EventPage() {
           packageId: packageDetail?.id,
           startTime: time?.startTime,
           endTime: time?.endTime,
-          partySize: 1,
+          partySize: +slot || 0,
+          AddedSizePrice: +slot * 100,
           customerUsId: info?.userId,
         },
         token
@@ -176,6 +178,21 @@ export default function EventPage() {
 
   const handleConfirmDeposit = async (deposit) => {
     try {
+      if (+deposit > booking?.totalCost) {
+        toast.error("🦄 Deposit must less than or equal cost!", {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+          transition: Bounce,
+        });
+        return;
+      }
+
       const token = sessionStorage.getItem("token")
         ? JSON.parse(sessionStorage.getItem("token"))
         : "";
@@ -233,6 +250,8 @@ export default function EventPage() {
             listService={listService}
             setListService={setListService}
             totalAmount={totalAmount}
+            slot={slot}
+            setslot={setslot}
           />
         );
       case 2:
@@ -243,7 +262,13 @@ export default function EventPage() {
           />
         );
       case 3:
-        return <Order packageDetail={packageDetail} booking={booking} />;
+        return (
+          <Order
+            packageDetail={packageDetail}
+            booking={booking}
+            serviceCustom={serviceCustom}
+          />
+        );
       default:
         return <p> Step {step + 1}</p>;
     }
@@ -258,9 +283,11 @@ export default function EventPage() {
           .filter((item) => !item.set)
           .map((item) => ({ ...item, choose: false, qty: 1 }))
       );
-      const priceServiceDefault = res?.reduce((acc, curr) => {
-        return acc + curr.price;
-      }, 0);
+      const priceServiceDefault = res
+        ?.filter((item) => item.set)
+        .reduce((acc, curr) => {
+          return acc + curr.price;
+        }, 0);
 
       setTotalAmount((prev) => prev + priceServiceDefault);
     } catch (error) {

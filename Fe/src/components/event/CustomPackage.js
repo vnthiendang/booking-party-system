@@ -17,6 +17,8 @@ const CustomPackage = ({
   listService,
   setListService,
   totalAmount,
+  slot,
+  setslot,
 }) => {
   const [openPopupBuy, setOpenPopupBuy] = useState({
     isOpen: false,
@@ -79,6 +81,11 @@ const CustomPackage = ({
 
     return total;
   };
+  const preventMinus = (e) => {
+    if (e.code === "Minus") {
+      e.preventDefault();
+    }
+  };
 
   return (
     <Box
@@ -118,83 +125,100 @@ const CustomPackage = ({
               </Grid>
             ))}
         </Grid>
-        <Box
-          sx={{
-            width: "261px",
-            // height: "200px",
-            border: "1px solid",
-            marginLeft: "20px",
-          }}
-        >
-          {/* title */}
+        <div>
           <Box
             sx={{
-              textAlign: "center",
+              width: "261px",
+              // height: "200px",
+              border: "1px solid",
+              marginLeft: "20px",
+            }}
+          >
+            {/* title */}
+            <Box
+              sx={{
+                textAlign: "center",
 
-              background: "#3333",
-              height: "46px",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
-            <p
-              style={{
-                fontSize: "24px",
-                margin: 0,
+                background: "#3333",
+                height: "46px",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
               }}
             >
-              {" "}
-              Summary
-            </p>
+              <p
+                style={{
+                  fontSize: "24px",
+                  margin: 0,
+                }}
+              >
+                {" "}
+                Summary
+              </p>
+            </Box>
+            <Box
+              sx={{
+                padding: "6px",
+              }}
+            >
+              Package:{" "}
+              <span style={{ fontWeight: "bold" }}>
+                {" "}
+                {packageDetail?.packageName}
+              </span>
+              <br />
+              Description:{" "}
+              <span style={{ fontWeight: "bold" }}>
+                {" "}
+                {packageDetail?.description}
+              </span>
+              <br />
+              Slot:{" "}
+              <span style={{ fontWeight: "bold" }}>
+                {" "}
+                {packageDetail?.capacity}
+              </span>
+              <br />
+              venue:
+              <span style={{ fontWeight: "bold" }}>
+                {" "}
+                {packageDetail?.venue}
+              </span>
+              <br />
+              <p
+                style={{
+                  fontSize: "18px",
+                }}
+              >
+                Grand Total:
+              </p>
+              <p
+                style={{
+                  fontWeight: "bold",
+                  fontSize: "26px",
+                  margin: 0,
+                }}
+              >
+                $
+                {(
+                  totalAmount +
+                  mapptotalAmountOfServiceNew(listService) +
+                  slot * 100
+                )?.toLocaleString()}
+              </p>
+            </Box>
           </Box>
-          <Box
-            sx={{
-              padding: "6px",
-            }}
-          >
-            Package:{" "}
-            <span style={{ fontWeight: "bold" }}>
-              {" "}
-              {packageDetail?.packageName}
-            </span>
-            <br />
-            Description:{" "}
-            <span style={{ fontWeight: "bold" }}>
-              {" "}
-              {packageDetail?.description}
-            </span>
-            <br />
-            Capacity:{" "}
-            <span style={{ fontWeight: "bold" }}>
-              {" "}
-              {packageDetail?.capacity}
-            </span>
-            <br />
-            venue:
-            <span style={{ fontWeight: "bold" }}> {packageDetail?.venue}</span>
-            <br />
-            <p
-              style={{
-                fontSize: "18px",
-              }}
-            >
-              Grand Total:
-            </p>
-            <p
-              style={{
-                fontWeight: "bold",
-                fontSize: "26px",
-                margin: 0,
-              }}
-            >
-              $
-              {(
-                totalAmount + mapptotalAmountOfServiceNew(listService)
-              )?.toLocaleString()}
-            </p>
-          </Box>
-        </Box>
+          <div style={{ marginLeft: "20px" }}>
+            <h2>Slot</h2>
+            <input
+              type="number"
+              style={{ fontSize: "25px" }}
+              min="0"
+              onKeyPress={preventMinus}
+              onChange={(e) => setslot(e.target.value)}
+            />
+          </div>
+        </div>
       </div>
       <h3>Sign Waiver: Birthday Waiver</h3>
       <Stack

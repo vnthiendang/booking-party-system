@@ -1,10 +1,10 @@
 import React from "react";
 import { HeaderEvent } from "../components";
 
-const LayoutEvent = ({ children }) => {
+const LayoutEvent = ({ children, showBtn }) => {
   return (
     <div>
-      <HeaderEvent showBtn={true} />
+      <HeaderEvent showBtn={showBtn} />
       {children}
     </div>
   );

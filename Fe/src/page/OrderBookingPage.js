@@ -80,7 +80,7 @@ const Order = ({ booking, packageDetail }) => {
   };
 
   return (
-    <LayoutEvent>
+    <LayoutEvent showBtn={true}>
       <Container maxWidth="lg">
         <div>
           <div

@@ -4,11 +4,15 @@ import { Bounce, toast } from "react-toastify";
 import { ServiceApi } from "../../api";
 import { useParams } from "react-router-dom";
 
-const Order = ({ booking, packageDetail }) => {
+const Order = ({ booking, packageDetail, serviceCustom }) => {
   console.log("🚀 ~ Order ~ booking:", booking);
   const [order, setorder] = useState(null);
   const params = useParams();
-
+  const serviceCustomQTy = serviceCustom
+    ?.filter((item) => item.choose)
+    ?.reduce((acc, curr) => {
+      return acc + +curr.qty;
+    }, 0);
   const [listService, setListService] = React.useState([]);
 
   const getOrrderDetail = async (token) => {
@@ -61,7 +65,7 @@ const Order = ({ booking, packageDetail }) => {
     getListService(params?.id);
   }, [params?.id]);
 
-  console.log(listService);
+  console.log(listService, serviceCustomQTy);
   return (
     <div>
       <div
@@ -139,11 +143,21 @@ const Order = ({ booking, packageDetail }) => {
                             <br />
                           </>
                         ))}
+                        {serviceCustom
+                          ?.filter((item) => item.choose)
+                          .map((item) => (
+                            <>
+                              <span>
+                                -{item?.serviceName} - ${item?.price}
+                              </span>
+                              <br />
+                            </>
+                          ))}
                       </span>
                     </p>
                     <p className="bottommargin-0 lineheight16">
                       <span className="font12 darkblue">
-                        Total Capacity: {packageDetail?.capacity}
+                        Total Slot: {packageDetail?.capacity}
                       </span>
                     </p>
                   </div>
@@ -151,7 +165,10 @@ const Order = ({ booking, packageDetail }) => {
                 </Stack>
                 {/* /.row */}
               </td>
-              <td>1</td>
+              <td>
+                Pacakage quantity : 1<br />
+                Service quantity : {listService?.length + serviceCustomQTy}
+              </td>
               <td>${packageDetail?.price?.toLocaleString()}</td>
             </tr>
           </tbody>
