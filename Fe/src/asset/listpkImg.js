@@ -7,22 +7,22 @@ import pk5 from "./img/SWP_img_pk/super-cute-mid-autumn-festival-kids-lantern-ni
 import sv1 from "./img/SWP_img_sv/khoai-tay-chien.jpg";
 import sv2 from "./img/SWP_img_sv/cach-lam-banh-mi-pho-mai.jpg";
 import sv3 from "./img/SWP_img_sv/cari-ga-cham-banh-mi.jpg";
-import sv4 from "./img/SWP_img_sv/Bánh kem Tiramisu.png";
+import sv4 from "./img/SWP_img_sv/Bánh_kem_Tiramisu.png";
 import sv5 from "./img/SWP_img_sv/Aquafina.jpg";
 import sv6 from "./img/SWP_img_sv/Lavie.png";
 import sv7 from "./img/SWP_img_sv/rem.jpg";
-import sv8 from "./img/SWP_img_sv/Dây đèn led,treo ảnh.jpg";
-import sv9 from "./img/SWP_img_sv/Hộp quà.png";
-import sv10 from "./img/SWP_img_sv/Khung ảnh.jpg";
+import sv8 from "./img/SWP_img_sv/sv8.jpg";
+import sv9 from "./img/SWP_img_sv/Hộp_quà.png";
+import sv10 from "./img/SWP_img_sv/Khung_ảnh.jpg";
 import sv11 from "./img/SWP_img_sv/Nón.jpg";
-import sv12 from "./img/SWP_img_sv/Dây hpbd.jpg";
-import sv13 from "./img/SWP_img_sv/Ép dứa.jpg";
+import sv12 from "./img/SWP_img_sv/Dây_hpbd.jpg";
+import sv13 from "./img/SWP_img_sv/Ép_dứa.jpg";
 import sv14 from "./img/SWP_img_sv/Pepsi.png";
 import sv15 from "./img/SWP_img_sv/Dasani.png";
-import sv16 from "./img/SWP_img_sv/Cam vắt.jpg";
+import sv16 from "./img/SWP_img_sv/Cam_vắt.jpg";
 import sv17 from "./img/SWP_img_sv/tradao.png";
 import sv18 from "./img/SWP_img_sv/7Up.jpg";
-import sv19 from "./img/SWP_img_sv/Bánh Mousse.jpg";
+import sv19 from "./img/SWP_img_sv/Bánh_Mousse.jpg";
 
 export const listPkImg = [pk1, pk2, pk3, pk4, pk5];
 export const listSvImg = [

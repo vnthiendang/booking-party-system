@@ -189,7 +189,7 @@ export default function UserTableRow({
         </TableCell>
 
         <TableCell align="right">
-          {isVerified !== "COMPLETED" && (
+          {!["COMPLETED", "CANCELLED"].includes(isVerified) && (
             <IconButton onClick={handleOpenMenu}>
               <Iconify icon="eva:more-vertical-fill" />
             </IconButton>
@@ -215,7 +215,6 @@ export default function UserTableRow({
           <Iconify icon="eva:edit-fill" sx={{ mr: 2 }} />
           {isVerified === "APPROVED" ? "DONE" : "Approve"}
         </MenuItem>
-
         {!["COMPLETED", "CANCELLED", "REFUNDED"].includes(isVerified) && (
           <MenuItem
             onClick={() => setOpenCancel(true)}
