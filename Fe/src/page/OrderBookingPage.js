@@ -129,6 +129,7 @@ const Order = ({ booking, packageDetail }) => {
                   >
                     Status payment
                   </th>
+                  <th>Slot</th>
                   <th>Total Cost</th>
                   <th
                     style={{
@@ -190,6 +191,7 @@ const Order = ({ booking, packageDetail }) => {
                       >
                         {item?.paymentStatus}
                       </td>
+                      <td>{item?.partySize}</td>
                       <td>${item?.totalCost?.toLocaleString()}</td>
                       <td
                         style={{
