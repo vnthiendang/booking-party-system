@@ -101,7 +101,7 @@ export default function EventPage() {
           startTime: time?.startTime,
           endTime: time?.endTime,
           partySize: +slot || 0,
-          AddedSizePrice: +slot * 100,
+          addedSizePrice: +slot * 100,
           customerUsId: info?.userId,
         },
         token
