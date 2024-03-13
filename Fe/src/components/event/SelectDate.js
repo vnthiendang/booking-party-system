@@ -7,11 +7,14 @@ import { PartyImg } from "../../asset";
 import { useParams } from "react-router-dom";
 import { ServiceApi } from "../../api";
 import { Bounce, toast } from "react-toastify";
+import { useSearchParams } from "react-router-dom";
+import { listPkImg } from "../../asset/listpkImg";
 
 const timeZoneList = ["7:00am-11:00am", "1:00pm-6:00pm", "6:00pm-11:pm"];
 const SelectDate = ({ handleNext, packageDetail, setTime }) => {
   const [dateValue, setDateValue] = useState("");
-
+  const [searchParams] = useSearchParams();
+  const index = searchParams.get("index");
   const checkTime = async (index) => {
     let startTime = new Date();
     let ednTime = new Date();
@@ -103,7 +106,11 @@ const SelectDate = ({ handleNext, packageDetail, setTime }) => {
             item, then click Next Step.
           </Alert>
           {packageDetail && (
-            <CartItem item={packageDetail} checkTime={checkTime} />
+            <CartItem
+              item={packageDetail}
+              checkTime={checkTime}
+              index={index}
+            />
           )}
         </Stack>
       </div>
@@ -113,7 +120,7 @@ const SelectDate = ({ handleNext, packageDetail, setTime }) => {
 
 export default SelectDate;
 
-const CartItem = ({ item, checkTime }) => {
+const CartItem = ({ item, checkTime, index }) => {
   /**
        * capacity 
 description
@@ -133,7 +140,7 @@ venue :"ThuDuc"
     >
       <p>{item?.packageName}</p>
       <Stack direction="row" spacing={5}>
-        <img src={PartyImg} alt="party img" width={128} height={128} />
+        <img src={listPkImg[index]} alt="party img" width={128} height={128} />
         <p>
           Location :{item?.venue}
           <br />

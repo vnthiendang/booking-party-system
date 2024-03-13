@@ -36,7 +36,8 @@ const PackagePage = () => {
   );
   // hanle click funtion
 
-  const handleClickBook = (id) => navigate(`/event/${id}`);
+  const handleClickBook = (id, index) =>
+    navigate(`/event/${id}?index=${index}`);
   const getAllPackaged = async () => {
     try {
       const res = await ServiceApi.getListpackageByCustomer();
@@ -271,7 +272,7 @@ venue :"ThuDuc"
                     background: "red",
                     height: 57,
                   }}
-                  onClick={() => handleClickBook(item.id)}
+                  onClick={() => handleClickBook(item.id, index)}
                 >
                   Book now
                 </Button>

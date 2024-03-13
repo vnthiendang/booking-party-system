@@ -19,6 +19,7 @@ import { Card } from "@mui/material";
 import { useForm, Controller } from "react-hook-form";
 import { Bounce, toast } from "react-toastify";
 import { AuthApi } from "../api";
+import "./style.css";
 
 const style = {
   position: "absolute",
@@ -177,6 +178,7 @@ export default function ModalRegister({
                                 variant="outlined"
                                 {...field}
                                 fullWidth
+                                className="customsnumber"
                                 type="number"
                                 min="0"
                                 onKeyPress={preventMinus}

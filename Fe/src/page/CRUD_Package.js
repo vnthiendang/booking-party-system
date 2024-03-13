@@ -71,6 +71,7 @@ venue :"ThuDuc"
       setDescPackage(res.description);
       setCapacityPackage(res.capacity);
       setLocationValue(res.venue);
+      setServiceId(res.services);
     } catch (error) {
       alert(error);
     }

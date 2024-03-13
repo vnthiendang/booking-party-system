@@ -1,0 +1,13 @@
+.customsnumber {
+}
+
+.customsnumber input::-webkit-outer-spin-button,
+.customsnumber input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+.customsnumber input[type="number"] {
+  -moz-appearance: textfield;
+}
