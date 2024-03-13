@@ -14,11 +14,6 @@ const Order = ({ booking, packageDetail, serviceCustom }) => {
       return acc + +curr.qty;
     }, 0);
   const [listService, setListService] = React.useState([]);
-  const servicePrice = serviceCustom
-    ?.filter((item) => item.choose)
-    ?.reduce((acc, curr) => {
-      return acc + curr.price * +curr.qty;
-    }, 0);
 
   const getOrrderDetail = async (token) => {
     try {
@@ -100,14 +95,14 @@ const Order = ({ booking, packageDetail, serviceCustom }) => {
               </th>
               <th
                 style={{
-                  width: "30%",
+                  width: "50%",
                 }}
               >
                 Quantity
               </th>
               <th
                 style={{
-                  width: "40%",
+                  width: "20%",
                 }}
               >
                 total Cost
@@ -174,15 +169,7 @@ const Order = ({ booking, packageDetail, serviceCustom }) => {
                 Pacakage quantity : 1<br />
                 Service quantity : {listService?.length + serviceCustomQTy}
               </td>
-              <td>
-                ${packageDetail?.price?.toLocaleString()}
-                <br />
-                service price : $
-                {(
-                  servicePrice +
-                  listService?.reduce((acc, curr) => acc + curr?.price, 0)
-                )?.toLocaleString()}
-              </td>
+              <td>${packageDetail?.price?.toLocaleString()}</td>
             </tr>
           </tbody>
         </table>
@@ -197,12 +184,7 @@ const Order = ({ booking, packageDetail, serviceCustom }) => {
           paddingRight: "10px",
         }}
       >
-        Grand Total: $
-        {(
-          order?.totalCost +
-          servicePrice +
-          listService?.reduce((acc, curr) => acc + curr?.price, 0)
-        )?.toLocaleString()}
+        Grand Total: ${order?.totalCost?.toLocaleString()}
       </p>
     </div>
   );
