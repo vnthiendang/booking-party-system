@@ -24,7 +24,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import { ROUTER } from "../util";
 import { ServiceApi } from "../api";
-import { listPkImg } from "../asset/listpkImg";
+import { listPkImg, listSvImg } from "../asset/listpkImg";
 
 const PackagePage = () => {
   // init state
@@ -107,7 +107,7 @@ const PackagePage = () => {
           <Grid container spacing={2} columns={16} justifyContent={"center"}>
             {Array.from({ length: 5 }, (value, index) => index + 1)?.map(
               (item, index) => (
-                <CardServicePackage key={index} />
+                <CardServicePackage key={index} index={index} />
               )
             )}
           </Grid>
@@ -317,6 +317,21 @@ venue :"ThuDuc"
 };
 
 const CardStepBooking = ({ item, index }) => {
+  const checkrenderStep = (index) => {
+    switch (index) {
+      case 1:
+        return "Choose time of package";
+      case 2:
+        return "Add more service if you want";
+      case 3:
+        return "Login for confirm booking";
+      case 4:
+        return "Deposit and confirm booking";
+
+      default:
+        break;
+    }
+  };
   const listImg = [Step1, Step2, Step3, Step4];
   return (
     <Grid item xs={4}>
@@ -346,30 +361,36 @@ const CardStepBooking = ({ item, index }) => {
               marginBottom: "40px",
             }}
           >
-            The Big Box offers options to book your party during operational
-            hours or as a private event. We have predefined party bundles for
-            you to choose from. Select what meets best for your needs. Consider
-            upgrading to infinite pass on a discounted price for unlimited fun
-            extravaganza!
-          </Typography>
-
-          <Typography
-            gutterBottom
-            variant="p"
-            component="div"
-            sx={{
-              color: "yellow",
-              fontSize: "16px",
-            }}
-          >
-            Book now!
+            {checkrenderStep(index + 1)}
           </Typography>
         </CardContent>
       </Card>
     </Grid>
   );
 };
-const CardServicePackage = ({ item }) => {
+const CardServicePackage = ({ item, index }) => {
+  const checkrender = (index) => {
+    switch (index) {
+      case 0:
+        return "Khoai tây chiên";
+        break;
+      case 1:
+        return "Bánh mì";
+        break;
+      case 2:
+        return "Cari gà";
+        break;
+      case 3:
+        return "Tiramisu";
+        break;
+      case 4:
+        return "Aquafina";
+        break;
+
+      default:
+        break;
+    }
+  };
   return (
     <Grid item xs={3}>
       <Card
@@ -380,10 +401,22 @@ const CardServicePackage = ({ item }) => {
           borderRadius: "30px",
         }}
       >
-        <CardMedia
-          sx={{ height: 203, background: "black", borderRadius: "30px" }}
-          image={pizzaImg}
+        {/* <CardMedia
+          sx={{
+            height: 203,
+            background: "black",
+            borderRadius: "30px",
+          }}
+          image={listSvImg[index]}
           title="green iguana"
+        /> */}
+        <img
+          src={listSvImg[index]}
+          style={{
+            height: 203,
+            background: "black",
+            borderRadius: "30px",
+          }}
         />
         <CardContent>
           <Typography
@@ -396,27 +429,8 @@ const CardServicePackage = ({ item }) => {
               fontWeight: "bold",
             }}
           >
-            Food Combo
+            {checkrender(index)}
           </Typography>
-
-          <Typography
-            gutterBottom
-            variant="p"
-            component="div"
-            sx={{
-              color: "#999",
-              fontSize: "18px",
-              marginBottom: "40px",
-            }}
-          >
-            3‐12″ Pizza & 2 Jugs of Pop (Choice of Cheese, Pepperoni, Hawaiian,
-            Chicken, Beef or Veggie)
-          </Typography>
-          <p className="price">
-            $649.99
-            <br />
-            <span className="details">+ GST</span>
-          </p>
         </CardContent>
       </Card>
     </Grid>
