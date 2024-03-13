@@ -25,6 +25,7 @@ public class PackageCreateDto {
 
     @Valid
     private List<Integer> services = new ArrayList<>();
+//    private List<CustomServiceDto> services;
 
     private Location venue;
 

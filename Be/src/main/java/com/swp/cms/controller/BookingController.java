@@ -97,9 +97,9 @@ public class BookingController {
             packageService.findPackageById(bookReservationDto.getPackageId());
 
             // Check if package is booked
-            if (Boolean.TRUE.equals(packageService.isBooked(bookReservationDto.getPackageId()))) {
-                throw new BadRequestException("Package is already booked");
-            }
+//            if (Boolean.TRUE.equals(packageService.isBooked(bookReservationDto.getPackageId()))) {
+//                throw new BadRequestException("Package is already booked");
+//            }
 
             // Check if start time is before end time
             if (bookReservationDto.getStartTime().after(bookReservationDto.getEndTime())) {

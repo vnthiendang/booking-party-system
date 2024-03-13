@@ -19,8 +19,13 @@ public interface BookingRepository extends JpaRepository<Booking, Integer>, JpaS
     // This is a custom query that finds all reservation has startTime and endTime in the same day as the given date
     @Query("SELECT r FROM Booking r WHERE DATE(r.startTime) = :date")
     List<Booking> findAllByDate(@Param("date") Date date);
-    @Query(value = "SELECT * FROM booking r WHERE r.end_time >= ?1 and r.start_time <= ?2 and r.package_id = ?3" , nativeQuery = true)
-    List<Booking> findByDateRangeOverlap(Date startTime, Date endTime , Integer packageId);
+    @Query(value = "SELECT r FROM Booking r WHERE " +
+            "HOUR(r.startTime) = HOUR(?1) AND MINUTE(r.startTime) >= MINUTE(?1) AND " +
+            "HOUR(r.endTime) = HOUR(?2) AND MINUTE(r.endTime) <= MINUTE(?2) AND " +
+            "r.packages.id = ?3 AND " +
+            "(r.bookingStatus = 'APPROVED' OR r.bookingStatus = 'PENDING')")
+    List<Booking> findByDateRangeOverlap(Date startTime, Date endTime, Integer packageId);
+
     @Query(value = "SELECT b " +
             "FROM Booking b " +
             "WHERE b.customer.usId = :userId")
