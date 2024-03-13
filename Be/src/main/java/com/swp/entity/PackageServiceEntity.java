@@ -22,4 +22,5 @@ public class PackageServiceEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "service_id")
     private PService service;
+    private Integer serviceQty;
 }

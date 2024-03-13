@@ -90,9 +90,8 @@ public class BookingService {
 
     public PackageDto mapPackageToPackageDto(Package packages){
 
-        List<Integer> serviceIds = packages.getPServices().stream()
+        List<ServiceDto> serviceIds = packages.getPServices().stream()
                 .map(packageServiceEntity -> pServiceService.mapServiceToServiceDto(packageServiceEntity.getService()))
-                .map(ServiceDto::getId)
                 .collect(Collectors.toList());
 
         return PackageDto.builder()

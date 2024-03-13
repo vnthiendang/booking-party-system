@@ -17,7 +17,14 @@ public interface PackageRepository extends JpaRepository<Package, Integer> {
 
     Optional<Package> findByIdAndUserId_UsId(Integer id, Integer userId);
 
-    @Query("SELECT DISTINCT p FROM Package p LEFT JOIN FETCH p.pServices ps LEFT JOIN FETCH ps.service where p.status = 'ON'")
+    @Query("SELECT DISTINCT p FROM Package p " +
+            "LEFT JOIN FETCH p.pServices ps " +
+            "LEFT JOIN FETCH ps.service " +
+            "WHERE p.status = 'ON'or p.status = 'BOOKED' AND " +
+            "p.id NOT IN ( SELECT b.packages.id FROM Booking b " +
+            "WHERE (b.bookingStatus = 'APPROVED'or b.bookingStatus = 'PENDING') " +
+            "AND b.packages.id = p.id GROUP BY b.packages.id " +
+            "HAVING COUNT(b.packages.id) = 3)")
     List<Package> findAllPackagesWithServices();
     @Query("select count(*)  from PackageServiceEntity p where p.service.serviceId=:serviceId and p.packages.id=:packageId")
     Integer countService(@Param("serviceId")Integer serviceId, @Param("packageId")Integer packageId);

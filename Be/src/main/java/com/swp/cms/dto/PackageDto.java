@@ -20,7 +20,7 @@ public class PackageDto {
     private String packageName;
 
     @Valid
-    private List<Integer> services = new ArrayList<>();
+    private List<ServiceDto> services = new ArrayList<>();
 
     private Location venue;
     private Double price;

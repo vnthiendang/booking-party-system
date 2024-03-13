@@ -1,12 +1,11 @@
 package com.swp.services;
 
+import com.swp.cms.dto.CustomServiceDto;
 import com.swp.cms.dto.PackageCreateDto;
 import com.swp.cms.dto.PackageDto;
 import com.swp.cms.dto.ServiceDto;
-import com.swp.entity.PService;
+import com.swp.entity.*;
 import com.swp.entity.Package;
-import com.swp.entity.PackageServiceEntity;
-import com.swp.entity.User;
 import com.swp.entity.enums.EPackageStatus;
 import com.swp.entity.enums.Location;
 import com.swp.exception.PackageAlreadyExistException;
@@ -53,10 +52,27 @@ public class PackageService {
 
         //aPackage = packageRepository.save(aPackage);
         Package savedPackage = packageRepository.save(aPackage);
-        List<Integer> serviceIds = createDto.getServices();
 
-        if (serviceIds != null && !serviceIds.isEmpty()) {
-            List<PService> savedServices = serviceServiceService.getServicesByIds(serviceIds);
+        //pass obj service, qty
+//        if(createDto.getServices() != null){
+//            List<PackageServiceEntity> bookingPS = new ArrayList<>();
+//
+//            for (CustomServiceDto customServiceDto : createDto.getServices()) {
+//                PService chosenService = serviceServiceService.getServiceById(customServiceDto.getServiceId());
+//
+//                PackageServiceEntity bookingPService = new PackageServiceEntity();
+//                bookingPService.setPackages(savedPackage);
+//                bookingPService.setService(chosenService);
+//                bookingPService.setServiceQty(10);
+//
+//                bookingPS.add(bookingPService);
+//            }
+//
+//            pServiceRepository.saveAll(bookingPS);
+//        }
+
+        if (createDto.getServices() != null && !createDto.getServices().isEmpty()) {
+            List<PService> savedServices = serviceServiceService.getServicesByIds(createDto.getServices());
 
             // Create PackageServiceEntity instances and associate them with the package
             List<PackageServiceEntity> packageServiceEntities = new ArrayList<>();
@@ -64,6 +80,9 @@ public class PackageService {
                 PackageServiceEntity packageServiceEntity = new PackageServiceEntity();
                 packageServiceEntity.setPackages(savedPackage);
                 packageServiceEntity.setService(service);
+
+                //fixed serviceQty with service
+                packageServiceEntity.setServiceQty(10);
                 packageServiceEntities.add(packageServiceEntity);
             }
 
@@ -83,9 +102,8 @@ public class PackageService {
                 .build();
     }
     public PackageDto mapPackageToPackageDto(Package packages) {
-        List<Integer> serviceIds = packages.getPServices().stream()
+        List<ServiceDto> serviceIds = packages.getPServices().stream()
                 .map(packageServiceEntity -> serviceServiceService.mapServiceToServiceDto(packageServiceEntity.getService()))
-                .map(ServiceDto::getId)
                 .collect(Collectors.toList());
 
         return PackageDto.builder()
@@ -168,15 +186,15 @@ public class PackageService {
 //            throw new IllegalArgumentException("Number of requested services exceeds available services.");
 //        }
 
-        Set<Integer> newServiceIds = new HashSet<>(updateDto.getServices());
+        Set<ServiceDto> newServiceIds = new HashSet<>(updateDto.getServices());
         List<PackageServiceEntity> newPackageServiceEntities = new ArrayList<>();
 
-        for (Integer serviceId : newServiceIds) {
-            PackageServiceEntity existingAssociation = pServiceRepository.findByPackages_IdAndService_ServiceId(updateDto.getId(), serviceId)
+        for (ServiceDto serviceDto : newServiceIds) {
+            PackageServiceEntity existingAssociation = pServiceRepository.findByPackages_IdAndService_ServiceId(updateDto.getId(), serviceDto.getId())
                     .orElse(null);
 
             if (existingAssociation == null) {
-                PService service = serviceServiceService.getServiceById(serviceId);
+                PService service = serviceServiceService.getServiceById(serviceDto.getId());
                 PackageServiceEntity packageServiceEntity = new PackageServiceEntity();
                 packageServiceEntity.setPackages(existingPackage);
                 packageServiceEntity.setService(service);
