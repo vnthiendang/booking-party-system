@@ -164,7 +164,7 @@ export default function LoginView() {
               border: "10px solid #fefefe",
             }}
           >
-            <Typography variant="h4">Sign in to Minimal</Typography>
+            <Typography variant="h4">Sign in</Typography>
 
             <Typography variant="body2" sx={{ mt: 2, mb: 5 }}>
               Don’t have an account?

@@ -21,40 +21,34 @@ const SelectDate = ({ handleNext, packageDetail, setTime }) => {
     if (index === 0) {
       // startTime = '2024-02-29 07:00:00';
       // ednTime = '2024-02-29 07:00:00';
-      startTime.setUTCHours(7);
+      startTime.setUTCHours(0);
+      startTime.setMinutes(0);
+      ednTime.setUTCHours(4);
+      ednTime.setMinutes(0);
+    }
+    if (index === 1) {
+      // startTime = '2024-02-29 07:00:00';
+      // ednTime = '2024-02-29 07:00:00';
+      startTime.setUTCHours(6);
       startTime.setMinutes(0);
       ednTime.setUTCHours(11);
       ednTime.setMinutes(0);
     }
-    if (index === 1) {
+    if (index === 2) {
       // startTime = '2024-02-29 07:00:00';
       // ednTime = '2024-02-29 07:00:00';
-      startTime.setUTCHours(13);
+      startTime.setUTCHours(11);
       startTime.setMinutes(0);
-      ednTime.setUTCHours(17);
+      ednTime.setUTCHours(16);
       ednTime.setMinutes(0);
     }
-    if (index === 1) {
-      // startTime = '2024-02-29 07:00:00';
-      // ednTime = '2024-02-29 07:00:00';
-      startTime.setUTCHours(18);
-      startTime.setMinutes(0);
-      ednTime.setUTCHours(22);
-      ednTime.setMinutes(0);
-    }
+    console.log('bb packageDetail: ', packageDetail);
 
     const res = await ServiceApi.checkTime({
-      packagesId: 8,
-      startTime: new Date(
-        startTime.toLocaleString("en-US", { timeZone: "Asia/Ho_Chi_Minh" })
-      )
-        .toISOString()
-        .replace(/\.\d{3}Z$/, ""),
-      endTime: new Date(
-        ednTime.toLocaleString("en-US", { timeZone: "Asia/Ho_Chi_Minh" })
-      )
-        .toISOString()
-        .replace(/\.\d{3}Z$/, ""),
+      // packagesId: 24,
+      packagesId: packageDetail?.id,
+      startTime: startTime,
+      endTime: ednTime,
     });
     if (res.data === false) {
       setTime({

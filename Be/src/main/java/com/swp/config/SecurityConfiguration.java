@@ -57,7 +57,7 @@ public class SecurityConfiguration {
                                         "/host/confirmCancel/**",
                                         "/host/getAllBookings/**",
                                         "/host/createPackage/**",
-                                        "/host/createPackage/**",
+                                        "/host/editPackage/**",
                                         "/host/packages/**",
                                         "/host/changeStatus/**").hasRole("HOST")
                                 .requestMatchers("/admin/**").hasRole("ADMIN")

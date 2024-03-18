@@ -48,7 +48,7 @@ const Order = ({ booking, packageDetail, serviceCustom }) => {
   //totalCost
   function formatTime(timeString) {
     const dateTime = new Date(timeString);
-    const hours = dateTime.getHours().toString().padStart(2, "0");
+        const hours = dateTime.getHours().toString().padStart(2, "0");
     const minutes = dateTime.getMinutes().toString().padStart(2, "0");
     return `${hours}:${minutes}`;
   }

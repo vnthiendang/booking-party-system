@@ -117,6 +117,8 @@ public class BookingController {
             reservation.setBookingStatus(EBookingStatus.PENDING);
             reservation.setPaymentStatus(EPaymentStatus.NOT_PAID);
             reservation.setBookingDate(new Date());
+            reservation.setStartTime(bookReservationDto.getStartTime());
+            reservation.setEndTime(bookReservationDto.getEndTime());
 
             if(bookReservationDto.getPartySize() != null && bookReservationDto.getAddedSizePrice() != null){
                 reservation.setPartySize(aPackage.getCapacity() + bookReservationDto.getPartySize());
@@ -191,24 +193,28 @@ public class BookingController {
             }
 
             // Set booking cost
-            booking.setTotalCost(booking.getTotalCost() + customServicePrice);
+            Double newTotalCost = booking.getTotalCost() + customServicePrice;
+            booking.setTotalCost(newTotalCost);
 
 
             // Check deposit and update payment status
             Double deposit = dto.getDeposit();
-            if(deposit != null){
-                if (deposit.equals(booking.getTotalCost())) {
-                    booking.setPaymentStatus(EPaymentStatus.PAID);
-                } else if (deposit < booking.getTotalCost()) {
-                    booking.setPaymentStatus(EPaymentStatus.DEPOSITED);
-                } else {
-                    // Handle potential case where deposit is greater than total cost
-                    throw new BadRequestException("Deposit is greater than total cost!");
-                }
-                booking.setDeposited(dto.getDeposit());
+            if(deposit == null){
+                throw new BadRequestException("Deposit amount is required");
+            }else if(deposit < 0){
+                throw new BadRequestException("Deposit must be greater than 0");
+            }else if (deposit > newTotalCost){
+                throw new BadRequestException("Deposit cannot be greater than total cost!");
+            } else if (deposit.equals(newTotalCost)) {
+                booking.setPaymentStatus(EPaymentStatus.PAID);
+            } else if (dto.getDeposit() < newTotalCost) {
+                booking.setPaymentStatus(EPaymentStatus.DEPOSITED);
+            } else if (deposit == 0) {
+                booking.setPaymentStatus(EPaymentStatus.NOT_PAID);
             }
+            booking.setDeposited(dto.getDeposit());
 
-            bookingService.addReservation(booking); // Assuming a method to save Booking
+            bookingService.addReservation(booking);
             return makeResponse(true, "", "Update booking successfully");
         } catch (Exception e) {
             return makeResponse(false, "An error occurred during updating", e.getMessage());
@@ -362,31 +368,26 @@ public class BookingController {
             if (booking == null) {
                 throw new BadRequestException("Booking not exit");
             }
-            if (booking.getBookingStatus() == EBookingStatus.APPROVED) {
-                throw new BadRequestException("Cannot cancel APPROVED booking");
-            }
+//            if (booking.getBookingStatus() == EBookingStatus.APPROVED) {
+//                throw new BadRequestException("Cannot cancel APPROVED booking");
+//            }
 
-            booking.setBookingStatus(EBookingStatus.CANCELLED);
-            booking.getPackages().setStatus(EPackageStatus.OFF);
+//            booking.setBookingStatus(EBookingStatus.CANCELLED);
+            if(booking.getDeposited() > 0){
+//                String truncatedStatus = EBookingStatus.REFUNDED.name().substring(0, 10); // Truncate to first 10 characters
+                booking.setRefundMoney(booking.getDeposited());
+                booking.setDeposited(0.0);
+                booking.setBookingStatus(EBookingStatus.REFUNDED);
+
+            }else {
+                booking.setDeposited(0.0);
+                booking.setBookingStatus(EBookingStatus.CANCELLED);
+            }
+            booking.getPackages().setStatus(EPackageStatus.ON);
             Booking updatedBooking = bookingService.addReservation(booking);
             return makeResponse(true, mapper.fromEntityToBookingDto(updatedBooking), "Booking updated successfully");
         }catch (Exception e){
             return makeResponse(false, " Error, occurred during updating status", e.getMessage());
-        }
-    }
-
-    @GetMapping("/listOrderDetails/{bookingId}")
-    public ListOrderDTO listOrderDetails(@PathVariable Integer bookingId) {
-        return bookingService.getOrderDetailList(bookingId);
-    }
-
-    @PostMapping("/updateAfterBooking")
-    public ApiMessageDto<Object> updateAfterBooking(@Valid @RequestBody UpdateAfterBookingDTO updateAfterBookingDTO) {
-        try {
-            bookingService.updateAfterBooking(updateAfterBookingDTO.getBookingId());
-            return makeResponse(true,updateAfterBookingDTO.getBookingId(), "Update successfully");
-        }catch (Exception e){
-            return makeResponse(false, "An error occurred during updating status", e.getMessage());
         }
     }
 

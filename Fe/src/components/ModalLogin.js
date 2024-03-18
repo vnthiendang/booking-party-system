@@ -171,7 +171,7 @@ export default function ModalLogin({
                     marginBottom: "10px",
                   }}
                 >
-                  Sign in to Minimal
+                  Sign in
                 </Typography>
                 <form onSubmit={handleSubmit(onSubmit, onError)}>
                   {renderForm}

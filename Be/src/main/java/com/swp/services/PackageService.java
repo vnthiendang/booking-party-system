@@ -1,9 +1,6 @@
 package com.swp.services;
 
-import com.swp.cms.dto.CustomServiceDto;
-import com.swp.cms.dto.PackageCreateDto;
-import com.swp.cms.dto.PackageDto;
-import com.swp.cms.dto.ServiceDto;
+import com.swp.cms.dto.*;
 import com.swp.entity.*;
 import com.swp.entity.Package;
 import com.swp.entity.enums.EPackageStatus;
@@ -158,7 +155,7 @@ public class PackageService {
     }
 
     @Transactional
-    public void updatePackageByUserId(PackageDto updateDto, Integer userId) {
+    public void updatePackageByUserId(UpdateAfterBookingDTO updateDto, Integer userId) {
 
         Package existingPackage = packageRepository.findByIdAndUserId_UsId(updateDto.getId(), userId)
                 .orElseThrow(() -> new EntityNotFoundException("Package not found"));
@@ -186,18 +183,19 @@ public class PackageService {
 //            throw new IllegalArgumentException("Number of requested services exceeds available services.");
 //        }
 
-        Set<ServiceDto> newServiceIds = new HashSet<>(updateDto.getServices());
+        List<Integer> newServiceIds = new ArrayList<>(updateDto.getServices());
         List<PackageServiceEntity> newPackageServiceEntities = new ArrayList<>();
 
-        for (ServiceDto serviceDto : newServiceIds) {
-            PackageServiceEntity existingAssociation = pServiceRepository.findByPackages_IdAndService_ServiceId(updateDto.getId(), serviceDto.getId())
+        for (Integer serviceDto : newServiceIds) {
+            PackageServiceEntity existingAssociation = pServiceRepository.findByPackages_IdAndService_ServiceId(updateDto.getId(), serviceDto)
                     .orElse(null);
 
             if (existingAssociation == null) {
-                PService service = serviceServiceService.getServiceById(serviceDto.getId());
+                PService service = serviceServiceService.getServiceById(serviceDto);
                 PackageServiceEntity packageServiceEntity = new PackageServiceEntity();
                 packageServiceEntity.setPackages(existingPackage);
                 packageServiceEntity.setService(service);
+                packageServiceEntity.setServiceQty(10);
                 newPackageServiceEntities.add(packageServiceEntity);
             }else {
                 throw new PackageAlreadyExistException("Cannot add duplicate service!");

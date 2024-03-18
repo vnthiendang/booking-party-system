@@ -191,6 +191,7 @@ public class BookingService {
                 .paymentStatus(String.valueOf(booking.getPaymentStatus()))
                 .customServices(serviceIds)
                 .customerUsId(booking.getCustomer().getUsId())
+                .refunded(booking.getRefundMoney())
 
                 .build();
     }
@@ -219,14 +220,6 @@ public class BookingService {
                 .deposited(booking.getDeposited())
                 .refundMoney(booking.getRefundMoney())
                 .build();
-    }
-    public ListOrderDTO getOrderDetailList(Integer bookingId){
-        ListOrderDTO listOrderDTO = new ListOrderDTO();
-
-        listOrderDTO.setAPackage(bookingRepository.findPackageByBookingId(bookingId));
-        int packageId = listOrderDTO.aPackage.getId();
-        listOrderDTO.setPServicesList(pServiceService.getServiceInPackage(packageId));
-        return listOrderDTO;
     }
     public void updateAfterBooking(Integer bookingId) {
         //update status

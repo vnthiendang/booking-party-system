@@ -94,7 +94,7 @@ const CustomPackage = ({
       }}
     >
       Customize your event using the sections below. If there is anything you
-      still need that you don't see here, tell us in the notes section on the
+      still need that you dont see here, tell us in the notes section on the
       next step.
       <h3>Add Product</h3>
       <div

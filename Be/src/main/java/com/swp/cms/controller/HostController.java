@@ -92,7 +92,7 @@ public class HostController {
     }
 
     @PutMapping("/editPackage/{id}")
-    public ResponseEntity<ApiResponse> editPackage(@PathVariable Integer id, @Valid @RequestBody PackageDto packageDto) {
+    public ResponseEntity<ApiResponse> editPackage(@PathVariable Integer id, @Valid @RequestBody UpdateAfterBookingDTO packageDto) {
         try {
             Integer hostId = getCurrentHostId();
             packageDto.setId(id);
@@ -171,8 +171,6 @@ public class HostController {
                 throw new BadRequestException("Booking not exit");
             }
 
-
-
             if(booking.getDeposited() > 0){
 //                String truncatedStatus = EBookingStatus.REFUNDED.name().substring(0, 10); // Truncate to first 10 characters
                 booking.setRefundMoney(booking.getDeposited());
@@ -183,7 +181,7 @@ public class HostController {
                 booking.setDeposited(0.0);
                 booking.setBookingStatus(EBookingStatus.CANCELLED);
             }
-
+            booking.getPackages().setStatus(EPackageStatus.ON);
             //save changes
             Booking updatedBooking = bookingService.addReservation(booking);
             return makeResponse(true, bookingMapper.fromEntityToBookingDto(updatedBooking), "Done! deposit refunded to customer.");

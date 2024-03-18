@@ -17,7 +17,7 @@ const Order = ({ booking, packageDetail }) => {
       : "";
     try {
       const res = await ServiceApi.getOrderDetail(token);
-      setorder(res);
+            setorder(res);
     } catch (error) {
       toast.error("🦄 Something went wrong!", {
         position: "top-right",
@@ -42,7 +42,7 @@ const Order = ({ booking, packageDetail }) => {
   //totalCost
   function formatTime(timeString) {
     const dateTime = new Date(timeString);
-    const hours = dateTime.getHours().toString().padStart(2, "0");
+        const hours = dateTime.getHours().toString().padStart(2, "0");
     const minutes = dateTime.getMinutes().toString().padStart(2, "0");
     return `${hours}:${minutes}`;
   }
@@ -103,40 +103,52 @@ const Order = ({ booking, packageDetail }) => {
                 <tr>
                   <th
                     style={{
-                      width: "10%",
+                      minWidth: "3rem",
                     }}
                   >
                     No
                   </th>
                   <th
                     style={{
-                      width: "40%",
+                      minWidth: "10rem",
+                      width: 'auto',
                     }}
                   >
                     Date
                   </th>
                   <th
                     style={{
-                      width: "20%",
+                      minWidth: "15rem",
                     }}
                   >
                     Status booking
                   </th>
                   <th
                     style={{
-                      width: "20%",
+                      minWidth: "15rem",
                     }}
                   >
                     Status payment
                   </th>
-                  <th>Slot</th>
-                  <th>Total Cost</th>
+                  <th
+                  style={{
+                    minWidth: "5rem",
+                  }}>Slot</th>
+                  <th style={{
+                    minWidth: "10rem",
+                  }}>Total Cost</th>
                   <th
                     style={{
-                      width: "60%",
+                      minWidth: "10rem",
                     }}
                   >
                     Edit Status
+                  </th>
+                  <th
+                  style={{
+                    minWidth: "15rem",
+                  }}>
+                    Refunded money
                   </th>
                 </tr>
               </thead>
@@ -164,7 +176,7 @@ const Order = ({ booking, packageDetail }) => {
                         >
                           {/* /.col */}
                           <div className="col-lg-10 col-xs-9 col-550-12">
-                            <p className="bottommargin-0 lineheight18">
+                            <p style={{ margin: '0rem', paddingBottom: '1rem' }} className="margin-0 lineheight18">
                               <span className="family-avi-medium darkblue">
                                 <b>
                                   <br /> {formatTime(item?.startTime)}-{" "}
@@ -191,8 +203,8 @@ const Order = ({ booking, packageDetail }) => {
                       >
                         {item?.paymentStatus}
                       </td>
-                      <td>{item?.partySize}</td>
-                      <td>${item?.totalCost?.toLocaleString()}</td>
+                      <td style={{ textAlign: 'center' }}>{item?.partySize}</td>
+                      <td style={{ textAlign: 'center' }}>${item?.totalCost?.toLocaleString()}</td>
                       <td
                         style={{
                           display: "flex",
@@ -203,7 +215,7 @@ const Order = ({ booking, packageDetail }) => {
                         {item?.bookingStatus === "PENDING" && (
                           <Button
                             variant="contained"
-                            sx={{ background: "red", marginTop: "20px" }}
+                            sx={{ background: "red", marginTop: "0.5rem" }}
                             onClick={() => {
                               setBookingId(item?.bookingId);
                               setOpenModalCancel(true);
@@ -212,6 +224,10 @@ const Order = ({ booking, packageDetail }) => {
                             Cancel
                           </Button>
                         )}
+                      </td>
+                      <td style={{ textAlign: 'center' }}>
+                        {(item?.bookingStatus === 'CANCELLED' && Number(item?.refunded) > 0) || item?.bookingStatus === 'REFUNDED'
+                          ? '$'+item?.refunded?.toLocaleString() : ''}
                       </td>
                     </tr>
                   );

@@ -35,7 +35,7 @@ export default function Header({ onOpenNav }) {
         </IconButton>
       )}
 
-      <Searchbar />
+      {/* <Searchbar /> */}
 
       <Box sx={{ flexGrow: 1 }} />
 
@@ -49,8 +49,8 @@ export default function Header({ onOpenNav }) {
         >
           Logout
         </Button>
-        <LanguagePopover />
-        <NotificationsPopover />
+        {/* <LanguagePopover />
+        <NotificationsPopover /> */}
         <AccountPopover />
       </Stack>
     </>

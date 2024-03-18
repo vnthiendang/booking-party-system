@@ -36,4 +36,6 @@ public class BookingDto {
     private List<Integer> customServices;
     private Integer customerUsId;
     private Double addedSizePrice;
+    private Double refunded;
+
 }

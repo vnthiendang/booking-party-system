@@ -125,7 +125,8 @@ export default function UserPage() {
 
         <Button
           variant="contained"
-          color="inherit"
+          // color="inherit"
+          sx={{ color: "blue", color: "white" }}
           startIcon={<Iconify icon="eva:plus-fill" />}
           onClick={() => navigate(ROUTER.CREATE_PACKAGE_BY_HOST)}
         >
