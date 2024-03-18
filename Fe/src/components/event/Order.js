@@ -48,7 +48,7 @@ const Order = ({ booking, packageDetail, serviceCustom }) => {
   //totalCost
   function formatTime(timeString) {
     const dateTime = new Date(timeString);
-        const hours = dateTime.getHours().toString().padStart(2, "0");
+    const hours = dateTime.getHours().toString().padStart(2, "0");
     const minutes = dateTime.getMinutes().toString().padStart(2, "0");
     return `${hours}:${minutes}`;
   }
@@ -169,7 +169,7 @@ const Order = ({ booking, packageDetail, serviceCustom }) => {
                 Pacakage quantity : 1<br />
                 Service quantity : {listService?.length + serviceCustomQTy}
               </td>
-              <td>${packageDetail?.price?.toLocaleString()}</td>
+              <td>${order?.totalCost?.toLocaleString()}</td>
             </tr>
           </tbody>
         </table>

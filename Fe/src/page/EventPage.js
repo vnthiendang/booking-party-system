@@ -107,13 +107,16 @@ export default function EventPage() {
         token
       );
       console.log("🚀 ~ handleBooking ~ booking:", booking);
-      setBooking(booking?.data);
       await ServiceApi.addService(
         {
           bookingId: booking?.data?.bookingId,
           customServices,
         },
         token
+      );
+      const res = await ServiceApi.getOrderDetail(token);
+      setBooking(
+        res?.filter((item) => item?.bookingId === booking?.data?.bookingId)?.[0]
       );
       toast.success("🦄 booking success!", {
         position: "top-right",
