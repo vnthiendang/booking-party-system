@@ -93,6 +93,8 @@ public class BookingController {
     @PostMapping("/bookPackage")
     public ApiMessageDto<Object> bookPackage(@Valid @RequestBody BookingDto bookReservationDto) {
         try {
+
+
             // Check if package exists
             packageService.findPackageById(bookReservationDto.getPackageId());
 
@@ -199,20 +201,23 @@ public class BookingController {
 
             // Check deposit and update payment status
             Double deposit = dto.getDeposit();
-            if(deposit == null){
-                throw new BadRequestException("Deposit amount is required");
-            }else if(deposit < 0){
-                throw new BadRequestException("Deposit must be greater than 0");
-            }else if (deposit > newTotalCost){
-                throw new BadRequestException("Deposit cannot be greater than total cost!");
-            } else if (deposit.equals(newTotalCost)) {
-                booking.setPaymentStatus(EPaymentStatus.PAID);
-            } else if (dto.getDeposit() < newTotalCost) {
-                booking.setPaymentStatus(EPaymentStatus.DEPOSITED);
-            } else if (deposit == 0) {
-                booking.setPaymentStatus(EPaymentStatus.NOT_PAID);
-            }
-            booking.setDeposited(dto.getDeposit());
+            
+
+           if (deposit !=null){
+               if(deposit < 0){
+                   throw new BadRequestException("Deposit must be greater than 0");
+               }else if (deposit > newTotalCost){
+                   throw new BadRequestException("Deposit cannot be greater than total cost!");
+               } else if (deposit.equals(newTotalCost)) {
+                   booking.setPaymentStatus(EPaymentStatus.PAID);
+               } else if (dto.getDeposit() < newTotalCost) {
+                   booking.setPaymentStatus(EPaymentStatus.DEPOSITED);
+               } else if (deposit == 0) {
+                   booking.setPaymentStatus(EPaymentStatus.NOT_PAID);
+               }
+               booking.setDeposited(dto.getDeposit());
+           }
+
 
             bookingService.addReservation(booking);
             return makeResponse(true, "", "Update booking successfully");
