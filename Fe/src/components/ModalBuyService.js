@@ -94,10 +94,17 @@ export default function ModalBuyService({
                   }}
                   onKeyPress={preventMinus}
                   value={qty}
+                  min={1}
                   onChange={(e) => {
-                    if (+e.target.value === 0) {
-                      setqty(1);
-                    } else setqty(e.target.value);
+                    const newValue = e.target.value;
+                    console.log(newValue);
+                    if (newValue === "") {
+                      setqty(""); // Cho phép xóa giá trị
+                    } else if (newValue === "0") {
+                      setqty(1); // Thay đổi giá trị mặc định thành 2
+                    } else {
+                      setqty(newValue);
+                    }
                   }}
                 />
 
