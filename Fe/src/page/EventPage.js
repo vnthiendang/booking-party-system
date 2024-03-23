@@ -279,23 +279,23 @@ export default function EventPage() {
 
   const getListService = async (id) => {
     try {
-      // const res = await ServiceApi.getListservicePk(id);
-      // setListService(
-      //   res
-      //     .map((item, index) => ({ ...item, media: listSvImg[index] }))
-      //     .filter((item) => !item.set)
-      //     .map((item) => ({ ...item, choose: false, qty: 1 }))
-      // );
+      const res = await ServiceApi.getListservicePk(id);
+      setListService(
+        res
+          .map((item, index) => ({ ...item, media: listSvImg[index] }))
+          .filter((item) => !item.set)
+          .map((item) => ({ ...item, choose: false, qty: 1 }))
+      );
 
-      setListService([
-        {
-          id: 1,
-          serviceName: "123",
-          media: listSvImg[0],
-          price: 90,
-          qty: 1,
-        },
-      ]);
+      // setListService([
+      //   {
+      //     id: 1,
+      //     serviceName: "123",
+      //     media: listSvImg[0],
+      //     price: 90,
+      //     qty: 1,
+      //   },
+      // ]);
     } catch (error) {
       alert(error);
     }
