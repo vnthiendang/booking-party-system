@@ -24,6 +24,12 @@ export default function ModalBuyService({
 }) {
   const { item } = open;
   const [qty, setqty] = React.useState(item?.qty || 1);
+
+  const preventMinus = (e) => {
+    if (e.code === "Minus") {
+      e.preventDefault();
+    }
+  };
   return (
     <div>
       <Modal
@@ -86,8 +92,13 @@ export default function ModalBuyService({
                   style={{
                     fontSize: "24px",
                   }}
+                  onKeyPress={preventMinus}
                   value={qty}
-                  onChange={(e) => setqty(e.target.value)}
+                  onChange={(e) => {
+                    if (+e.target.value === 0) {
+                      setqty(1);
+                    } else setqty(e.target.value);
+                  }}
                 />
 
                 <Button
