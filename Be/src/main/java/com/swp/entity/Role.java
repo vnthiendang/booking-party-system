@@ -21,10 +21,6 @@ public class Role {
     @Column(unique = true, nullable = false)
     private Roles roleType;
 
-    public Role(Roles roleType) {
-        this.roleType = roleType;
-    }
-
     @Override
     public String toString() {
         return "Role{" +

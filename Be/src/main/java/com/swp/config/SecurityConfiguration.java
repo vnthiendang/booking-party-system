@@ -35,8 +35,12 @@ public class SecurityConfiguration {
             "/swagger-ui/**",
             "/webjars/**",
             "/swagger-ui.html",
-            "/host/**",
-            "/booking/**",
+            "/booking/packages",
+            "/booking/{packageId}/services",
+            "/booking/package/**",
+            "/booking/checkPackageAvailableInDateRange",
+            "/booking/checkEmail/**",
+            "/booking/service/**",
             "/customer/**",
             "/profile"
     };
@@ -54,19 +58,20 @@ public class SecurityConfiguration {
                         req.requestMatchers(WHITE_LIST_URL)
                                 .permitAll()
                                 .requestMatchers(
-                                        "/host/confirmCancel/**",
-                                        "/host/getAllBookings/**",
-                                        "/host/createPackage/**",
-                                        "/host/editPackage/**",
-                                        "/host/packages/**",
-                                        "/host/changeStatus/**").hasRole("HOST")
+//                                        "/host/confirmCancel/**" +
+                                        "/host/**").hasRole("HOST")
+//                                        "/host/getAllBookings/**",
+//                                        "/host/createPackage/**",
+//                                        "/host/editPackage/**",
+//                                        "/host/packages/**",
+
                                 .requestMatchers("/admin/**").hasRole("ADMIN")
                                 .requestMatchers(
                                         "/booking/cancelBooking/**",
-                                        "/booking/bookPackage/**",
+                                        "/booking/bookPackage",
+                                        "/booking/addServices",
                                         "/booking/history/**",
-                                        "/booking/getByDate/**",
-                                        "/booking/addServices/**").hasRole("CUSTOMER")
+                                        "/booking/getByDate/**").hasRole("CUSTOMER")
                                 .anyRequest()
                                 .authenticated()
                 )
