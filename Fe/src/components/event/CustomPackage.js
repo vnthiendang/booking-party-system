@@ -28,6 +28,20 @@ const CustomPackage = ({
   let sigPad = {};
 
   const handleAddService = (id, qty) => {
+    if (!qty) {
+      toast.error("🦄 quantity can not be empty", {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+        transition: Bounce,
+      });
+      return;
+    }
     const newValue = listService?.map((item) =>
       item?.id === id ? { ...item, choose: true, qty } : item
     );

@@ -181,6 +181,20 @@ export default function EventPage() {
 
   const handleConfirmDeposit = async (deposit) => {
     try {
+      if (!deposit) {
+        toast.error("🦄 Deposit must not empty!", {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+          transition: Bounce,
+        });
+        return;
+      }
       if (+deposit > booking?.totalCost) {
         toast.error("🦄 Deposit must less than or equal cost!", {
           position: "top-right",
